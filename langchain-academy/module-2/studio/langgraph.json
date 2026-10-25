@@ -1,7 +1,7 @@
 {
   "dockerfile_lines": [],
   "graphs": {
-    "chatbot": "./chatbot.py:graph"
+    "chatbot": "./chatbot.py:grafo"
   },
   "env": "./.env",
   "python_version": "3.11",
