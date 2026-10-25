@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="210" viewBox="0 0 1200 210" role="img" aria-labelledby="titulo">
+<title id="titulo">Los siete módulos del curso, del 0 al 6</title>
+<style>
+.sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif}
+.mono{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.marcha{stroke-dasharray:6 7;animation:marcha 1.3s linear infinite}
+@keyframes marcha{to{stroke-dashoffset:-26}}
+@media (prefers-reduced-motion:reduce){.marcha{animation:none}}
+</style>
+<defs>
+<linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1120"/><stop offset="1" stop-color="#141d33"/></linearGradient>
+<pattern id="puntos" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#1b2640"/></pattern>
+<filter id="difuso" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7"/></filter>
+<marker id="flecha" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#46587a"/></marker>
+<linearGradient id="progreso" gradientUnits="userSpaceOnUse" x1="110" y1="0" x2="1090" y2="0"><stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+</defs>
+<rect x=".5" y=".5" width="1199" height="209" rx="18" fill="url(#fondo)" stroke="#26324a"/>
+<rect x=".5" y=".5" width="1199" height="209" rx="18" fill="url(#puntos)"/>
+<path d="M110,66 L1090,66" stroke="#34445f" stroke-width="4" stroke-linecap="round"/>
+<path d="M110,66 L1090,66" stroke="url(#progreso)" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="100"><animate attributeName="stroke-dashoffset" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.0444;0.7111;0.9778;0.9789;1.0000" values="100;100;0;0;100;100"/><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.9222;0.9667;1.0000" values="1;1;0;0"/></path>
+<circle cx="110" cy="66" r="22" fill="#64748b" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.0444;0.0722;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
+<circle cx="110" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
+<circle cx="110" cy="66" r="20" fill="#64748b" fill-opacity=".16" stroke="#64748b" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.0444;0.0722;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
+<text x="110" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">0</text>
+<text x="110" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Puesta a punto</text>
+<text x="110" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >entorno y claves</text>
+<text x="110" y="176" class="mono" font-size="13" font-weight="600" fill="#64748b" text-anchor="middle" >17 min</text>
+<circle cx="273.333" cy="66" r="22" fill="#2dd4bf" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.1556;0.1833;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
+<circle cx="273.333" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
+<circle cx="273.333" cy="66" r="20" fill="#2dd4bf" fill-opacity=".16" stroke="#2dd4bf" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.1556;0.1833;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
+<text x="273.333" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">1</text>
+<text x="273.333" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Introducción</text>
+<text x="273.333" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >del grafo al agente</text>
+<text x="273.333" y="176" class="mono" font-size="13" font-weight="600" fill="#2dd4bf" text-anchor="middle" >51 min</text>
+<circle cx="436.667" cy="66" r="22" fill="#38bdf8" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.2667;0.2944;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
+<circle cx="436.667" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
+<circle cx="436.667" cy="66" r="20" fill="#38bdf8" fill-opacity=".16" stroke="#38bdf8" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.2667;0.2944;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
+<text x="436.667" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">2</text>
+<text x="436.667" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Estado y memoria</text>
+<text x="436.667" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >reducers y resúmenes</text>
+<text x="436.667" y="176" class="mono" font-size="13" font-weight="600" fill="#38bdf8" text-anchor="middle" >45 min</text>
+<circle cx="600" cy="66" r="22" fill="#fb7185" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.3778;0.4056;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
+<circle cx="600" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
+<circle cx="600" cy="66" r="20" fill="#fb7185" fill-opacity=".16" stroke="#fb7185" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.3778;0.4056;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
+<text x="600" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">3</text>
+<text x="600" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Human-in-the-loop</text>
+<text x="600" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >pausar y aprobar</text>
+<text x="600" y="176" class="mono" font-size="13" font-weight="600" fill="#fb7185" text-anchor="middle" >55 min</text>
+<circle cx="763.333" cy="66" r="22" fill="#fbbf24" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.4889;0.5167;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
+<circle cx="763.333" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
+<circle cx="763.333" cy="66" r="20" fill="#fbbf24" fill-opacity=".16" stroke="#fbbf24" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.4889;0.5167;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
+<text x="763.333" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">4</text>
+<text x="763.333" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Tu asistente</text>
+<text x="763.333" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >paralelo, map-reduce</text>
+<text x="763.333" y="176" class="mono" font-size="13" font-weight="600" fill="#fbbf24" text-anchor="middle" >61 min</text>
+<circle cx="926.667" cy="66" r="22" fill="#a78bfa" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.6000;0.6278;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
+<circle cx="926.667" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
+<circle cx="926.667" cy="66" r="20" fill="#a78bfa" fill-opacity=".16" stroke="#a78bfa" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.6000;0.6278;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
+<text x="926.667" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">5</text>
+<text x="926.667" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Memoria larga</text>
+<text x="926.667" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >Store y Trustcall</text>
+<text x="926.667" y="176" class="mono" font-size="13" font-weight="600" fill="#a78bfa" text-anchor="middle" >78 min</text>
+<circle cx="1090" cy="66" r="22" fill="#4ade80" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.7111;0.7389;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
+<circle cx="1090" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
+<circle cx="1090" cy="66" r="20" fill="#4ade80" fill-opacity=".16" stroke="#4ade80" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.7111;0.7389;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
+<text x="1090" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">6</text>
+<text x="1090" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Despliegue</text>
+<text x="1090" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >servidor y SDK</text>
+<text x="1090" y="176" class="mono" font-size="13" font-weight="600" fill="#4ade80" text-anchor="middle" >49 min</text>
+<g opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.0444;0.0667;0.9222;0.9667;1.0000" values="0;0;1;1;0;0"/><animateMotion dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.0444;0.7111;1.0000" keyPoints="0;0;1;1" path="M110,66 L1090,66"/><circle r="12" fill="#a78bfa" opacity=".5" filter="url(#difuso)"/><circle r="5" fill="#e6edf3"/></g>
+</svg>
