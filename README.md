@@ -16,6 +16,12 @@ Mis apuntes del curso [Introduction to LangGraph](https://academy.langchain.com/
 
 El código es el del repositorio oficial [langchain-academy](https://github.com/langchain-ai/langchain-academy), con licencia MIT, y está en la carpeta [`langchain-academy`](langchain-academy). Los videos se ven en la página del curso, que es gratis con una cuenta de LangChain Academy.
 
+## Mi versión del curso
+
+Estoy reescribiendo el curso con mi visión: los mismos temas, cada concepto con su definición formal, sus propiedades y el código que lo implementa, con ejemplos matemáticos. Va en [`modulos`](modulos), lección por lección.
+
+- Módulo 1 · [Grafo sin modelo](modulos/modulo-1/01_grafo_sin_modelo.ipynb): el método de Newton como grafo de LangGraph. [Índice del módulo](modulos/modulo-1).
+
 ## La ruta
 
 <p><picture>
