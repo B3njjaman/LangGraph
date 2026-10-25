@@ -20,374 +20,374 @@ from langgraph.store.memory import InMemoryStore
 
 import configuration
 
-## Utilities 
+## Utilidades
 
-# Inspect the tool calls for Trustcall
-class Spy:
+# Inspeccionamos las llamadas a herramientas de Trustcall
+class Espia:
     def __init__(self):
-        self.called_tools = []
+        self.herramientas_llamadas = []
 
-    def __call__(self, run):
-        q = [run]
+    def __call__(self, ejecucion):
+        q = [ejecucion]
         while q:
             r = q.pop()
             if r.child_runs:
                 q.extend(r.child_runs)
             if r.run_type == "chat_model":
-                self.called_tools.append(
+                self.herramientas_llamadas.append(
                     r.outputs["generations"][0][0]["message"]["kwargs"]["tool_calls"]
                 )
 
-# Extract information from tool calls for both patches and new memories in Trustcall
-def extract_tool_info(tool_calls, schema_name="Memory"):
-    """Extract information from tool calls for both patches and new memories.
-    
+# Extraemos información de las llamadas a herramientas, tanto de los parches como de las memorias nuevas, en Trustcall
+def extraer_info_herramientas(llamadas_herramientas, nombre_esquema="Memoria"):
+    """Extrae información de las llamadas a herramientas, tanto de los parches como de las memorias nuevas.
+
     Args:
-        tool_calls: List of tool calls from the model
-        schema_name: Name of the schema tool (e.g., "Memory", "ToDo", "Profile")
+        llamadas_herramientas: Lista de llamadas a herramientas del modelo
+        nombre_esquema: Nombre de la herramienta del esquema (por ejemplo, "Memoria", "Tarea", "Perfil")
     """
 
-    # Initialize list of changes
-    changes = []
-    
-    for call_group in tool_calls:
-        for call in call_group:
-            if call['name'] == 'PatchDoc':
-                changes.append({
-                    'type': 'update',
-                    'doc_id': call['args']['json_doc_id'],
-                    'planned_edits': call['args']['planned_edits'],
-                    'value': call['args']['patches'][0]['value']
+    # Inicializamos la lista de cambios
+    cambios = []
+
+    for grupo_llamadas in llamadas_herramientas:
+        for llamada in grupo_llamadas:
+            if llamada['name'] == 'PatchDoc':
+                cambios.append({
+                    'tipo': 'actualizacion',
+                    'id_documento': llamada['args']['json_doc_id'],
+                    'ediciones_planeadas': llamada['args']['planned_edits'],
+                    'valor': llamada['args']['patches'][0]['value']
                 })
-            elif call['name'] == schema_name:
-                changes.append({
-                    'type': 'new',
-                    'value': call['args']
+            elif llamada['name'] == nombre_esquema:
+                cambios.append({
+                    'tipo': 'nueva',
+                    'valor': llamada['args']
                 })
 
-    # Format results as a single string
-    result_parts = []
-    for change in changes:
-        if change['type'] == 'update':
-            result_parts.append(
-                f"Document {change['doc_id']} updated:\n"
-                f"Plan: {change['planned_edits']}\n"
-                f"Added content: {change['value']}"
+    # Damos formato a los resultados como un único string
+    partes_resultado = []
+    for cambio in cambios:
+        if cambio['tipo'] == 'actualizacion':
+            partes_resultado.append(
+                f"Documento {cambio['id_documento']} actualizado:\n"
+                f"Plan: {cambio['ediciones_planeadas']}\n"
+                f"Contenido agregado: {cambio['valor']}"
             )
         else:
-            result_parts.append(
-                f"New {schema_name} created:\n"
-                f"Content: {change['value']}"
+            partes_resultado.append(
+                f"Se creó {nombre_esquema} nueva:\n"
+                f"Contenido: {cambio['valor']}"
             )
-    
-    return "\n\n".join(result_parts)
 
-## Schema definitions
+    return "\n\n".join(partes_resultado)
 
-# User profile schema
-class Profile(BaseModel):
-    """This is the profile of the user you are chatting with"""
-    name: Optional[str] = Field(description="The user's name", default=None)
-    location: Optional[str] = Field(description="The user's location", default=None)
-    job: Optional[str] = Field(description="The user's job", default=None)
-    connections: list[str] = Field(
-        description="Personal connection of the user, such as family members, friends, or coworkers",
+## Definición de los esquemas
+
+# Esquema del perfil de usuario
+class Perfil(BaseModel):
+    """Este es el perfil del usuario con el que estás conversando"""
+    nombre: Optional[str] = Field(description="El nombre del usuario", default=None)
+    ubicacion: Optional[str] = Field(description="La ubicación del usuario", default=None)
+    trabajo: Optional[str] = Field(description="El trabajo del usuario", default=None)
+    conexiones: list[str] = Field(
+        description="Conexiones personales del usuario, como familiares, amigos o compañeros de trabajo",
         default_factory=list
     )
-    interests: list[str] = Field(
-        description="Interests that the user has", 
+    intereses: list[str] = Field(
+        description="Intereses que tiene el usuario",
         default_factory=list
     )
 
-# ToDo schema
-class ToDo(BaseModel):
-    task: str = Field(description="The task to be completed.")
-    time_to_complete: Optional[int] = Field(description="Estimated time to complete the task (minutes).")
-    deadline: Optional[datetime] = Field(
-        description="When the task needs to be completed by (if applicable)",
+# Esquema de las tareas
+class Tarea(BaseModel):
+    tarea: str = Field(description="La tarea que hay que completar.")
+    tiempo_estimado: Optional[int] = Field(description="Tiempo estimado para completar la tarea (minutos).")
+    fecha_limite: Optional[datetime] = Field(
+        description="Fecha en que la tarea debe estar completada (si corresponde)",
         default=None
     )
-    solutions: list[str] = Field(
-        description="List of specific, actionable solutions (e.g., specific ideas, service providers, or concrete options relevant to completing the task)",
+    soluciones: list[str] = Field(
+        description="Lista de soluciones específicas y accionables (por ejemplo, ideas concretas, proveedores de servicios u opciones concretas relevantes para completar la tarea)",
         min_items=1,
         default_factory=list
     )
-    status: Literal["not started", "in progress", "done", "archived"] = Field(
-        description="Current status of the task",
-        default="not started"
+    situacion: Literal["sin empezar", "en curso", "hecha", "archivada"] = Field(
+        description="Situación actual de la tarea",
+        default="sin empezar"
     )
 
-## Initialize the model and tools
+## Inicializamos el modelo y las herramientas
 
-# Update memory tool
-class UpdateMemory(TypedDict):
-    """ Decision on what memory type to update """
-    update_type: Literal['user', 'todo', 'instructions']
+# Herramienta para actualizar la memoria
+class ActualizarMemoria(TypedDict):
+    """ Decisión sobre qué tipo de memoria actualizar """
+    tipo_actualizacion: Literal['usuario', 'tarea', 'instrucciones']
 
-# Initialize the model
-model = ChatOpenAI(model="gpt-4o", temperature=0)
+# Inicializamos el modelo
+modelo = ChatOpenAI(model="gpt-4o", temperature=0)
 
-## Create the Trustcall extractors for updating the user profile and ToDo list
-profile_extractor = create_extractor(
-    model,
-    tools=[Profile],
-    tool_choice="Profile",
+## Creamos los extractores de Trustcall para actualizar el perfil de usuario y la lista de tareas
+extractor_perfil = create_extractor(
+    modelo,
+    tools=[Perfil],
+    tool_choice="Perfil",
 )
 
-## Prompts 
+## Prompts
 
-# Chatbot instruction for choosing what to update and what tools to call 
-MODEL_SYSTEM_MESSAGE = """You are a helpful chatbot. 
+# Instrucción del chatbot para elegir qué actualizar y qué herramientas llamar
+MENSAJE_SISTEMA_MODELO = """Eres un chatbot útil.
 
-You are designed to be a companion to a user, helping them keep track of their ToDo list.
+Estás diseñado para ser un compañero del usuario, ayudándolo a llevar el registro de su lista de tareas.
 
-You have a long term memory which keeps track of three things:
-1. The user's profile (general information about them) 
-2. The user's ToDo list
-3. General instructions for updating the ToDo list
+Tienes una memoria a largo plazo que lleva el registro de tres cosas:
+1. El perfil del usuario (información general sobre él)
+2. La lista de tareas del usuario
+3. Instrucciones generales para actualizar la lista de tareas
 
-Here is the current User Profile (may be empty if no information has been collected yet):
-<user_profile>
-{user_profile}
-</user_profile>
+Este es el perfil actual del usuario (puede estar vacío si aún no se ha reunido información):
+<perfil_usuario>
+{perfil_usuario}
+</perfil_usuario>
 
-Here is the current ToDo List (may be empty if no tasks have been added yet):
-<todo>
-{todo}
-</todo>
+Esta es la lista de tareas actual (puede estar vacía si aún no se han agregado tareas):
+<tareas>
+{tareas}
+</tareas>
 
-Here are the current user-specified preferences for updating the ToDo list (may be empty if no preferences have been specified yet):
-<instructions>
-{instructions}
-</instructions>
+Estas son las preferencias actuales indicadas por el usuario para actualizar la lista de tareas (pueden estar vacías si aún no ha indicado ninguna):
+<instrucciones>
+{instrucciones}
+</instrucciones>
 
-Here are your instructions for reasoning about the user's messages:
+Estas son tus instrucciones para razonar sobre los mensajes del usuario:
 
-1. Reason carefully about the user's messages as presented below. 
+1. Razona con cuidado sobre los mensajes del usuario tal como se presentan a continuación.
 
-2. Decide whether any of the your long-term memory should be updated:
-- If personal information was provided about the user, update the user's profile by calling UpdateMemory tool with type `user`
-- If tasks are mentioned, update the ToDo list by calling UpdateMemory tool with type `todo`
-- If the user has specified preferences for how to update the ToDo list, update the instructions by calling UpdateMemory tool with type `instructions`
+2. Decide si hay que actualizar alguna parte de tu memoria a largo plazo:
+- Si el usuario entregó información personal, actualiza su perfil llamando a la herramienta ActualizarMemoria con el tipo `usuario`
+- Si se mencionan tareas, actualiza la lista de tareas llamando a la herramienta ActualizarMemoria con el tipo `tarea`
+- Si el usuario indicó preferencias sobre cómo actualizar la lista de tareas, actualiza las instrucciones llamando a la herramienta ActualizarMemoria con el tipo `instrucciones`
 
-3. Tell the user that you have updated your memory, if appropriate:
-- Do not tell the user you have updated the user's profile
-- Tell the user them when you update the todo list
-- Do not tell the user that you have updated instructions
+3. Cuando corresponda, dile al usuario que actualizaste tu memoria:
+- No le digas al usuario que actualizaste su perfil
+- Dile al usuario cuando actualices la lista de tareas
+- No le digas al usuario que actualizaste las instrucciones
 
-4. Err on the side of updating the todo list. No need to ask for explicit permission.
+4. Ante la duda, actualiza la lista de tareas. No hace falta pedir permiso explícito.
 
-5. Respond naturally to user user after a tool call was made to save memories, or if no tool call was made."""
+5. Responde de forma natural al usuario después de llamar a una herramienta para guardar memorias, o si no se llamó a ninguna herramienta."""
 
-# Trustcall instruction
-TRUSTCALL_INSTRUCTION = """Reflect on following interaction. 
+# Instrucción de Trustcall
+INSTRUCCION_TRUSTCALL = """Reflexiona sobre la siguiente interacción.
 
-Use the provided tools to retain any necessary memories about the user. 
+Usa las herramientas disponibles para conservar las memorias necesarias sobre el usuario.
 
-Use parallel tool calling to handle updates and insertions simultaneously.
+Usa llamadas a herramientas en paralelo para manejar las actualizaciones y las inserciones al mismo tiempo.
 
-System Time: {time}"""
+Hora del sistema: {hora}"""
 
-# Instructions for updating the ToDo list
-CREATE_INSTRUCTIONS = """Reflect on the following interaction.
+# Instrucciones para actualizar la lista de tareas
+INSTRUCCIONES_CREAR = """Reflexiona sobre la siguiente interacción.
 
-Based on this interaction, update your instructions for how to update ToDo list items. Use any feedback from the user to update how they like to have items added, etc.
+A partir de esta interacción, actualiza tus instrucciones sobre cómo actualizar los elementos de la lista de tareas. Usa cualquier feedback del usuario para actualizar cómo le gusta que se agreguen los elementos, etc.
 
-Your current instructions are:
+Tus instrucciones actuales son:
 
-<current_instructions>
-{current_instructions}
-</current_instructions>"""
+<instrucciones_actuales>
+{instrucciones_actuales}
+</instrucciones_actuales>"""
 
-## Node definitions
+## Definición de los nodos
 
-def task_mAIstro(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def task_mAIstro(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    """Load memories from the store and use them to personalize the chatbot's response."""
-    
-    # Get the user ID from the config
-    configurable = configuration.Configuration.from_runnable_config(config)
-    user_id = configurable.user_id
+    """Carga las memorias desde el Store y las usa para personalizar la respuesta del chatbot."""
 
-   # Retrieve profile memory from the store
-    namespace = ("profile", user_id)
-    memories = store.search(namespace)
-    if memories:
-        user_profile = memories[0].value
+    # Obtenemos el id del usuario desde la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
+    id_usuario = configurable.id_usuario
+
+   # Recuperamos la memoria del perfil desde el Store
+    namespace = ("perfil", id_usuario)
+    memorias = store.search(namespace)
+    if memorias:
+        perfil_usuario = memorias[0].value
     else:
-        user_profile = None
+        perfil_usuario = None
 
-    # Retrieve people memory from the store
-    namespace = ("todo", user_id)
-    memories = store.search(namespace)
-    todo = "\n".join(f"{mem.value}" for mem in memories)
+    # Recuperamos las memorias de tareas desde el Store
+    namespace = ("tarea", id_usuario)
+    memorias = store.search(namespace)
+    tareas = "\n".join(f"{mem.value}" for mem in memorias)
 
-    # Retrieve custom instructions
-    namespace = ("instructions", user_id)
-    memories = store.search(namespace)
-    if memories:
-        instructions = memories[0].value
+    # Recuperamos las instrucciones personalizadas
+    namespace = ("instrucciones", id_usuario)
+    memorias = store.search(namespace)
+    if memorias:
+        instrucciones = memorias[0].value
     else:
-        instructions = ""
-    
-    system_msg = MODEL_SYSTEM_MESSAGE.format(user_profile=user_profile, todo=todo, instructions=instructions)
+        instrucciones = ""
 
-    # Respond using memory as well as the chat history
-    response = model.bind_tools([UpdateMemory], parallel_tool_calls=False).invoke([SystemMessage(content=system_msg)]+state["messages"])
+    mensaje_sistema = MENSAJE_SISTEMA_MODELO.format(perfil_usuario=perfil_usuario, tareas=tareas, instrucciones=instrucciones)
 
-    return {"messages": [response]}
+    # Respondemos usando la memoria y el historial del chat
+    respuesta = modelo.bind_tools([ActualizarMemoria], parallel_tool_calls=False).invoke([SystemMessage(content=mensaje_sistema)]+estado["messages"])
 
-def update_profile(state: MessagesState, config: RunnableConfig, store: BaseStore):
+    return {"messages": [respuesta]}
 
-    """Reflect on the chat history and update the memory collection."""
-    
-    # Get the user ID from the config
-    configurable = configuration.Configuration.from_runnable_config(config)
-    user_id = configurable.user_id
+def actualizar_perfil(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    # Define the namespace for the memories
-    namespace = ("profile", user_id)
+    """Reflexiona sobre el historial del chat y actualiza la colección de memorias."""
 
-    # Retrieve the most recent memories for context
-    existing_items = store.search(namespace)
+    # Obtenemos el id del usuario desde la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
+    id_usuario = configurable.id_usuario
 
-    # Format the existing memories for the Trustcall extractor
-    tool_name = "Profile"
-    existing_memories = ([(existing_item.key, tool_name, existing_item.value)
-                          for existing_item in existing_items]
-                          if existing_items
-                          else None
-                        )
+    # Definimos el namespace de las memorias
+    namespace = ("perfil", id_usuario)
 
-    # Merge the chat history and the instruction
-    TRUSTCALL_INSTRUCTION_FORMATTED=TRUSTCALL_INSTRUCTION.format(time=datetime.now().isoformat())
-    updated_messages=list(merge_message_runs(messages=[SystemMessage(content=TRUSTCALL_INSTRUCTION_FORMATTED)] + state["messages"][:-1]))
+    # Recuperamos las memorias más recientes como contexto
+    elementos_existentes = store.search(namespace)
 
-    # Invoke the extractor
-    result = profile_extractor.invoke({"messages": updated_messages, 
-                                         "existing": existing_memories})
+    # Damos formato a las memorias existentes para el extractor de Trustcall
+    nombre_herramienta = "Perfil"
+    memorias_existentes = ([(elemento_existente.key, nombre_herramienta, elemento_existente.value)
+                            for elemento_existente in elementos_existentes]
+                            if elementos_existentes
+                            else None
+                          )
 
-    # Save save the memories from Trustcall to the store
-    for r, rmeta in zip(result["responses"], result["response_metadata"]):
+    # Combinamos el historial del chat y la instrucción
+    INSTRUCCION_TRUSTCALL_FORMATEADA=INSTRUCCION_TRUSTCALL.format(hora=datetime.now().isoformat())
+    mensajes_actualizados=list(merge_message_runs(messages=[SystemMessage(content=INSTRUCCION_TRUSTCALL_FORMATEADA)] + estado["messages"][:-1]))
+
+    # Invocamos el extractor
+    resultado = extractor_perfil.invoke({"messages": mensajes_actualizados,
+                                         "existing": memorias_existentes})
+
+    # Guardamos en el Store las memorias de Trustcall
+    for r, meta_r in zip(resultado["responses"], resultado["response_metadata"]):
         store.put(namespace,
-                  rmeta.get("json_doc_id", str(uuid.uuid4())),
+                  meta_r.get("json_doc_id", str(uuid.uuid4())),
                   r.model_dump(mode="json"),
             )
-    tool_calls = state['messages'][-1].tool_calls
-    # Return tool message with update verification
-    return {"messages": [{"role": "tool", "content": "updated profile", "tool_call_id":tool_calls[0]['id']}]}
+    llamadas_herramientas = estado['messages'][-1].tool_calls
+    # Devolvemos un mensaje de herramienta que confirma la actualización
+    return {"messages": [{"role": "tool", "content": "perfil actualizado", "tool_call_id":llamadas_herramientas[0]['id']}]}
 
-def update_todos(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def actualizar_tareas(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    """Reflect on the chat history and update the memory collection."""
-    
-    # Get the user ID from the config
-    configurable = configuration.Configuration.from_runnable_config(config)
-    user_id = configurable.user_id
+    """Reflexiona sobre el historial del chat y actualiza la colección de memorias."""
 
-    # Define the namespace for the memories
-    namespace = ("todo", user_id)
+    # Obtenemos el id del usuario desde la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
+    id_usuario = configurable.id_usuario
 
-    # Retrieve the most recent memories for context
-    existing_items = store.search(namespace)
+    # Definimos el namespace de las memorias
+    namespace = ("tarea", id_usuario)
 
-    # Format the existing memories for the Trustcall extractor
-    tool_name = "ToDo"
-    existing_memories = ([(existing_item.key, tool_name, existing_item.value)
-                          for existing_item in existing_items]
-                          if existing_items
-                          else None
-                        )
+    # Recuperamos las memorias más recientes como contexto
+    elementos_existentes = store.search(namespace)
 
-    # Merge the chat history and the instruction
-    TRUSTCALL_INSTRUCTION_FORMATTED=TRUSTCALL_INSTRUCTION.format(time=datetime.now().isoformat())
-    updated_messages=list(merge_message_runs(messages=[SystemMessage(content=TRUSTCALL_INSTRUCTION_FORMATTED)] + state["messages"][:-1]))
+    # Damos formato a las memorias existentes para el extractor de Trustcall
+    nombre_herramienta = "Tarea"
+    memorias_existentes = ([(elemento_existente.key, nombre_herramienta, elemento_existente.value)
+                            for elemento_existente in elementos_existentes]
+                            if elementos_existentes
+                            else None
+                          )
 
-    # Initialize the spy for visibility into the tool calls made by Trustcall
-    spy = Spy()
-    
-    # Create the Trustcall extractor for updating the ToDo list 
-    todo_extractor = create_extractor(
-    model,
-    tools=[ToDo],
-    tool_choice=tool_name,
+    # Combinamos el historial del chat y la instrucción
+    INSTRUCCION_TRUSTCALL_FORMATEADA=INSTRUCCION_TRUSTCALL.format(hora=datetime.now().isoformat())
+    mensajes_actualizados=list(merge_message_runs(messages=[SystemMessage(content=INSTRUCCION_TRUSTCALL_FORMATEADA)] + estado["messages"][:-1]))
+
+    # Inicializamos el espía para tener visibilidad de las llamadas a herramientas que hace Trustcall
+    espia = Espia()
+
+    # Creamos el extractor de Trustcall para actualizar la lista de tareas
+    extractor_tareas = create_extractor(
+    modelo,
+    tools=[Tarea],
+    tool_choice=nombre_herramienta,
     enable_inserts=True
-    ).with_listeners(on_end=spy)
+    ).with_listeners(on_end=espia)
 
-    # Invoke the extractor
-    result = todo_extractor.invoke({"messages": updated_messages, 
-                                         "existing": existing_memories})
+    # Invocamos el extractor
+    resultado = extractor_tareas.invoke({"messages": mensajes_actualizados,
+                                         "existing": memorias_existentes})
 
-    # Save save the memories from Trustcall to the store
-    for r, rmeta in zip(result["responses"], result["response_metadata"]):
+    # Guardamos en el Store las memorias de Trustcall
+    for r, meta_r in zip(resultado["responses"], resultado["response_metadata"]):
         store.put(namespace,
-                  rmeta.get("json_doc_id", str(uuid.uuid4())),
+                  meta_r.get("json_doc_id", str(uuid.uuid4())),
                   r.model_dump(mode="json"),
             )
-        
-    # Respond to the tool call made in task_mAIstro, confirming the update    
-    tool_calls = state['messages'][-1].tool_calls
 
-    # Extract the changes made by Trustcall and add the the ToolMessage returned to task_mAIstro
-    todo_update_msg = extract_tool_info(spy.called_tools, tool_name)
-    return {"messages": [{"role": "tool", "content": todo_update_msg, "tool_call_id":tool_calls[0]['id']}]}
+    # Respondemos a la llamada a herramienta hecha en task_mAIstro, confirmando la actualización
+    llamadas_herramientas = estado['messages'][-1].tool_calls
 
-def update_instructions(state: MessagesState, config: RunnableConfig, store: BaseStore):
+    # Extraemos los cambios hechos por Trustcall y los agregamos al ToolMessage que se devuelve a task_mAIstro
+    mensaje_actualizacion_tareas = extraer_info_herramientas(espia.herramientas_llamadas, nombre_herramienta)
+    return {"messages": [{"role": "tool", "content": mensaje_actualizacion_tareas, "tool_call_id":llamadas_herramientas[0]['id']}]}
 
-    """Reflect on the chat history and update the memory collection."""
-    
-    # Get the user ID from the config
-    configurable = configuration.Configuration.from_runnable_config(config)
-    user_id = configurable.user_id
-    
-    namespace = ("instructions", user_id)
+def actualizar_instrucciones(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    existing_memory = store.get(namespace, "user_instructions")
-        
-    # Format the memory in the system prompt
-    system_msg = CREATE_INSTRUCTIONS.format(current_instructions=existing_memory.value if existing_memory else None)
-    new_memory = model.invoke([SystemMessage(content=system_msg)]+state['messages'][:-1] + [HumanMessage(content="Please update the instructions based on the conversation")])
+    """Reflexiona sobre el historial del chat y actualiza la colección de memorias."""
 
-    # Overwrite the existing memory in the store 
-    key = "user_instructions"
-    store.put(namespace, key, {"memory": new_memory.content})
-    tool_calls = state['messages'][-1].tool_calls
-    # Return tool message with update verification
-    return {"messages": [{"role": "tool", "content": "updated instructions", "tool_call_id":tool_calls[0]['id']}]}
+    # Obtenemos el id del usuario desde la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
+    id_usuario = configurable.id_usuario
 
-# Conditional edge
-def route_message(state: MessagesState, config: RunnableConfig, store: BaseStore) -> Literal[END, "update_todos", "update_instructions", "update_profile"]:
+    namespace = ("instrucciones", id_usuario)
 
-    """Reflect on the memories and chat history to decide whether to update the memory collection."""
-    message = state['messages'][-1]
-    if len(message.tool_calls) ==0:
+    memoria_existente = store.get(namespace, "instrucciones_usuario")
+
+    # Damos formato a la memoria dentro del mensaje de sistema
+    mensaje_sistema = INSTRUCCIONES_CREAR.format(instrucciones_actuales=memoria_existente.value if memoria_existente else None)
+    memoria_nueva = modelo.invoke([SystemMessage(content=mensaje_sistema)]+estado['messages'][:-1] + [HumanMessage(content="Por favor, actualiza las instrucciones según la conversación")])
+
+    # Sobrescribimos la memoria existente en el Store
+    clave = "instrucciones_usuario"
+    store.put(namespace, clave, {"memoria": memoria_nueva.content})
+    llamadas_herramientas = estado['messages'][-1].tool_calls
+    # Devolvemos un mensaje de herramienta que confirma la actualización
+    return {"messages": [{"role": "tool", "content": "instrucciones actualizadas", "tool_call_id":llamadas_herramientas[0]['id']}]}
+
+# Arista condicional
+def enrutar_mensaje(estado: MessagesState, config: RunnableConfig, store: BaseStore) -> Literal[END, "actualizar_tareas", "actualizar_instrucciones", "actualizar_perfil"]:
+
+    """Reflexiona sobre las memorias y el historial del chat para decidir si hay que actualizar la colección de memorias."""
+    mensaje = estado['messages'][-1]
+    if len(mensaje.tool_calls) ==0:
         return END
     else:
-        tool_call = message.tool_calls[0]
-        if tool_call['args']['update_type'] == "user":
-            return "update_profile"
-        elif tool_call['args']['update_type'] == "todo":
-            return "update_todos"
-        elif tool_call['args']['update_type'] == "instructions":
-            return "update_instructions"
+        llamada_herramienta = mensaje.tool_calls[0]
+        if llamada_herramienta['args']['tipo_actualizacion'] == "usuario":
+            return "actualizar_perfil"
+        elif llamada_herramienta['args']['tipo_actualizacion'] == "tarea":
+            return "actualizar_tareas"
+        elif llamada_herramienta['args']['tipo_actualizacion'] == "instrucciones":
+            return "actualizar_instrucciones"
         else:
             raise ValueError
 
-# Create the graph + all nodes
-builder = StateGraph(MessagesState, config_schema=configuration.Configuration)
+# Creamos el grafo + todos los nodos
+constructor = StateGraph(MessagesState, config_schema=configuration.Configuracion)
 
-# Define the flow of the memory extraction process
-builder.add_node(task_mAIstro)
-builder.add_node(update_todos)
-builder.add_node(update_profile)
-builder.add_node(update_instructions)
+# Definimos el flujo del proceso de extracción de memorias
+constructor.add_node(task_mAIstro)
+constructor.add_node(actualizar_tareas)
+constructor.add_node(actualizar_perfil)
+constructor.add_node(actualizar_instrucciones)
 
-# Define the flow 
-builder.add_edge(START, "task_mAIstro")
-builder.add_conditional_edges("task_mAIstro", route_message)
-builder.add_edge("update_todos", "task_mAIstro")
-builder.add_edge("update_profile", "task_mAIstro")
-builder.add_edge("update_instructions", "task_mAIstro")
+# Definimos el flujo
+constructor.add_edge(START, "task_mAIstro")
+constructor.add_conditional_edges("task_mAIstro", enrutar_mensaje)
+constructor.add_edge("actualizar_tareas", "task_mAIstro")
+constructor.add_edge("actualizar_perfil", "task_mAIstro")
+constructor.add_edge("actualizar_instrucciones", "task_mAIstro")
 
-# Compile the graph
-graph = builder.compile()
+# Compilamos el grafo
+grafo = constructor.compile()

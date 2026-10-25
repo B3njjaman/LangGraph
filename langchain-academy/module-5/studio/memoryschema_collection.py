@@ -1,4 +1,4 @@
-import uuid 
+import uuid
 
 from pydantic import BaseModel, Field
 
@@ -12,103 +12,103 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.store.base import BaseStore
 import configuration
 
-# Initialize the LLM
-model = ChatOpenAI(model="gpt-4o", temperature=0) 
+# Inicializamos el LLM
+modelo = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# Memory schema
-class Memory(BaseModel):
-    content: str = Field(description="The main content of the memory. For example: User expressed interest in learning about French.")
+# Esquema de memoria
+class Memoria(BaseModel):
+    contenido: str = Field(description="El contenido principal de la memoria. Por ejemplo: El usuario expresó interés en aprender francés.")
 
-# Create the Trustcall extractor
-trustcall_extractor = create_extractor(
-    model,
-    tools=[Memory],
-    tool_choice="Memory",
-    # This allows the extractor to insert new memories
+# Creamos el extractor de Trustcall
+extractor_trustcall = create_extractor(
+    modelo,
+    tools=[Memoria],
+    tool_choice="Memoria",
+    # Esto permite que el extractor inserte memorias nuevas
     enable_inserts=True,
 )
 
-# Chatbot instruction
-MODEL_SYSTEM_MESSAGE = """You are a helpful chatbot. You are designed to be a companion to a user. 
+# Instrucción del chatbot
+MENSAJE_SISTEMA_MODELO = """Eres un chatbot útil. Estás diseñado para ser un compañero del usuario.
 
-You have a long term memory which keeps track of information you learn about the user over time.
+Tienes una memoria a largo plazo que lleva el registro de la información que aprendes sobre el usuario con el tiempo.
 
-Current Memory (may include updated memories from this conversation): 
+Memoria actual (puede incluir memorias actualizadas durante esta conversación):
 
-{memory}"""
+{memoria}"""
 
-# Trustcall instruction
-TRUSTCALL_INSTRUCTION = """Reflect on following interaction. 
+# Instrucción de Trustcall
+INSTRUCCION_TRUSTCALL = """Reflexiona sobre la siguiente interacción.
 
-Use the provided tools to retain any necessary memories about the user. 
+Usa las herramientas disponibles para conservar las memorias necesarias sobre el usuario.
 
-Use parallel tool calling to handle updates and insertions simultaneously:"""
-def call_model(state: MessagesState, config: RunnableConfig, store: BaseStore):
+Usa llamadas a herramientas en paralelo para manejar las actualizaciones y las inserciones al mismo tiempo:"""
+def llamar_modelo(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    """Load memory from the store and use it to personalize the chatbot's response."""
-    
-    # Get configuration
-    configurable = configuration.Configuration.from_runnable_config(config)
+    """Carga las memorias desde el Store y las usa para personalizar la respuesta del chatbot."""
 
-    # Get the user ID from the config
-    user_id = configurable.user_id
+    # Obtenemos la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
 
-    # Retrieve memory from the store
-    namespace = ("memories", user_id)
-    memories = store.search(namespace)
+    # Obtenemos el id del usuario desde la configuración
+    id_usuario = configurable.id_usuario
 
-    # Format the memories for the system prompt
-    info = "\n".join(f"- {mem.value['content']}" for mem in memories)
-    system_msg = MODEL_SYSTEM_MESSAGE.format(memory=info)
+    # Recuperamos la memoria desde el Store
+    namespace = ("memorias", id_usuario)
+    memorias = store.search(namespace)
 
-    # Respond using memory as well as the chat history
-    response = model.invoke([SystemMessage(content=system_msg)]+state["messages"])
+    # Damos formato a las memorias para el mensaje de sistema
+    informacion = "\n".join(f"- {mem.value['contenido']}" for mem in memorias)
+    mensaje_sistema = MENSAJE_SISTEMA_MODELO.format(memoria=informacion)
 
-    return {"messages": response}
+    # Respondemos usando la memoria y el historial del chat
+    respuesta = modelo.invoke([SystemMessage(content=mensaje_sistema)]+estado["messages"])
 
-def write_memory(state: MessagesState, config: RunnableConfig, store: BaseStore):
+    return {"messages": respuesta}
 
-    """Reflect on the chat history and save a memory to the store."""
-    
-    # Get configuration
-    configurable = configuration.Configuration.from_runnable_config(config)
+def escribir_memoria(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    # Get the user ID from the config
-    user_id = configurable.user_id
+    """Reflexiona sobre el historial del chat y guarda una memoria en el Store."""
 
-    # Define the namespace for the memories
-    namespace = ("memories", user_id)
+    # Obtenemos la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
 
-    # Retrieve the most recent memories for context
-    existing_items = store.search(namespace)
+    # Obtenemos el id del usuario desde la configuración
+    id_usuario = configurable.id_usuario
 
-    # Format the existing memories for the Trustcall extractor
-    tool_name = "Memory"
-    existing_memories = ([(existing_item.key, tool_name, existing_item.value)
-                          for existing_item in existing_items]
-                          if existing_items
-                          else None
-                        )
+    # Definimos el namespace de las memorias
+    namespace = ("memorias", id_usuario)
 
-    # Merge the chat history and the instruction
-    updated_messages=list(merge_message_runs(messages=[SystemMessage(content=TRUSTCALL_INSTRUCTION)] + state["messages"]))
+    # Recuperamos las memorias más recientes como contexto
+    elementos_existentes = store.search(namespace)
 
-    # Invoke the extractor
-    result = trustcall_extractor.invoke({"messages": updated_messages, 
-                                        "existing": existing_memories})
+    # Damos formato a las memorias existentes para el extractor de Trustcall
+    nombre_herramienta = "Memoria"
+    memorias_existentes = ([(elemento_existente.key, nombre_herramienta, elemento_existente.value)
+                            for elemento_existente in elementos_existentes]
+                            if elementos_existentes
+                            else None
+                          )
 
-    # Save the memories from Trustcall to the store
-    for r, rmeta in zip(result["responses"], result["response_metadata"]):
+    # Combinamos el historial del chat y la instrucción
+    mensajes_actualizados=list(merge_message_runs(messages=[SystemMessage(content=INSTRUCCION_TRUSTCALL)] + estado["messages"]))
+
+    # Invocamos el extractor
+    resultado = extractor_trustcall.invoke({"messages": mensajes_actualizados,
+                                            "existing": memorias_existentes})
+
+    # Guardamos en el Store las memorias de Trustcall
+    for r, meta_r in zip(resultado["responses"], resultado["response_metadata"]):
         store.put(namespace,
-                  rmeta.get("json_doc_id", str(uuid.uuid4())),
+                  meta_r.get("json_doc_id", str(uuid.uuid4())),
                   r.model_dump(mode="json"),
             )
 
-# Define the graph
-builder = StateGraph(MessagesState,config_schema=configuration.Configuration)
-builder.add_node("call_model", call_model)
-builder.add_node("write_memory", write_memory)
-builder.add_edge(START, "call_model")
-builder.add_edge("call_model", "write_memory")
-builder.add_edge("write_memory", END)
-graph = builder.compile()
+# Definimos el grafo
+constructor = StateGraph(MessagesState,config_schema=configuration.Configuracion)
+constructor.add_node("llamar_modelo", llamar_modelo)
+constructor.add_node("escribir_memoria", escribir_memoria)
+constructor.add_edge(START, "llamar_modelo")
+constructor.add_edge("llamar_modelo", "escribir_memoria")
+constructor.add_edge("escribir_memoria", END)
+grafo = constructor.compile()
