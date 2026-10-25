@@ -72,6 +72,14 @@ graph.invoke({"graph_state": "Hi, this is Lance."})
 
 Solo necesita `pip install langgraph`, sin claves.
 
+## Mis apuntes
+
+En [`apuntes/`](apuntes) van mis notebooks en español, uno por lección. Explican cada pieza paso a paso, prueban lo que pasa cuando algo se hace mal y terminan con ejercicios. Usan un modelo local con Ollama (`qwen2.5:7b`), así que corren gratis y sin claves, y cada uno trae una celda para cambiarlo por `gpt-4o`.
+
+| Módulo | Apuntes |
+|---|---|
+| 1 · Introducción | [5 notebooks](apuntes/modulo-1): el grafo más simple, mensajes y cadena, router, agente y agente con memoria |
+
 ## Contenido
 
 Los números de la tabla son los de cada lección en el curso. Los enlaces de video piden iniciar sesión en LangChain Academy. Cada notebook se puede leer en GitHub, la mayoría con sus salidas a la vista, o abrir en Colab para ejecutarlo. La columna Studio enlaza el mismo grafo como archivo `.py`, listo para [LangSmith Studio](#langsmith-studio).
@@ -91,6 +99,8 @@ Cómo instalar el entorno, configurar las claves y hacer la primera llamada a un
   <source media="(prefers-color-scheme: dark)" srcset="imagenes/readme/modulo-1-oscuro.svg">
   <img alt="Módulo 1. El grafo más simple: desde START pasa por node_1 y una arista condicional elige node_2 o node_3 antes de END" src="imagenes/readme/modulo-1-claro.svg" width="100%">
 </picture></p>
+
+Mis apuntes de este módulo: [`apuntes/modulo-1`](apuntes/modulo-1).
 
 | | Lección | Video | Notebook | Studio |
 |---|---|---|---|---|
@@ -336,6 +346,7 @@ Después de poner la clave de OpenAI en `.env`, se abre en el navegador `https:/
 
 ```
 LangGraph/
+├── apuntes/                 mis notebooks en español, un módulo por carpeta
 ├── langchain-academy/       el repositorio oficial del curso (MIT)
 │   ├── module-0/ … module-6/   los notebooks de cada módulo
 │   └── module-N/studio/        los mismos grafos, listos para Studio
