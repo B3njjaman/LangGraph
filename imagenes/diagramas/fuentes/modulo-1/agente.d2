@@ -1,0 +1,78 @@
+# El agente del módulo 1 resolviendo "¿Cuánto es 3 × 4?".
+# Cada paso enciende el nodo que corre, agrega a messages lo que devolvió y explica qué pasó.
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+grid-columns: 2
+grid-gap: 48
+
+grafo: {
+  class: invisible
+  direction: down
+
+  inicio: START {class: extremo}
+  asistente: "asistente" {class: nodo-llm; width: 150}
+  tools: "tools" {class: nodo-herramienta; width: 110}
+  fin: END {class: extremo}
+
+  inicio -> asistente {class: arista}
+  asistente -> tools: "pidió\nherramientas" {class: condicional}
+  tools -> asistente {class: arista}
+  asistente -> fin: "respondió" {class: condicional}
+}
+
+lado: {
+  class: invisible
+  grid-columns: 1
+  grid-gap: 12
+
+  paso: "La pregunta entra por START." {class: paso}
+
+  estado: "estado['messages']" {
+    class: panel
+    label.near: top-left
+    grid-columns: 1
+    grid-gap: 10
+
+    m1: "humano · ¿Cuánto es 3 × 4?" {class: msj-humano}
+    m2: "ia · multiplicar(a=3, b=4)" {class: msj-ia; style.opacity: 0}
+    m3: "tool · 12" {class: msj-tool; style.opacity: 0}
+    m4: "ia · 3 × 4 es 12." {class: msj-ia; style.opacity: 0}
+  }
+}
+
+grafo.inicio.class: extremo-activo
+
+steps: {
+  1: {
+    grafo.inicio.class: extremo
+    grafo.(inicio -> asistente)[0].class: recorrida
+    grafo.asistente.class: nodo-llm-activo
+    lado.estado.m2.style.opacity: 1
+    lado.paso.label: "asistente llama al modelo,\nque pide la herramienta."
+  }
+  2: {
+    grafo.(inicio -> asistente)[0].class: arista
+    grafo.asistente.class: nodo-llm
+    grafo.(asistente -> tools)[0].class: recorrida
+    grafo.tools.class: nodo-herramienta-activo
+    lado.estado.m3.style.opacity: 1
+    lado.paso.label: "tools ejecuta multiplicar\ny agrega el resultado."
+  }
+  3: {
+    grafo.(asistente -> tools)[0].class: condicional
+    grafo.tools.class: nodo-herramienta
+    grafo.(tools -> asistente)[0].class: recorrida
+    grafo.asistente.class: nodo-llm-activo
+    lado.estado.m4.style.opacity: 1
+    lado.paso.label: "El modelo ve el resultado\ny responde con texto."
+  }
+  4: {
+    grafo.(tools -> asistente)[0].class: arista
+    grafo.asistente.class: nodo-llm
+    grafo.(asistente -> fin)[0].class: recorrida
+    grafo.fin.class: extremo-activo
+    lado.paso.label: "Sin llamadas a herramientas:\nel grafo termina."
+  }
+}
