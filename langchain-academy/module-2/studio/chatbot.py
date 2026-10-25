@@ -3,84 +3,84 @@ from langchain_core.messages import HumanMessage, SystemMessage, RemoveMessage
 from langgraph.graph import MessagesState
 from langgraph.graph import StateGraph, START, END
 
-# We will use this model for both the conversation and the summarization
+# Usaremos este modelo tanto para la conversación como para el resumen
 from langchain_openai import ChatOpenAI
-model = ChatOpenAI(model="gpt-4o", temperature=0) 
+modelo = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# State class to store messages and summary
-class State(MessagesState):
-    summary: str
-    
-# Define the logic to call the model
-def call_model(state: State):
-    
-    # Get summary if it exists
-    summary = state.get("summary", "")
+# Clase de estado para guardar los mensajes y el resumen
+class Estado(MessagesState):
+    resumen: str
 
-    # If there is summary, then we add it to messages
-    if summary:
-        
-        # Add summary to system message
-        system_message = f"Summary of conversation earlier: {summary}"
+# Define la lógica para llamar al modelo
+def llamar_modelo(estado: Estado):
 
-        # Append summary to any newer messages
-        messages = [SystemMessage(content=system_message)] + state["messages"]
-    
+    # Obtiene el resumen si existe
+    resumen = estado.get("resumen", "")
+
+    # Si hay un resumen, lo agregamos a los mensajes
+    if resumen:
+
+        # Agrega el resumen al mensaje de sistema
+        mensaje_sistema = f"Resumen de la conversación anterior: {resumen}"
+
+        # Agrega el resumen antes de los mensajes más recientes
+        mensajes = [SystemMessage(content=mensaje_sistema)] + estado["messages"]
+
     else:
-        messages = state["messages"]
-    
-    response = model.invoke(messages)
-    return {"messages": response}
+        mensajes = estado["messages"]
 
-# Determine whether to end or summarize the conversation
-def should_continue(state: State) -> Literal["summarize_conversation", "__end__"]:
-    
-    """Return the next node to execute."""
-    
-    messages = state["messages"]
-    
-    # If there are more than six messages, then we summarize the conversation
-    if len(messages) > 6:
-        return "summarize_conversation"
-    
-    # Otherwise we can just end
+    respuesta = modelo.invoke(mensajes)
+    return {"messages": respuesta}
+
+# Decide si terminar o resumir la conversación
+def debe_continuar(estado: Estado) -> Literal["resumir_conversacion", "__end__"]:
+
+    """Devuelve el siguiente nodo a ejecutar."""
+
+    mensajes = estado["messages"]
+
+    # Si hay más de seis mensajes, resumimos la conversación
+    if len(mensajes) > 6:
+        return "resumir_conversacion"
+
+    # Si no, podemos terminar
     return END
 
-def summarize_conversation(state: State):
-    
-    # First get the summary if it exists
-    summary = state.get("summary", "")
+def resumir_conversacion(estado: Estado):
 
-    # Create our summarization prompt 
-    if summary:
-        
-        # If a summary already exists, add it to the prompt
-        summary_message = (
-            f"This is summary of the conversation to date: {summary}\n\n"
-            "Extend the summary by taking into account the new messages above:"
+    # Primero obtenemos el resumen si existe
+    resumen = estado.get("resumen", "")
+
+    # Creamos el prompt para resumir
+    if resumen:
+
+        # Si ya existe un resumen, lo agregamos al prompt
+        mensaje_resumen = (
+            f"Este es el resumen de la conversación hasta ahora: {resumen}\n\n"
+            "Amplía el resumen teniendo en cuenta los nuevos mensajes de arriba:"
         )
-        
+
     else:
-        # If no summary exists, just create a new one
-        summary_message = "Create a summary of the conversation above:"
+        # Si no existe un resumen, creamos uno nuevo
+        mensaje_resumen = "Crea un resumen de la conversación de arriba:"
 
-    # Add prompt to our history
-    messages = state["messages"] + [HumanMessage(content=summary_message)]
-    response = model.invoke(messages)
-    
-    # Delete all but the 2 most recent messages and add our summary to the state 
-    delete_messages = [RemoveMessage(id=m.id) for m in state["messages"][:-2]]
-    return {"summary": response.content, "messages": delete_messages}
+    # Agrega el prompt a nuestro historial
+    mensajes = estado["messages"] + [HumanMessage(content=mensaje_resumen)]
+    respuesta = modelo.invoke(mensajes)
 
-# Define a new graph
-workflow = StateGraph(State)
-workflow.add_node("conversation", call_model)
-workflow.add_node(summarize_conversation)
+    # Borra todos los mensajes menos los 2 más recientes y agrega el resumen al estado
+    mensajes_a_borrar = [RemoveMessage(id=m.id) for m in estado["messages"][:-2]]
+    return {"resumen": respuesta.content, "messages": mensajes_a_borrar}
 
-# Set the entrypoint as conversation
-workflow.add_edge(START, "conversation")
-workflow.add_conditional_edges("conversation", should_continue)
-workflow.add_edge("summarize_conversation", END)
+# Define un nuevo grafo
+flujo = StateGraph(Estado)
+flujo.add_node("conversacion", llamar_modelo)
+flujo.add_node(resumir_conversacion)
 
-# Compile
-graph = workflow.compile()
+# Define la conversación como punto de entrada
+flujo.add_edge(START, "conversacion")
+flujo.add_conditional_edges("conversacion", debe_continuar)
+flujo.add_edge("resumir_conversacion", END)
+
+# Compila
+grafo = flujo.compile()

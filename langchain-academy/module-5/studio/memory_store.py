@@ -5,100 +5,100 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.store.base import BaseStore
 import configuration
 
-# Initialize the LLM
-model = ChatOpenAI(model="gpt-4o", temperature=0) 
+# Inicializamos el LLM
+modelo = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# Chatbot instruction
-MODEL_SYSTEM_MESSAGE = """You are a helpful assistant with memory that provides information about the user. 
-If you have memory for this user, use it to personalize your responses.
-Here is the memory (it may be empty): {memory}"""
+# Instrucción del chatbot
+MENSAJE_SISTEMA_MODELO = """Eres un asistente útil con memoria que entrega información sobre el usuario.
+Si tienes memoria de este usuario, úsala para personalizar tus respuestas.
+Esta es la memoria (puede estar vacía): {memoria}"""
 
-# Create new memory from the chat history and any existing memory
-CREATE_MEMORY_INSTRUCTION = """"You are collecting information about the user to personalize your responses.
+# Crear una memoria nueva a partir del historial del chat y de la memoria existente, si la hay
+INSTRUCCION_CREAR_MEMORIA = """"Estás reuniendo información sobre el usuario para personalizar tus respuestas.
 
-CURRENT USER INFORMATION:
-{memory}
+INFORMACIÓN ACTUAL DEL USUARIO:
+{memoria}
 
-INSTRUCTIONS:
-1. Review the chat history below carefully
-2. Identify new information about the user, such as:
-   - Personal details (name, location)
-   - Preferences (likes, dislikes)
-   - Interests and hobbies
-   - Past experiences
-   - Goals or future plans
-3. Merge any new information with existing memory
-4. Format the memory as a clear, bulleted list
-5. If new information conflicts with existing memory, keep the most recent version
+INSTRUCCIONES:
+1. Revisa con atención el historial del chat que aparece abajo
+2. Identifica información nueva sobre el usuario, como:
+   - Datos personales (nombre, lugar donde vive)
+   - Preferencias (lo que le gusta y lo que no)
+   - Intereses y pasatiempos
+   - Experiencias pasadas
+   - Metas o planes futuros
+3. Combina la información nueva con la memoria existente
+4. Da a la memoria el formato de una lista con viñetas, clara
+5. Si la información nueva contradice la memoria existente, conserva la versión más reciente
 
-Remember: Only include factual information directly stated by the user. Do not make assumptions or inferences.
+Recuerda: incluye solo información factual que el usuario haya dicho directamente. No hagas suposiciones ni inferencias.
 
-Based on the chat history below, please update the user information:"""
+Con base en el historial del chat que aparece abajo, actualiza la información del usuario:"""
 
-def call_model(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def llamar_modelo(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    """Load memory from the store and use it to personalize the chatbot's response."""
-    
-    # Get configuration
-    configurable = configuration.Configuration.from_runnable_config(config)
+    """Carga la memoria desde el Store y la usa para personalizar la respuesta del chatbot."""
 
-    # Get the user ID from the config
-    user_id = configurable.user_id
+    # Obtenemos la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
 
-    # Retrieve memory from the store
-    namespace = ("memory", user_id)
-    key = "user_memory"
-    existing_memory = store.get(namespace, key)
+    # Obtenemos el id del usuario desde la configuración
+    id_usuario = configurable.id_usuario
 
-    # Extract the memory
-    if existing_memory:
-        # Value is a dictionary with a memory key
-        existing_memory_content = existing_memory.value.get('memory')
+    # Recuperamos la memoria desde el Store
+    namespace = ("memoria", id_usuario)
+    clave = "memoria_usuario"
+    memoria_existente = store.get(namespace, clave)
+
+    # Extraemos la memoria
+    if memoria_existente:
+        # El valor es un diccionario con una clave "memoria"
+        contenido_memoria_existente = memoria_existente.value.get('memoria')
     else:
-        existing_memory_content = "No existing memory found."
+        contenido_memoria_existente = "No se encontró ninguna memoria."
 
-    # Format the memory in the system prompt
-    system_msg = MODEL_SYSTEM_MESSAGE.format(memory=existing_memory_content)
+    # Damos formato a la memoria dentro del mensaje de sistema
+    mensaje_sistema = MENSAJE_SISTEMA_MODELO.format(memoria=contenido_memoria_existente)
 
-    # Respond using memory as well as the chat history
-    response = model.invoke([SystemMessage(content=system_msg)]+state["messages"])
+    # Respondemos usando la memoria y el historial del chat
+    respuesta = modelo.invoke([SystemMessage(content=mensaje_sistema)]+estado["messages"])
 
-    return {"messages": response}
+    return {"messages": respuesta}
 
-def write_memory(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def escribir_memoria(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    """Reflect on the chat history and save a memory to the store."""
-    
-    # Get configuration
-    configurable = configuration.Configuration.from_runnable_config(config)
+    """Reflexiona sobre el historial del chat y guarda una memoria en el Store."""
 
-    # Get the user ID from the config
-    user_id = configurable.user_id
+    # Obtenemos la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
 
-    # Retrieve existing memory from the store
-    namespace = ("memory", user_id)
-    existing_memory = store.get(namespace, "user_memory")
+    # Obtenemos el id del usuario desde la configuración
+    id_usuario = configurable.id_usuario
 
-    # Extract the memory
-    if existing_memory:
-        # Value is a dictionary with a memory key
-        existing_memory_content = existing_memory.value.get('memory')
+    # Recuperamos la memoria existente desde el Store
+    namespace = ("memoria", id_usuario)
+    memoria_existente = store.get(namespace, "memoria_usuario")
+
+    # Extraemos la memoria
+    if memoria_existente:
+        # El valor es un diccionario con una clave "memoria"
+        contenido_memoria_existente = memoria_existente.value.get('memoria')
     else:
-        existing_memory_content = "No existing memory found."
-        
-    # Format the memory in the system prompt
-    system_msg = CREATE_MEMORY_INSTRUCTION.format(memory=existing_memory_content)
-    new_memory = model.invoke([SystemMessage(content=system_msg)]+state['messages'])
+        contenido_memoria_existente = "No se encontró ninguna memoria."
 
-    # Overwrite the existing memory in the store 
-    key = "user_memory"
-    store.put(namespace, key, {"memory": new_memory.content})
+    # Damos formato a la memoria dentro del mensaje de sistema
+    mensaje_sistema = INSTRUCCION_CREAR_MEMORIA.format(memoria=contenido_memoria_existente)
+    memoria_nueva = modelo.invoke([SystemMessage(content=mensaje_sistema)]+estado['messages'])
 
-# Define the graph
-builder = StateGraph(MessagesState,config_schema=configuration.Configuration)
-builder.add_node("call_model", call_model)
-builder.add_node("write_memory", write_memory)
-builder.add_edge(START, "call_model")
-builder.add_edge("call_model", "write_memory")
-builder.add_edge("write_memory", END)
-graph = builder.compile()
+    # Sobrescribimos la memoria existente en el Store
+    clave = "memoria_usuario"
+    store.put(namespace, clave, {"memoria": memoria_nueva.content})
+
+# Definimos el grafo
+constructor = StateGraph(MessagesState,config_schema=configuration.Configuracion)
+constructor.add_node("llamar_modelo", llamar_modelo)
+constructor.add_node("escribir_memoria", escribir_memoria)
+constructor.add_edge(START, "llamar_modelo")
+constructor.add_edge("llamar_modelo", "escribir_memoria")
+constructor.add_edge("escribir_memoria", END)
+grafo = constructor.compile()

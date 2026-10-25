@@ -1,10 +1,10 @@
 {
   "dockerfile_lines": [],
   "graphs": {
-    "parallelization": "./parallelization.py:graph",
-    "sub_graphs": "./sub_graphs.py:graph",
-    "map_reduce": "./map_reduce.py:graph",
-    "research_assistant": "./research_assistant.py:graph"
+    "paralelo": "./parallelization.py:grafo",
+    "subgrafos": "./sub_graphs.py:grafo",
+    "map_reduce": "./map_reduce.py:grafo",
+    "asistente_investigacion": "./research_assistant.py:grafo"
   },
   "env": "./.env",
   "python_version": "3.11",

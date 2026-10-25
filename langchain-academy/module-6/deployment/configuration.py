@@ -7,23 +7,23 @@ from typing_extensions import Annotated
 from dataclasses import dataclass
 
 @dataclass(kw_only=True)
-class Configuration:
-    """The configurable fields for the chatbot."""
-    user_id: str = "default-user"
-    todo_category: str = "general" 
-    task_maistro_role: str = "You are a helpful task management assistant. You help you create, organize, and manage the user's ToDo list."
+class Configuracion:
+    """Los campos configurables del chatbot."""
+    id_usuario: str = "usuario-predeterminado"
+    categoria_tareas: str = "general"
+    rol_task_maistro: str = "Eres un asistente útil de gestión de tareas. Te encargas de crear, organizar y gestionar la lista de tareas del usuario."
 
     @classmethod
     def from_runnable_config(
         cls, config: Optional[RunnableConfig] = None
-    ) -> "Configuration":
-        """Create a Configuration instance from a RunnableConfig."""
+    ) -> "Configuracion":
+        """Crea una instancia de Configuracion a partir de un RunnableConfig."""
         configurable = (
             config["configurable"] if config and "configurable" in config else {}
         )
-        values: dict[str, Any] = {
+        valores: dict[str, Any] = {
             f.name: os.environ.get(f.name.upper(), configurable.get(f.name))
             for f in fields(cls)
             if f.init
         }
-        return cls(**{k: v for k, v in values.items() if v})
+        return cls(**{k: v for k, v in valores.items() if v})

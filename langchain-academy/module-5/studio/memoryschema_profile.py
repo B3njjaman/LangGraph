@@ -9,96 +9,96 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.store.base import BaseStore
 import configuration
 
-# Initialize the LLM
-model = ChatOpenAI(model="gpt-4o", temperature=0) 
+# Inicializamos el LLM
+modelo = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# Schema 
-class UserProfile(BaseModel):
-    """ Profile of a user """
-    user_name: str = Field(description="The user's preferred name")
-    user_location: str = Field(description="The user's location")
-    interests: list = Field(description="A list of the user's interests")
+# Esquema
+class PerfilUsuario(BaseModel):
+    """ Perfil de un usuario """
+    nombre_usuario: str = Field(description="El nombre preferido del usuario")
+    ubicacion_usuario: str = Field(description="La ubicación del usuario")
+    intereses: list = Field(description="Una lista con los intereses del usuario")
 
-# Create the extractor
-trustcall_extractor = create_extractor(
-    model,
-    tools=[UserProfile],
-    tool_choice="UserProfile", # Enforces use of the UserProfile tool
+# Creamos el extractor
+extractor_trustcall = create_extractor(
+    modelo,
+    tools=[PerfilUsuario],
+    tool_choice="PerfilUsuario", # Obliga a usar la herramienta PerfilUsuario
 )
 
-# Chatbot instruction
-MODEL_SYSTEM_MESSAGE = """You are a helpful assistant with memory that provides information about the user. 
-If you have memory for this user, use it to personalize your responses.
-Here is the memory (it may be empty): {memory}"""
+# Instrucción del chatbot
+MENSAJE_SISTEMA_MODELO = """Eres un asistente útil con memoria que entrega información sobre el usuario.
+Si tienes memoria de este usuario, úsala para personalizar tus respuestas.
+Esta es la memoria (puede estar vacía): {memoria}"""
 
-# Extraction instruction
-TRUSTCALL_INSTRUCTION = """Create or update the memory (JSON doc) to incorporate information from the following conversation:"""
+# Instrucción de extracción
+INSTRUCCION_TRUSTCALL = """Crea o actualiza la memoria (documento JSON) para incorporar la información de la siguiente conversación:"""
 
-def call_model(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def llamar_modelo(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    """Load memory from the store and use it to personalize the chatbot's response."""
-    
-    # Get configuration
-    configurable = configuration.Configuration.from_runnable_config(config)
+    """Carga la memoria desde el Store y la usa para personalizar la respuesta del chatbot."""
 
-    # Get the user ID from the config
-    user_id = configurable.user_id
+    # Obtenemos la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
 
-    # Retrieve memory from the store
-    namespace = ("memory", user_id)
-    existing_memory = store.get(namespace, "user_memory")
+    # Obtenemos el id del usuario desde la configuración
+    id_usuario = configurable.id_usuario
 
-    # Format the memories for the system prompt
-    if existing_memory and existing_memory.value:
-        memory_dict = existing_memory.value
-        formatted_memory = (
-            f"Name: {memory_dict.get('user_name', 'Unknown')}\n"
-            f"Location: {memory_dict.get('user_location', 'Unknown')}\n"
-            f"Interests: {', '.join(memory_dict.get('interests', []))}"      
+    # Recuperamos la memoria desde el Store
+    namespace = ("memoria", id_usuario)
+    memoria_existente = store.get(namespace, "memoria_usuario")
+
+    # Damos formato a las memorias para el mensaje de sistema
+    if memoria_existente and memoria_existente.value:
+        dict_memoria = memoria_existente.value
+        memoria_formateada = (
+            f"Nombre: {dict_memoria.get('nombre_usuario', 'Desconocido')}\n"
+            f"Ubicación: {dict_memoria.get('ubicacion_usuario', 'Desconocida')}\n"
+            f"Intereses: {', '.join(dict_memoria.get('intereses', []))}"
         )
     else:
-        formatted_memory = None
+        memoria_formateada = None
 
-    # Format the memory in the system prompt
-    system_msg = MODEL_SYSTEM_MESSAGE.format(memory=formatted_memory)
+    # Damos formato a la memoria dentro del mensaje de sistema
+    mensaje_sistema = MENSAJE_SISTEMA_MODELO.format(memoria=memoria_formateada)
 
-    # Respond using memory as well as the chat history
-    response = model.invoke([SystemMessage(content=system_msg)]+state["messages"])
+    # Respondemos usando la memoria y el historial del chat
+    respuesta = modelo.invoke([SystemMessage(content=mensaje_sistema)]+estado["messages"])
 
-    return {"messages": response}
+    return {"messages": respuesta}
 
-def write_memory(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def escribir_memoria(estado: MessagesState, config: RunnableConfig, store: BaseStore):
 
-    """Reflect on the chat history and save a memory to the store."""
-    
-    # Get configuration
-    configurable = configuration.Configuration.from_runnable_config(config)
+    """Reflexiona sobre el historial del chat y guarda una memoria en el Store."""
 
-    # Get the user ID from the config
-    user_id = configurable.user_id
+    # Obtenemos la configuración
+    configurable = configuration.Configuracion.from_runnable_config(config)
 
-    # Retrieve existing memory from the store
-    namespace = ("memory", user_id)
-    existing_memory = store.get(namespace, "user_memory")
-        
-    # Get the profile as the value from the list, and convert it to a JSON doc
-    existing_profile = {"UserProfile": existing_memory.value} if existing_memory else None
-    
-    # Invoke the extractor
-    result = trustcall_extractor.invoke({"messages": [SystemMessage(content=TRUSTCALL_INSTRUCTION)]+state["messages"], "existing": existing_profile})
-    
-    # Get the updated profile as a JSON object
-    updated_profile = result["responses"][0].model_dump()
+    # Obtenemos el id del usuario desde la configuración
+    id_usuario = configurable.id_usuario
 
-    # Save the updated profile
-    key = "user_memory"
-    store.put(namespace, key, updated_profile)
+    # Recuperamos la memoria existente desde el Store
+    namespace = ("memoria", id_usuario)
+    memoria_existente = store.get(namespace, "memoria_usuario")
 
-# Define the graph
-builder = StateGraph(MessagesState,config_schema=configuration.Configuration)
-builder.add_node("call_model", call_model)
-builder.add_node("write_memory", write_memory)
-builder.add_edge(START, "call_model")
-builder.add_edge("call_model", "write_memory")
-builder.add_edge("write_memory", END)
-graph = builder.compile()
+    # Tomamos el perfil como el valor de la lista y lo convertimos en un documento JSON
+    perfil_existente = {"PerfilUsuario": memoria_existente.value} if memoria_existente else None
+
+    # Invocamos el extractor
+    resultado = extractor_trustcall.invoke({"messages": [SystemMessage(content=INSTRUCCION_TRUSTCALL)]+estado["messages"], "existing": perfil_existente})
+
+    # Obtenemos el perfil actualizado como un objeto JSON
+    perfil_actualizado = resultado["responses"][0].model_dump()
+
+    # Guardamos el perfil actualizado
+    clave = "memoria_usuario"
+    store.put(namespace, clave, perfil_actualizado)
+
+# Definimos el grafo
+constructor = StateGraph(MessagesState,config_schema=configuration.Configuracion)
+constructor.add_node("llamar_modelo", llamar_modelo)
+constructor.add_node("escribir_memoria", escribir_memoria)
+constructor.add_edge(START, "llamar_modelo")
+constructor.add_edge("llamar_modelo", "escribir_memoria")
+constructor.add_edge("escribir_memoria", END)
+grafo = constructor.compile()

@@ -4,58 +4,58 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph, MessagesState
 from langgraph.prebuilt import tools_condition, ToolNode
 
-def add(a: int, b: int) -> int:
-    """Adds a and b.
+def sumar(a: int, b: int) -> int:
+    """Suma a y b.
 
     Args:
-        a: first int
-        b: second int
+        a: primer entero
+        b: segundo entero
     """
     return a + b
 
-def multiply(a: int, b: int) -> int:
-    """Multiplies a and b.
+def multiplicar(a: int, b: int) -> int:
+    """Multiplica a y b.
 
     Args:
-        a: first int
-        b: second int
+        a: primer entero
+        b: segundo entero
     """
     return a * b
 
-def divide(a: int, b: int) -> float:
-    """Adds a and b.
+def dividir(a: int, b: int) -> float:
+    """Divide a entre b.
 
     Args:
-        a: first int
-        b: second int
+        a: primer entero
+        b: segundo entero
     """
     return a / b
 
-tools = [add, multiply, divide]
+herramientas = [sumar, multiplicar, dividir]
 
-# Define LLM with bound tools
+# Definimos el LLM con las herramientas asociadas
 llm = ChatOpenAI(model="gpt-4o")
-llm_with_tools = llm.bind_tools(tools)
+llm_con_herramientas = llm.bind_tools(herramientas)
 
-# System message
-sys_msg = SystemMessage(content="You are a helpful assistant tasked with writing performing arithmetic on a set of inputs.")
+# Mensaje de sistema
+mensaje_sistema = SystemMessage(content="Eres un asistente útil encargado de realizar operaciones aritméticas con un conjunto de entradas.")
 
-# Node
-def assistant(state: MessagesState):
-   return {"messages": [llm_with_tools.invoke([sys_msg] + state["messages"])]}
+# Nodo
+def asistente(estado: MessagesState):
+   return {"messages": [llm_con_herramientas.invoke([mensaje_sistema] + estado["messages"])]}
 
-# Build graph
-builder = StateGraph(MessagesState)
-builder.add_node("assistant", assistant)
-builder.add_node("tools", ToolNode(tools))
-builder.add_edge(START, "assistant")
-builder.add_conditional_edges(
-    "assistant",
-    # If the latest message (result) from assistant is a tool call -> tools_condition routes to tools
-    # If the latest message (result) from assistant is a not a tool call -> tools_condition routes to END
+# Construimos el grafo
+constructor = StateGraph(MessagesState)
+constructor.add_node("asistente", asistente)
+constructor.add_node("tools", ToolNode(herramientas))
+constructor.add_edge(START, "asistente")
+constructor.add_conditional_edges(
+    "asistente",
+    # Si el último mensaje (resultado) del asistente es una llamada a herramienta -> tools_condition dirige a tools
+    # Si el último mensaje (resultado) del asistente no es una llamada a herramienta -> tools_condition dirige a END
     tools_condition,
 )
-builder.add_edge("tools", "assistant")
+constructor.add_edge("tools", "asistente")
 
-# Compile graph
-graph = builder.compile()
+# Compilamos el grafo
+grafo = constructor.compile()

@@ -4,7 +4,7 @@ from typing import Annotated, List
 from typing_extensions import TypedDict
 
 from langchain_community.document_loaders import WikipediaLoader
-from langchain_tavily import TavilySearch  # updated 1.0
+from langchain_tavily import TavilySearch  # actualizado 1.0
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, get_buffer_string
 from langchain_openai import ChatOpenAI
 
@@ -13,535 +13,535 @@ from langgraph.graph import END, MessagesState, START, StateGraph
 
 ### LLM
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0) 
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
-### Schema 
+### Esquema
 
-class Analyst(BaseModel):
-    affiliation: str = Field(
-        description="Primary affiliation of the analyst.",
+class Analista(BaseModel):
+    afiliacion: str = Field(
+        description="Afiliación principal del analista.",
     )
-    name: str = Field(
-        description="Name of the analyst."
+    nombre: str = Field(
+        description="Nombre del analista."
     )
-    role: str = Field(
-        description="Role of the analyst in the context of the topic.",
+    rol: str = Field(
+        description="Rol del analista en el contexto del tema.",
     )
-    description: str = Field(
-        description="Description of the analyst focus, concerns, and motives.",
+    descripcion: str = Field(
+        description="Descripción del enfoque, las preocupaciones y las motivaciones del analista.",
     )
     @property
     def persona(self) -> str:
-        return f"Name: {self.name}\nRole: {self.role}\nAffiliation: {self.affiliation}\nDescription: {self.description}\n"
+        return f"Nombre: {self.nombre}\nRol: {self.rol}\nAfiliación: {self.afiliacion}\nDescripción: {self.descripcion}\n"
 
-class Perspectives(BaseModel):
-    analysts: List[Analyst] = Field(
-        description="Comprehensive list of analysts with their roles and affiliations.",
+class Perspectivas(BaseModel):
+    analistas: List[Analista] = Field(
+        description="Lista completa de analistas con sus roles y afiliaciones.",
     )
 
-class GenerateAnalystsState(TypedDict):
-    topic: str # Research topic
-    max_analysts: int # Number of analysts
-    human_analyst_feedback: str # Human feedback
-    analysts: List[Analyst] # Analyst asking questions
+class EstadoGenerarAnalistas(TypedDict):
+    tema: str # Tema de investigación
+    max_analistas: int # Número de analistas
+    feedback_humano_analistas: str # Feedback humano
+    analistas: List[Analista] # Analistas que hacen las preguntas
 
-class InterviewState(MessagesState):
-    max_num_turns: int # Number turns of conversation
-    context: Annotated[list, operator.add] # Source docs
-    analyst: Analyst # Analyst asking questions
-    interview: str # Interview transcript
-    sections: list # Final key we duplicate in outer state for Send() API
+class EstadoEntrevista(MessagesState):
+    max_turnos: int # Número de turnos de la conversación
+    contexto: Annotated[list, operator.add] # Documentos fuente
+    analista: Analista # Analista que hace las preguntas
+    entrevista: str # Transcripción de la entrevista
+    secciones: list # Clave final que duplicamos en el estado externo para la API Send()
 
-class SearchQuery(BaseModel):
-    search_query: str = Field(None, description="Search query for retrieval.")
+class ConsultaBusqueda(BaseModel):
+    consulta_busqueda: str = Field(None, description="Consulta de búsqueda para la recuperación.")
 
-class ResearchGraphState(TypedDict):
-    topic: str # Research topic
-    max_analysts: int # Number of analysts
-    human_analyst_feedback: str # Human feedback
-    analysts: List[Analyst] # Analyst asking questions
-    sections: Annotated[list, operator.add] # Send() API key
-    introduction: str # Introduction for the final report
-    content: str # Content for the final report
-    conclusion: str # Conclusion for the final report
-    final_report: str # Final report
+class EstadoGrafoInvestigacion(TypedDict):
+    tema: str # Tema de investigación
+    max_analistas: int # Número de analistas
+    feedback_humano_analistas: str # Feedback humano
+    analistas: List[Analista] # Analistas que hacen las preguntas
+    secciones: Annotated[list, operator.add] # Clave para la API Send()
+    introduccion: str # Introducción del informe final
+    contenido: str # Contenido del informe final
+    conclusion: str # Conclusión del informe final
+    informe_final: str # Informe final
 
-### Nodes and edges
+### Nodos y aristas
 
-analyst_instructions="""You are tasked with creating a set of AI analyst personas. Follow these instructions carefully:
+instrucciones_analista="""Tu tarea es crear un conjunto de personas de analistas de IA. Sigue estas instrucciones con atención:
 
-1. First, review the research topic:
-{topic}
-        
-2. Examine any editorial feedback that has been optionally provided to guide creation of the analysts: 
-        
-{human_analyst_feedback}
-    
-3. Determine the most interesting themes based upon documents and / or feedback above.
-                    
-4. Pick the top {max_analysts} themes.
+1. Primero, revisa el tema de investigación:
+{tema}
 
-5. Assign one analyst to each theme."""
+2. Examina el feedback editorial que se haya entregado (es opcional) para guiar la creación de los analistas:
 
-def create_analysts(state: GenerateAnalystsState):
-    
-    """ Create analysts """
-    
-    topic=state['topic']
-    max_analysts=state['max_analysts']
-    human_analyst_feedback=state.get('human_analyst_feedback', '')
-        
-    # Enforce structured output
-    structured_llm = llm.with_structured_output(Perspectives)
+{feedback_humano_analistas}
 
-    # System message
-    system_message = analyst_instructions.format(topic=topic,
-                                                            human_analyst_feedback=human_analyst_feedback, 
-                                                            max_analysts=max_analysts)
+3. Determina los temas más interesantes a partir de los documentos y / o del feedback anteriores.
 
-    # Generate question 
-    analysts = structured_llm.invoke([SystemMessage(content=system_message)]+[HumanMessage(content="Generate the set of analysts.")])
-    
-    # Write the list of analysis to state
-    return {"analysts": analysts.analysts}
+4. Elige los {max_analistas} temas principales.
 
-def human_feedback(state: GenerateAnalystsState):
-    """ No-op node that should be interrupted on """
+5. Asigna un analista a cada tema."""
+
+def crear_analistas(estado: EstadoGenerarAnalistas):
+
+    """ Crea los analistas """
+
+    tema=estado['tema']
+    max_analistas=estado['max_analistas']
+    feedback_humano_analistas=estado.get('feedback_humano_analistas', '')
+
+    # Forzamos una salida estructurada
+    llm_estructurado = llm.with_structured_output(Perspectivas)
+
+    # Mensaje de sistema
+    mensaje_sistema = instrucciones_analista.format(tema=tema,
+                                                            feedback_humano_analistas=feedback_humano_analistas,
+                                                            max_analistas=max_analistas)
+
+    # Generamos los analistas
+    analistas = llm_estructurado.invoke([SystemMessage(content=mensaje_sistema)]+[HumanMessage(content="Genera el conjunto de analistas.")])
+
+    # Escribimos la lista de analistas en el estado
+    return {"analistas": analistas.analistas}
+
+def feedback_humano(estado: EstadoGenerarAnalistas):
+    """ Nodo que no hace nada y en el que se debe interrumpir """
     pass
 
-# Generate analyst question
-question_instructions = """You are an analyst tasked with interviewing an expert to learn about a specific topic. 
+# Generamos la pregunta del analista
+instrucciones_pregunta = """Eres un analista encargado de entrevistar a un experto para aprender sobre un tema específico.
 
-Your goal is boil down to interesting and specific insights related to your topic.
+Tu objetivo es llegar a ideas interesantes y específicas relacionadas con tu tema.
 
-1. Interesting: Insights that people will find surprising or non-obvious.
-        
-2. Specific: Insights that avoid generalities and include specific examples from the expert.
+1. Interesantes: ideas que a la gente le resulten sorprendentes o poco obvias.
 
-Here is your topic of focus and set of goals: {goals}
-        
-Begin by introducing yourself using a name that fits your persona, and then ask your question.
+2. Específicas: ideas que eviten las generalidades e incluyan ejemplos concretos del experto.
 
-Continue to ask questions to drill down and refine your understanding of the topic.
-        
-When you are satisfied with your understanding, complete the interview with: "Thank you so much for your help!"
+Este es tu tema de enfoque y tu conjunto de objetivos: {objetivos}
 
-Remember to stay in character throughout your response, reflecting the persona and goals provided to you."""
+Comienza presentándote con un nombre que encaje con tu persona y luego haz tu pregunta.
 
-def generate_question(state: InterviewState):
+Sigue haciendo preguntas para profundizar y afinar tu comprensión del tema.
 
-    """ Node to generate a question """
+Cuando estés satisfecho con tu comprensión, termina la entrevista con: "¡Muchas gracias por tu ayuda!"
 
-    # Get state
-    analyst = state["analyst"]
-    messages = state["messages"]
+Recuerda mantenerte en el personaje durante toda tu respuesta, reflejando la persona y los objetivos que se te dieron."""
 
-    # Generate question 
-    system_message = question_instructions.format(goals=analyst.persona)
-    question = llm.invoke([SystemMessage(content=system_message)]+messages)
-        
-    # Write messages to state
-    return {"messages": [question]}
+def generar_pregunta(estado: EstadoEntrevista):
 
-# Search query writing
-search_instructions = SystemMessage(content=f"""You will be given a conversation between an analyst and an expert. 
+    """ Nodo para generar una pregunta """
 
-Your goal is to generate a well-structured query for use in retrieval and / or web-search related to the conversation.
-        
-First, analyze the full conversation.
+    # Obtenemos el estado
+    analista = estado["analista"]
+    mensajes = estado["messages"]
 
-Pay particular attention to the final question posed by the analyst.
+    # Generamos la pregunta
+    mensaje_sistema = instrucciones_pregunta.format(objetivos=analista.persona)
+    pregunta = llm.invoke([SystemMessage(content=mensaje_sistema)]+mensajes)
 
-Convert this final question into a well-structured web search query""")
+    # Escribimos los mensajes en el estado
+    return {"messages": [pregunta]}
 
-def search_web(state: InterviewState):
-    
-    """ Retrieve docs from web search """
+# Redacción de la consulta de búsqueda
+instrucciones_busqueda = SystemMessage(content=f"""Se te entregará una conversación entre un analista y un experto.
 
-    # Search
-    tavily_search = TavilySearch(max_results=3)
+Tu objetivo es generar una consulta bien estructurada para usar en una recuperación y / o una búsqueda web relacionada con la conversación.
 
-    # Search query
-    structured_llm = llm.with_structured_output(SearchQuery)
-    search_query = structured_llm.invoke([search_instructions]+state['messages'])
-    
-    # Search
-    data = tavily_search.invoke({"query": search_query.search_query})
-    search_docs = data.get("results", data)
+Primero, analiza la conversación completa.
 
-     # Format
-    formatted_search_docs = "\n\n---\n\n".join(
+Presta especial atención a la última pregunta que hizo el analista.
+
+Convierte esta última pregunta en una consulta de búsqueda web bien estructurada""")
+
+def buscar_web(estado: EstadoEntrevista):
+
+    """ Recupera documentos con una búsqueda web """
+
+    # Búsqueda
+    busqueda_tavily = TavilySearch(max_results=3)
+
+    # Consulta de búsqueda
+    llm_estructurado = llm.with_structured_output(ConsultaBusqueda)
+    consulta_busqueda = llm_estructurado.invoke([instrucciones_busqueda]+estado['messages'])
+
+    # Búsqueda
+    datos = busqueda_tavily.invoke({"query": consulta_busqueda.consulta_busqueda})
+    docs_busqueda = datos.get("results", datos)
+
+     # Formato
+    docs_busqueda_formateados = "\n\n---\n\n".join(
         [
             f'<Document href="{doc["url"]}"/>\n{doc["content"]}\n</Document>'
-            for doc in search_docs
+            for doc in docs_busqueda
         ]
     )
 
-    return {"context": [formatted_search_docs]} 
+    return {"contexto": [docs_busqueda_formateados]}
 
-def search_wikipedia(state: InterviewState):
-    
-    """ Retrieve docs from wikipedia """
+def buscar_wikipedia(estado: EstadoEntrevista):
 
-    # Search query
-    structured_llm = llm.with_structured_output(SearchQuery)
-    search_query = structured_llm.invoke([search_instructions]+state['messages'])
-    
-    # Search
-    search_docs = WikipediaLoader(query=search_query.search_query, 
+    """ Recupera documentos de Wikipedia """
+
+    # Consulta de búsqueda
+    llm_estructurado = llm.with_structured_output(ConsultaBusqueda)
+    consulta_busqueda = llm_estructurado.invoke([instrucciones_busqueda]+estado['messages'])
+
+    # Búsqueda
+    docs_busqueda = WikipediaLoader(query=consulta_busqueda.consulta_busqueda,
                                   load_max_docs=2).load()
 
-     # Format
-    formatted_search_docs = "\n\n---\n\n".join(
+     # Formato
+    docs_busqueda_formateados = "\n\n---\n\n".join(
         [
             f'<Document source="{doc.metadata["source"]}" page="{doc.metadata.get("page", "")}"/>\n{doc.page_content}\n</Document>'
-            for doc in search_docs
+            for doc in docs_busqueda
         ]
     )
 
-    return {"context": [formatted_search_docs]} 
+    return {"contexto": [docs_busqueda_formateados]}
 
-# Generate expert answer
-answer_instructions = """You are an expert being interviewed by an analyst.
+# Generamos la respuesta del experto
+instrucciones_respuesta = """Eres un experto al que está entrevistando un analista.
 
-Here is analyst area of focus: {goals}. 
-        
-You goal is to answer a question posed by the interviewer.
+Esta es el área de enfoque del analista: {objetivos}.
 
-To answer question, use this context:
-        
-{context}
+Tu objetivo es responder una pregunta que hace el entrevistador.
 
-When answering questions, follow these guidelines:
-        
-1. Use only the information provided in the context. 
-        
-2. Do not introduce external information or make assumptions beyond what is explicitly stated in the context.
+Para responder la pregunta, usa este contexto:
 
-3. The context contain sources at the topic of each individual document.
+{contexto}
 
-4. Include these sources your answer next to any relevant statements. For example, for source # 1 use [1]. 
+Al responder las preguntas, sigue estas pautas:
 
-5. List your sources in order at the bottom of your answer. [1] Source 1, [2] Source 2, etc
-        
-6. If the source is: <Document source="assistant/docs/llama3_1.pdf" page="7"/>' then just list: 
-        
-[1] assistant/docs/llama3_1.pdf, page 7 
-        
-And skip the addition of the brackets as well as the Document source preamble in your citation."""
+1. Usa solo la información entregada en el contexto.
 
-def generate_answer(state: InterviewState):
-    
-    """ Node to answer a question """
+2. No agregues información externa ni hagas suposiciones más allá de lo que el contexto dice de forma explícita.
 
-    # Get state
-    analyst = state["analyst"]
-    messages = state["messages"]
-    context = state["context"]
+3. El contexto incluye las fuentes al comienzo de cada documento.
 
-    # Answer question
-    system_message = answer_instructions.format(goals=analyst.persona, context=context)
-    answer = llm.invoke([SystemMessage(content=system_message)]+messages)
-            
-    # Name the message as coming from the expert
-    answer.name = "expert"
-    
-    # Append it to state
-    return {"messages": [answer]}
+4. Incluye esas fuentes en tu respuesta, junto a cada afirmación relevante. Por ejemplo, para la fuente n.º 1 usa [1].
 
-def save_interview(state: InterviewState):
-    
-    """ Save interviews """
+5. Enumera tus fuentes en orden al final de tu respuesta. [1] Fuente 1, [2] Fuente 2, etc.
 
-    # Get messages
-    messages = state["messages"]
-    
-    # Convert interview to a string
-    interview = get_buffer_string(messages)
-    
-    # Save to interviews key
-    return {"interview": interview}
+6. Si la fuente es: <Document source="assistant/docs/llama3_1.pdf" page="7"/>' entonces solo escribe:
 
-def route_messages(state: InterviewState, 
-                   name: str = "expert"):
+[1] assistant/docs/llama3_1.pdf, página 7
 
-    """ Route between question and answer """
-    
-    # Get messages
-    messages = state["messages"]
-    max_num_turns = state.get('max_num_turns',2)
+Y omite también los corchetes y el encabezado Document source en tu cita."""
 
-    # Check the number of expert answers 
-    num_responses = len(
-        [m for m in messages if isinstance(m, AIMessage) and m.name == name]
+def generar_respuesta(estado: EstadoEntrevista):
+
+    """ Nodo para responder una pregunta """
+
+    # Obtenemos el estado
+    analista = estado["analista"]
+    mensajes = estado["messages"]
+    contexto = estado["contexto"]
+
+    # Respondemos la pregunta
+    mensaje_sistema = instrucciones_respuesta.format(objetivos=analista.persona, contexto=contexto)
+    respuesta = llm.invoke([SystemMessage(content=mensaje_sistema)]+mensajes)
+
+    # Indicamos que el mensaje viene del experto
+    respuesta.name = "experto"
+
+    # Lo agregamos al estado
+    return {"messages": [respuesta]}
+
+def guardar_entrevista(estado: EstadoEntrevista):
+
+    """ Guarda la entrevista """
+
+    # Obtenemos los mensajes
+    mensajes = estado["messages"]
+
+    # Convertimos la entrevista en un string
+    entrevista = get_buffer_string(mensajes)
+
+    # La guardamos en la clave entrevista
+    return {"entrevista": entrevista}
+
+def enrutar_mensajes(estado: EstadoEntrevista,
+                   nombre: str = "experto"):
+
+    """ Enruta entre pregunta y respuesta """
+
+    # Obtenemos los mensajes
+    mensajes = estado["messages"]
+    max_turnos = estado.get('max_turnos',2)
+
+    # Contamos las respuestas del experto
+    num_respuestas = len(
+        [m for m in mensajes if isinstance(m, AIMessage) and m.name == nombre]
     )
 
-    # End if expert has answered more than the max turns
-    if num_responses >= max_num_turns:
-        return 'save_interview'
+    # Terminamos si el experto respondió más veces que el máximo de turnos
+    if num_respuestas >= max_turnos:
+        return 'guardar_entrevista'
 
-    # This router is run after each question - answer pair 
-    # Get the last question asked to check if it signals the end of discussion
-    last_question = messages[-2]
-    
-    if "Thank you so much for your help" in last_question.content:
-        return 'save_interview'
-    return "ask_question"
+    # Este router se ejecuta después de cada par pregunta - respuesta
+    # Tomamos la última pregunta para ver si señala el fin de la conversación
+    ultima_pregunta = mensajes[-2]
 
-# Write a summary (section of the final report) of the interview
-section_writer_instructions = """You are an expert technical writer. 
-            
-Your task is to create a short, easily digestible section of a report based on a set of source documents.
+    if "Muchas gracias por tu ayuda" in ultima_pregunta.content:
+        return 'guardar_entrevista'
+    return "hacer_pregunta"
 
-1. Analyze the content of the source documents: 
-- The name of each source document is at the start of the document, with the <Document tag.
-        
-2. Create a report structure using markdown formatting:
-- Use ## for the section title
-- Use ### for sub-section headers
-        
-3. Write the report following this structure:
-a. Title (## header)
-b. Summary (### header)
-c. Sources (### header)
+# Escribimos un resumen de la entrevista (una sección del informe final)
+instrucciones_escritor_seccion = """Eres un escritor técnico experto.
 
-4. Make your title engaging based upon the focus area of the analyst: 
-{focus}
+Tu tarea es crear una sección breve y fácil de digerir de un informe, a partir de un conjunto de documentos fuente.
 
-5. For the summary section:
-- Set up summary with general background / context related to the focus area of the analyst
-- Emphasize what is novel, interesting, or surprising about insights gathered from the interview
-- Create a numbered list of source documents, as you use them
-- Do not mention the names of interviewers or experts
-- Aim for approximately 400 words maximum
-- Use numbered sources in your report (e.g., [1], [2]) based on information from source documents
-        
-6. In the Sources section:
-- Include all sources used in your report
-- Provide full links to relevant websites or specific document paths
-- Separate each source by a newline. Use two spaces at the end of each line to create a newline in Markdown.
-- It will look like:
+1. Analiza el contenido de los documentos fuente:
+- El nombre de cada documento fuente está al comienzo del documento, junto a la etiqueta <Document.
 
-### Sources
-[1] Link or Document name
-[2] Link or Document name
+2. Crea una estructura de informe con formato markdown:
+- Usa ## para el título de la sección
+- Usa ### para los encabezados de las subsecciones
 
-7. Be sure to combine sources. For example this is not correct:
+3. Escribe el informe siguiendo esta estructura:
+a. Título (encabezado ##)
+b. Resumen (encabezado ###)
+c. Fuentes (encabezado ###)
+
+4. Haz que tu título sea atractivo, según el área de enfoque del analista:
+{enfoque}
+
+5. Para la sección de resumen:
+- Comienza el resumen con antecedentes / contexto general relacionado con el área de enfoque del analista
+- Destaca lo novedoso, interesante o sorprendente de las ideas obtenidas en la entrevista
+- Crea una lista numerada de los documentos fuente, a medida que los uses
+- No menciones los nombres de los entrevistadores ni de los expertos
+- Apunta a un máximo de unas 400 palabras
+- Usa fuentes numeradas en tu informe (por ejemplo, [1], [2]) según la información de los documentos fuente
+
+6. En la sección de Fuentes:
+- Incluye todas las fuentes usadas en tu informe
+- Entrega los enlaces completos a los sitios web relevantes o las rutas específicas de los documentos
+- Separa cada fuente con un salto de línea. Usa dos espacios al final de cada línea para crear un salto de línea en Markdown.
+- Se verá así:
+
+### Fuentes
+[1] Enlace o nombre del documento
+[2] Enlace o nombre del documento
+
+7. Asegúrate de combinar las fuentes. Por ejemplo, esto no es correcto:
 
 [3] https://ai.meta.com/blog/meta-llama-3-1/
 [4] https://ai.meta.com/blog/meta-llama-3-1/
 
-There should be no redundant sources. It should simply be:
+No debe haber fuentes repetidas. Debe quedar simplemente así:
 
 [3] https://ai.meta.com/blog/meta-llama-3-1/
-        
-8. Final review:
-- Ensure the report follows the required structure
-- Include no preamble before the title of the report
-- Check that all guidelines have been followed"""
 
-def write_section(state: InterviewState):
+8. Revisión final:
+- Asegúrate de que el informe siga la estructura requerida
+- No incluyas ningún preámbulo antes del título del informe
+- Comprueba que se hayan seguido todas las pautas"""
 
-    """ Node to write a section """
+def escribir_seccion(estado: EstadoEntrevista):
 
-    # Get state
-    interview = state["interview"]
-    context = state["context"]
-    analyst = state["analyst"]
-   
-    # Write section using either the gathered source docs from interview (context) or the interview itself (interview)
-    system_message = section_writer_instructions.format(focus=analyst.description)
-    section = llm.invoke([SystemMessage(content=system_message)]+[HumanMessage(content=f"Use this source to write your section: {context}")]) 
-                
-    # Append it to state
-    return {"sections": [section.content]}
+    """ Nodo para escribir una sección """
 
-# Add nodes and edges 
-interview_builder = StateGraph(InterviewState)
-interview_builder.add_node("ask_question", generate_question)
-interview_builder.add_node("search_web", search_web)
-interview_builder.add_node("search_wikipedia", search_wikipedia)
-interview_builder.add_node("answer_question", generate_answer)
-interview_builder.add_node("save_interview", save_interview)
-interview_builder.add_node("write_section", write_section)
+    # Obtenemos el estado
+    entrevista = estado["entrevista"]
+    contexto = estado["contexto"]
+    analista = estado["analista"]
 
-# Flow
-interview_builder.add_edge(START, "ask_question")
-interview_builder.add_edge("ask_question", "search_web")
-interview_builder.add_edge("ask_question", "search_wikipedia")
-interview_builder.add_edge("search_web", "answer_question")
-interview_builder.add_edge("search_wikipedia", "answer_question")
-interview_builder.add_conditional_edges("answer_question", route_messages,['ask_question','save_interview'])
-interview_builder.add_edge("save_interview", "write_section")
-interview_builder.add_edge("write_section", END)
+    # Escribimos la sección con los documentos fuente reunidos en la entrevista (contexto) o con la entrevista misma (entrevista)
+    mensaje_sistema = instrucciones_escritor_seccion.format(enfoque=analista.descripcion)
+    seccion = llm.invoke([SystemMessage(content=mensaje_sistema)]+[HumanMessage(content=f"Usa esta fuente para escribir tu sección: {contexto}")])
 
-def initiate_all_interviews(state: ResearchGraphState):
+    # La agregamos al estado
+    return {"secciones": [seccion.content]}
 
-    """ Conditional edge to initiate all interviews via Send() API or return to create_analysts """    
+# Agregamos los nodos y las aristas
+constructor_entrevista = StateGraph(EstadoEntrevista)
+constructor_entrevista.add_node("hacer_pregunta", generar_pregunta)
+constructor_entrevista.add_node("buscar_web", buscar_web)
+constructor_entrevista.add_node("buscar_wikipedia", buscar_wikipedia)
+constructor_entrevista.add_node("responder_pregunta", generar_respuesta)
+constructor_entrevista.add_node("guardar_entrevista", guardar_entrevista)
+constructor_entrevista.add_node("escribir_seccion", escribir_seccion)
 
-    # Check if human feedback
-    human_analyst_feedback=state.get('human_analyst_feedback','approve')
-    if human_analyst_feedback.lower() != 'approve':
-        # Return to create_analysts
-        return "create_analysts"
+# Flujo
+constructor_entrevista.add_edge(START, "hacer_pregunta")
+constructor_entrevista.add_edge("hacer_pregunta", "buscar_web")
+constructor_entrevista.add_edge("hacer_pregunta", "buscar_wikipedia")
+constructor_entrevista.add_edge("buscar_web", "responder_pregunta")
+constructor_entrevista.add_edge("buscar_wikipedia", "responder_pregunta")
+constructor_entrevista.add_conditional_edges("responder_pregunta", enrutar_mensajes,['hacer_pregunta','guardar_entrevista'])
+constructor_entrevista.add_edge("guardar_entrevista", "escribir_seccion")
+constructor_entrevista.add_edge("escribir_seccion", END)
 
-    # Otherwise kick off interviews in parallel via Send() API
+def iniciar_entrevistas(estado: EstadoGrafoInvestigacion):
+
+    """ Arista condicional que inicia todas las entrevistas con la API Send() o vuelve a crear_analistas """
+
+    # Revisamos si hay feedback humano
+    feedback_humano_analistas=estado.get('feedback_humano_analistas','aprobar')
+    if feedback_humano_analistas.lower() != 'aprobar':
+        # Volvemos a crear_analistas
+        return "crear_analistas"
+
+    # Si no, lanzamos las entrevistas en paralelo con la API Send()
     else:
-        topic = state["topic"]
-        return [Send("conduct_interview", {"analyst": analyst,
+        tema = estado["tema"]
+        return [Send("hacer_entrevista", {"analista": analista,
                                            "messages": [HumanMessage(
-                                               content=f"So you said you were writing an article on {topic}?"
+                                               content=f"¿Entonces dijiste que estabas escribiendo un artículo sobre {tema}?"
                                            )
-                                                       ]}) for analyst in state["analysts"]]
+                                                       ]}) for analista in estado["analistas"]]
 
-# Write a report based on the interviews
-report_writer_instructions = """You are a technical writer creating a report on this overall topic: 
+# Escribimos un informe a partir de las entrevistas
+instrucciones_escritor_informe = """Eres un escritor técnico que crea un informe sobre este tema general:
 
-{topic}
-    
-You have a team of analysts. Each analyst has done two things: 
+{tema}
 
-1. They conducted an interview with an expert on a specific sub-topic.
-2. They write up their finding into a memo.
+Tienes un equipo de analistas. Cada analista hizo dos cosas:
 
-Your task: 
+1. Realizó una entrevista con un experto sobre un subtema específico.
+2. Redactó sus hallazgos en un memo.
 
-1. You will be given a collection of memos from your analysts.
-2. Think carefully about the insights from each memo.
-3. Consolidate these into a crisp overall summary that ties together the central ideas from all of the memos. 
-4. Summarize the central points in each memo into a cohesive single narrative.
+Tu tarea:
 
-To format your report:
- 
-1. Use markdown formatting. 
-2. Include no pre-amble for the report.
-3. Use no sub-heading. 
-4. Start your report with a single title header: ## Insights
-5. Do not mention any analyst names in your report.
-6. Preserve any citations in the memos, which will be annotated in brackets, for example [1] or [2].
-7. Create a final, consolidated list of sources and add to a Sources section with the `## Sources` header.
-8. List your sources in order and do not repeat.
+1. Recibirás una colección de memos de tus analistas.
+2. Piensa con cuidado en las ideas de cada memo.
+3. Consolídalas en un resumen general claro que enlace las ideas centrales de todos los memos.
+4. Resume los puntos centrales de cada memo en una sola narrativa coherente.
 
-[1] Source 1
-[2] Source 2
+Para dar formato a tu informe:
 
-Here are the memos from your analysts to build your report from: 
+1. Usa formato markdown.
+2. No incluyas preámbulo en el informe.
+3. No uses subtítulos.
+4. Comienza tu informe con un único encabezado de título: ## Hallazgos
+5. No menciones los nombres de ningún analista en tu informe.
+6. Conserva las citas de los memos, que estarán anotadas entre corchetes, por ejemplo [1] o [2].
+7. Crea una lista final y consolidada de fuentes y agrégala en una sección de Fuentes con el encabezado `## Fuentes`.
+8. Enumera tus fuentes en orden y sin repetirlas.
 
-{context}"""
+[1] Fuente 1
+[2] Fuente 2
 
-def write_report(state: ResearchGraphState):
+Estos son los memos de tus analistas para construir tu informe:
 
-    """ Node to write the final report body """
+{contexto}"""
 
-    # Full set of sections
-    sections = state["sections"]
-    topic = state["topic"]
+def escribir_informe(estado: EstadoGrafoInvestigacion):
 
-    # Concat all sections together
-    formatted_str_sections = "\n\n".join([f"{section}" for section in sections])
-    
-    # Summarize the sections into a final report
-    system_message = report_writer_instructions.format(topic=topic, context=formatted_str_sections)    
-    report = llm.invoke([SystemMessage(content=system_message)]+[HumanMessage(content=f"Write a report based upon these memos.")]) 
-    return {"content": report.content}
+    """ Nodo para escribir el cuerpo del informe final """
 
-# Write the introduction or conclusion
-intro_conclusion_instructions = """You are a technical writer finishing a report on {topic}
+    # Conjunto completo de secciones
+    secciones = estado["secciones"]
+    tema = estado["tema"]
 
-You will be given all of the sections of the report.
+    # Unimos todas las secciones
+    secciones_formateadas = "\n\n".join([f"{seccion}" for seccion in secciones])
 
-You job is to write a crisp and compelling introduction or conclusion section.
+    # Resumimos las secciones en un informe final
+    mensaje_sistema = instrucciones_escritor_informe.format(tema=tema, contexto=secciones_formateadas)
+    informe = llm.invoke([SystemMessage(content=mensaje_sistema)]+[HumanMessage(content=f"Escribe un informe a partir de estos memos.")])
+    return {"contenido": informe.content}
 
-The user will instruct you whether to write the introduction or conclusion.
+# Escribimos la introducción o la conclusión
+instrucciones_intro_conclusion = """Eres un escritor técnico que está terminando un informe sobre {tema}
 
-Include no pre-amble for either section.
+Se te entregarán todas las secciones del informe.
 
-Target around 100 words, crisply previewing (for introduction) or recapping (for conclusion) all of the sections of the report.
+Tu trabajo es escribir una introducción o una conclusión clara y atractiva.
 
-Use markdown formatting. 
+El usuario te indicará si debes escribir la introducción o la conclusión.
 
-For your introduction, create a compelling title and use the # header for the title.
+No incluyas preámbulo en ninguna de las dos secciones.
 
-For your introduction, use ## Introduction as the section header. 
+Apunta a unas 100 palabras, que presenten de forma clara un adelanto (en la introducción) o un repaso (en la conclusión) de todas las secciones del informe.
 
-For your conclusion, use ## Conclusion as the section header.
+Usa formato markdown.
 
-Here are the sections to reflect on for writing: {formatted_str_sections}"""
+Para tu introducción, crea un título atractivo y usa el encabezado # para el título.
 
-def write_introduction(state: ResearchGraphState):
+Para tu introducción, usa ## Introducción como encabezado de la sección.
 
-    """ Node to write the introduction """
+Para tu conclusión, usa ## Conclusión como encabezado de la sección.
 
-    # Full set of sections
-    sections = state["sections"]
-    topic = state["topic"]
+Estas son las secciones en las que debes basarte para escribir: {secciones_formateadas}"""
 
-    # Concat all sections together
-    formatted_str_sections = "\n\n".join([f"{section}" for section in sections])
-    
-    # Summarize the sections into a final report
-    
-    instructions = intro_conclusion_instructions.format(topic=topic, formatted_str_sections=formatted_str_sections)    
-    intro = llm.invoke([instructions]+[HumanMessage(content=f"Write the report introduction")]) 
-    return {"introduction": intro.content}
+def escribir_introduccion(estado: EstadoGrafoInvestigacion):
 
-def write_conclusion(state: ResearchGraphState):
+    """ Nodo para escribir la introducción """
 
-    """ Node to write the conclusion """
+    # Conjunto completo de secciones
+    secciones = estado["secciones"]
+    tema = estado["tema"]
 
-    # Full set of sections
-    sections = state["sections"]
-    topic = state["topic"]
+    # Unimos todas las secciones
+    secciones_formateadas = "\n\n".join([f"{seccion}" for seccion in secciones])
 
-    # Concat all sections together
-    formatted_str_sections = "\n\n".join([f"{section}" for section in sections])
-    
-    # Summarize the sections into a final report
-    
-    instructions = intro_conclusion_instructions.format(topic=topic, formatted_str_sections=formatted_str_sections)    
-    conclusion = llm.invoke([instructions]+[HumanMessage(content=f"Write the report conclusion")]) 
+    # Resumimos las secciones en un informe final
+
+    instrucciones = instrucciones_intro_conclusion.format(tema=tema, secciones_formateadas=secciones_formateadas)
+    intro = llm.invoke([instrucciones]+[HumanMessage(content=f"Escribe la introducción del informe")])
+    return {"introduccion": intro.content}
+
+def escribir_conclusion(estado: EstadoGrafoInvestigacion):
+
+    """ Nodo para escribir la conclusión """
+
+    # Conjunto completo de secciones
+    secciones = estado["secciones"]
+    tema = estado["tema"]
+
+    # Unimos todas las secciones
+    secciones_formateadas = "\n\n".join([f"{seccion}" for seccion in secciones])
+
+    # Resumimos las secciones en un informe final
+
+    instrucciones = instrucciones_intro_conclusion.format(tema=tema, secciones_formateadas=secciones_formateadas)
+    conclusion = llm.invoke([instrucciones]+[HumanMessage(content=f"Escribe la conclusión del informe")])
     return {"conclusion": conclusion.content}
 
-def finalize_report(state: ResearchGraphState):
+def finalizar_informe(estado: EstadoGrafoInvestigacion):
 
-    """ The is the "reduce" step where we gather all the sections, combine them, and reflect on them to write the intro/conclusion """
+    """ Este es el paso "reduce": reunimos todas las secciones, las combinamos y reflexionamos sobre ellas para escribir la introducción y la conclusión """
 
-    # Save full final report
-    content = state["content"]
-    if content.startswith("## Insights"):
-        content = content.strip("## Insights")
-    if "## Sources" in content:
+    # Guardamos el informe final completo
+    contenido = estado["contenido"]
+    if contenido.startswith("## Hallazgos"):
+        contenido = contenido.removeprefix("## Hallazgos")
+    if "## Fuentes" in contenido:
         try:
-            content, sources = content.split("\n## Sources\n")
+            contenido, fuentes = contenido.split("\n## Fuentes\n")
         except:
-            sources = None
+            fuentes = None
     else:
-        sources = None
+        fuentes = None
 
-    final_report = state["introduction"] + "\n\n---\n\n" + content + "\n\n---\n\n" + state["conclusion"]
-    if sources is not None:
-        final_report += "\n\n## Sources\n" + sources
-    return {"final_report": final_report}
+    informe_final = estado["introduccion"] + "\n\n---\n\n" + contenido + "\n\n---\n\n" + estado["conclusion"]
+    if fuentes is not None:
+        informe_final += "\n\n## Fuentes\n" + fuentes
+    return {"informe_final": informe_final}
 
-# Add nodes and edges 
-builder = StateGraph(ResearchGraphState)
-builder.add_node("create_analysts", create_analysts)
-builder.add_node("human_feedback", human_feedback)
-builder.add_node("conduct_interview", interview_builder.compile())
-builder.add_node("write_report",write_report)
-builder.add_node("write_introduction",write_introduction)
-builder.add_node("write_conclusion",write_conclusion)
-builder.add_node("finalize_report",finalize_report)
+# Agregamos los nodos y las aristas
+constructor = StateGraph(EstadoGrafoInvestigacion)
+constructor.add_node("crear_analistas", crear_analistas)
+constructor.add_node("feedback_humano", feedback_humano)
+constructor.add_node("hacer_entrevista", constructor_entrevista.compile())
+constructor.add_node("escribir_informe",escribir_informe)
+constructor.add_node("escribir_introduccion",escribir_introduccion)
+constructor.add_node("escribir_conclusion",escribir_conclusion)
+constructor.add_node("finalizar_informe",finalizar_informe)
 
-# Logic
-builder.add_edge(START, "create_analysts")
-builder.add_edge("create_analysts", "human_feedback")
-builder.add_conditional_edges("human_feedback", initiate_all_interviews, ["create_analysts", "conduct_interview"])
-builder.add_edge("conduct_interview", "write_report")
-builder.add_edge("conduct_interview", "write_introduction")
-builder.add_edge("conduct_interview", "write_conclusion")
-builder.add_edge(["write_conclusion", "write_report", "write_introduction"], "finalize_report")
-builder.add_edge("finalize_report", END)
+# Lógica
+constructor.add_edge(START, "crear_analistas")
+constructor.add_edge("crear_analistas", "feedback_humano")
+constructor.add_conditional_edges("feedback_humano", iniciar_entrevistas, ["crear_analistas", "hacer_entrevista"])
+constructor.add_edge("hacer_entrevista", "escribir_informe")
+constructor.add_edge("hacer_entrevista", "escribir_introduccion")
+constructor.add_edge("hacer_entrevista", "escribir_conclusion")
+constructor.add_edge(["escribir_conclusion", "escribir_informe", "escribir_introduccion"], "finalizar_informe")
+constructor.add_edge("finalizar_informe", END)
 
-# Compile
-graph = builder.compile(interrupt_before=['human_feedback'])
+# Compilamos
+grafo = constructor.compile(interrupt_before=['feedback_humano'])

@@ -2,32 +2,32 @@ from typing_extensions import TypedDict
 from langgraph.errors import NodeInterrupt
 from langgraph.graph import START, END, StateGraph
 
-class State(TypedDict):
-    input: str
+class Estado(TypedDict):
+    entrada: str
 
-def step_1(state: State) -> State:
-    print("---Step 1---")
-    return state
+def paso_1(estado: Estado) -> Estado:
+    print("---Paso 1---")
+    return estado
 
-def step_2(state: State) -> State:
-    # Let's optionally raise a NodeInterrupt if the length of the input is longer than 5 characters
-    if len(state['input']) > 5:
-        raise NodeInterrupt(f"Received input that is longer than 5 characters: {state['input']}")
-    
-    print("---Step 2---")
-    return state
+def paso_2(estado: Estado) -> Estado:
+    # Lanzamos una NodeInterrupt de forma opcional si la entrada tiene más de 5 caracteres
+    if len(estado['entrada']) > 5:
+        raise NodeInterrupt(f"Se recibió una entrada de más de 5 caracteres: {estado['entrada']}")
 
-def step_3(state: State) -> State:
-    print("---Step 3---")
-    return state
+    print("---Paso 2---")
+    return estado
 
-builder = StateGraph(State)
-builder.add_node("step_1", step_1)
-builder.add_node("step_2", step_2)
-builder.add_node("step_3", step_3)
-builder.add_edge(START, "step_1")
-builder.add_edge("step_1", "step_2")
-builder.add_edge("step_2", "step_3")
-builder.add_edge("step_3", END)
+def paso_3(estado: Estado) -> Estado:
+    print("---Paso 3---")
+    return estado
 
-graph = builder.compile()
+constructor = StateGraph(Estado)
+constructor.add_node("paso_1", paso_1)
+constructor.add_node("paso_2", paso_2)
+constructor.add_node("paso_3", paso_3)
+constructor.add_edge(START, "paso_1")
+constructor.add_edge("paso_1", "paso_2")
+constructor.add_edge("paso_2", "paso_3")
+constructor.add_edge("paso_3", END)
+
+grafo = constructor.compile()

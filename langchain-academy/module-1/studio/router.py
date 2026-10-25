@@ -3,36 +3,36 @@ from langgraph.graph import MessagesState
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
 
-# Tool
-def multiply(a: int, b: int) -> int:
-    """Multiplies a and b.
+# Herramienta
+def multiplicar(a: int, b: int) -> int:
+    """Multiplica a y b.
 
     Args:
-        a: first int
-        b: second int
+        a: primer entero
+        b: segundo entero
     """
     return a * b
 
-# LLM with bound tool
+# LLM con la herramienta enlazada
 llm = ChatOpenAI(model="gpt-4o")
-llm_with_tools = llm.bind_tools([multiply])
+llm_con_herramientas = llm.bind_tools([multiplicar])
 
-# Node
-def tool_calling_llm(state: MessagesState):
-    return {"messages": [llm_with_tools.invoke(state["messages"])]}
+# Nodo
+def llamar_llm(estado: MessagesState):
+    return {"messages": [llm_con_herramientas.invoke(estado["messages"])]}
 
-# Build graph
-builder = StateGraph(MessagesState)
-builder.add_node("tool_calling_llm", tool_calling_llm)
-builder.add_node("tools", ToolNode([multiply]))
-builder.add_edge(START, "tool_calling_llm")
-builder.add_conditional_edges(
-    "tool_calling_llm",
-    # If the latest message (result) from assistant is a tool call -> tools_condition routes to tools
-    # If the latest message (result) from assistant is a not a tool call -> tools_condition routes to END
+# Construir el grafo
+constructor = StateGraph(MessagesState)
+constructor.add_node("llamar_llm", llamar_llm)
+constructor.add_node("tools", ToolNode([multiplicar]))
+constructor.add_edge(START, "llamar_llm")
+constructor.add_conditional_edges(
+    "llamar_llm",
+    # Si el último mensaje (resultado) del asistente es una llamada a herramienta -> tools_condition dirige a tools
+    # Si el último mensaje (resultado) del asistente no es una llamada a herramienta -> tools_condition dirige a END
     tools_condition,
 )
-builder.add_edge("tools", END)
+constructor.add_edge("tools", END)
 
-# Compile graph
-graph = builder.compile()
+# Compilar el grafo
+grafo = constructor.compile()
