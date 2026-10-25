@@ -4,66 +4,66 @@ from typing_extensions import TypedDict
 
 from pydantic import BaseModel
 
-from langchain_openai import ChatOpenAI 
+from langchain_openai import ChatOpenAI
 
 from langgraph.constants import Send
 from langgraph.graph import END, StateGraph, START
 
-# Prompts we will use
-subjects_prompt = """Generate a list of 3 sub-topics that are all related to this overall topic: {topic}."""
-joke_prompt = """Generate a joke about {subject}"""
-best_joke_prompt = """Below are a bunch of jokes about {topic}. Select the best one! Return the ID of the best one, starting 0 as the ID for the first joke. Jokes: \n\n  {jokes}"""
+# Prompts que vamos a usar
+prompt_subtemas = """Genera una lista de 3 subtemas, todos relacionados con este tema general: {tema}."""
+prompt_chiste = """Genera un chiste sobre {subtema}"""
+prompt_mejor_chiste = """A continuación hay varios chistes sobre {tema}. ¡Elige el mejor! Devuelve el ID del mejor, usando 0 como ID del primer chiste. Chistes: \n\n  {chistes}"""
 
 # LLM
-model = ChatOpenAI(model="gpt-4o", temperature=0) 
+modelo = ChatOpenAI(model="gpt-4o", temperature=0)
 
-# Define the state
-class Subjects(BaseModel):
-    subjects: list[str]
+# Definimos el estado
+class Subtemas(BaseModel):
+    subtemas: list[str]
 
-class BestJoke(BaseModel):
+class MejorChiste(BaseModel):
     id: int
-    
-class OverallState(TypedDict):
-    topic: str
-    subjects: list
-    jokes: Annotated[list, operator.add]
-    best_selected_joke: str
 
-def generate_topics(state: OverallState):
-    prompt = subjects_prompt.format(topic=state["topic"])
-    response = model.with_structured_output(Subjects).invoke(prompt)
-    return {"subjects": response.subjects}
+class EstadoGeneral(TypedDict):
+    tema: str
+    subtemas: list
+    chistes: Annotated[list, operator.add]
+    mejor_chiste_elegido: str
 
-class JokeState(TypedDict):
-    subject: str
+def generar_temas(estado: EstadoGeneral):
+    prompt = prompt_subtemas.format(tema=estado["tema"])
+    respuesta = modelo.with_structured_output(Subtemas).invoke(prompt)
+    return {"subtemas": respuesta.subtemas}
 
-class Joke(BaseModel):
-    joke: str
+class EstadoChiste(TypedDict):
+    subtema: str
 
-def generate_joke(state: JokeState):
-    prompt = joke_prompt.format(subject=state["subject"])
-    response = model.with_structured_output(Joke).invoke(prompt)
-    return {"jokes": [response.joke]}
+class Chiste(BaseModel):
+    chiste: str
 
-def best_joke(state: OverallState):
-    jokes = "\n\n".join(state["jokes"])
-    prompt = best_joke_prompt.format(topic=state["topic"], jokes=jokes)
-    response = model.with_structured_output(BestJoke).invoke(prompt)
-    return {"best_selected_joke": state["jokes"][response.id]}
+def generar_chiste(estado: EstadoChiste):
+    prompt = prompt_chiste.format(subtema=estado["subtema"])
+    respuesta = modelo.with_structured_output(Chiste).invoke(prompt)
+    return {"chistes": [respuesta.chiste]}
 
-def continue_to_jokes(state: OverallState):
-    return [Send("generate_joke", {"subject": s}) for s in state["subjects"]]
+def mejor_chiste(estado: EstadoGeneral):
+    chistes = "\n\n".join(estado["chistes"])
+    prompt = prompt_mejor_chiste.format(tema=estado["tema"], chistes=chistes)
+    respuesta = modelo.with_structured_output(MejorChiste).invoke(prompt)
+    return {"mejor_chiste_elegido": estado["chistes"][respuesta.id]}
 
-# Construct the graph: here we put everything together to construct our graph
-graph_builder = StateGraph(OverallState)
-graph_builder.add_node("generate_topics", generate_topics)
-graph_builder.add_node("generate_joke", generate_joke)
-graph_builder.add_node("best_joke", best_joke)
-graph_builder.add_edge(START, "generate_topics")
-graph_builder.add_conditional_edges("generate_topics", continue_to_jokes, ["generate_joke"])
-graph_builder.add_edge("generate_joke", "best_joke")
-graph_builder.add_edge("best_joke", END)
+def ir_a_chistes(estado: EstadoGeneral):
+    return [Send("generar_chiste", {"subtema": s}) for s in estado["subtemas"]]
 
-# Compile the graph
-graph = graph_builder.compile()
+# Construimos el grafo: aquí juntamos todo
+constructor_grafo = StateGraph(EstadoGeneral)
+constructor_grafo.add_node("generar_temas", generar_temas)
+constructor_grafo.add_node("generar_chiste", generar_chiste)
+constructor_grafo.add_node("mejor_chiste", mejor_chiste)
+constructor_grafo.add_edge(START, "generar_temas")
+constructor_grafo.add_conditional_edges("generar_temas", ir_a_chistes, ["generar_chiste"])
+constructor_grafo.add_edge("generar_chiste", "mejor_chiste")
+constructor_grafo.add_edge("mejor_chiste", END)
+
+# Compilamos el grafo
+grafo = constructor_grafo.compile()

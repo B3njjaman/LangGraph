@@ -6,87 +6,87 @@ from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from langchain_community.document_loaders import WikipediaLoader
-from langchain_tavily import TavilySearch  # updated 1.0
+from langchain_tavily import TavilySearch  # actualizado 1.0
 
 from langchain_openai import ChatOpenAI
 
 from langgraph.graph import StateGraph, START, END
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0) 
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
-class State(TypedDict):
-    question: str
-    answer: str
-    context: Annotated[list, operator.add]
+class Estado(TypedDict):
+    pregunta: str
+    respuesta: str
+    contexto: Annotated[list, operator.add]
 
-def search_web(state):
-    
-    """ Retrieve docs from web search """
+def buscar_web(estado):
 
-    # Search
-    tavily_search = TavilySearch(max_results=3)
-    data = tavily_search.invoke({"query": state['question']})
-    search_docs = data.get("results", data)
+    """ Recupera documentos con una búsqueda web """
 
-     # Format
-    formatted_search_docs = "\n\n---\n\n".join(
+    # Búsqueda
+    busqueda_tavily = TavilySearch(max_results=3)
+    datos = busqueda_tavily.invoke({"query": estado['pregunta']})
+    docs_busqueda = datos.get("results", datos)
+
+     # Formato
+    docs_busqueda_formateados = "\n\n---\n\n".join(
         [
             f'<Document href="{doc["url"]}"/>\n{doc["content"]}\n</Document>'
-            for doc in search_docs
+            for doc in docs_busqueda
         ]
     )
 
-    return {"context": [formatted_search_docs]} 
+    return {"contexto": [docs_busqueda_formateados]}
 
-def search_wikipedia(state):
-    
-    """ Retrieve docs from wikipedia """
+def buscar_wikipedia(estado):
 
-    # Search
-    search_docs = WikipediaLoader(query=state['question'], 
+    """ Recupera documentos de Wikipedia """
+
+    # Búsqueda
+    docs_busqueda = WikipediaLoader(query=estado['pregunta'],
                                   load_max_docs=2).load()
 
-     # Format
-    formatted_search_docs = "\n\n---\n\n".join(
+     # Formato
+    docs_busqueda_formateados = "\n\n---\n\n".join(
         [
             f'<Document source="{doc.metadata["source"]}" page="{doc.metadata.get("page", "")}"/>\n{doc.page_content}\n</Document>'
-            for doc in search_docs
+            for doc in docs_busqueda
         ]
     )
 
-    return {"context": [formatted_search_docs]} 
+    return {"contexto": [docs_busqueda_formateados]}
 
-def generate_answer(state):
-    
-    """ Node to answer a question """
+def generar_respuesta(estado):
 
-    # Get state
-    context = state["context"]
-    question = state["question"]
+    """ Nodo para responder una pregunta """
 
-    # Template
-    answer_template = """Answer the question {question} using this context: {context}"""
-    answer_instructions = answer_template.format(question=question, 
-                                                       context=context)    
-    
-    # Answer
-    answer = llm.invoke([SystemMessage(content=answer_instructions)]+[HumanMessage(content=f"Answer the question.")])
-      
-    # Append it to state
-    return {"answer": answer}
+    # Obtenemos el estado
+    contexto = estado["contexto"]
+    pregunta = estado["pregunta"]
 
-# Add nodes
-builder = StateGraph(State)
+    # Plantilla
+    plantilla_respuesta = """Responde la pregunta {pregunta} usando este contexto: {contexto}"""
+    instrucciones_respuesta = plantilla_respuesta.format(pregunta=pregunta,
+                                                       contexto=contexto)
 
-# Initialize each node with node_secret 
-builder.add_node("search_web",search_web)
-builder.add_node("search_wikipedia", search_wikipedia)
-builder.add_node("generate_answer", generate_answer)
+    # Respuesta
+    respuesta = llm.invoke([SystemMessage(content=instrucciones_respuesta)]+[HumanMessage(content=f"Responde la pregunta.")])
 
-# Flow
-builder.add_edge(START, "search_wikipedia")
-builder.add_edge(START, "search_web")
-builder.add_edge("search_wikipedia", "generate_answer")
-builder.add_edge("search_web", "generate_answer")
-builder.add_edge("generate_answer", END)
-graph = builder.compile()
+    # La agregamos al estado
+    return {"respuesta": respuesta}
+
+# Agregamos los nodos
+constructor = StateGraph(Estado)
+
+# Inicializamos cada nodo
+constructor.add_node("buscar_web",buscar_web)
+constructor.add_node("buscar_wikipedia", buscar_wikipedia)
+constructor.add_node("generar_respuesta", generar_respuesta)
+
+# Flujo
+constructor.add_edge(START, "buscar_wikipedia")
+constructor.add_edge(START, "buscar_web")
+constructor.add_edge("buscar_wikipedia", "generar_respuesta")
+constructor.add_edge("buscar_web", "generar_respuesta")
+constructor.add_edge("generar_respuesta", END)
+grafo = constructor.compile()
