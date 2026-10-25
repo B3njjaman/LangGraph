@@ -1,0 +1,19 @@
+# Transcripciones y páginas del curso: son de LangChain Academy, quedan solo en local
+privado/
+*.zip
+
+# Claves y entornos
+.env
+.venv/
+venv/
+lc-academy-env/
+
+# Python y Jupyter
+__pycache__/
+.ipynb_checkpoints/
+
+# Servidor local de LangGraph Studio
+.langgraph_api/
+
+# Capturas de Playwright
+.playwright-mcp/
