@@ -1,0 +1,103 @@
+# Lección 1. Cómo se aplica una actualización: s ⊕ u, clave por clave.
+# Arriba, claves sin reducer (LastValue): el valor nuevo reemplaza y la clave ausente se conserva.
+# Abajo, una clave con operator.add (BinaryOperatorAggregate): las listas se concatenan.
+# intervalo: 2600
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  tabla: {
+    grid-columns: 1
+    grid-gap: 8
+    label.near: top-center
+    style: {fill: ${tarjeta}; stroke: ${borde}; stroke-width: 1; border-radius: 10; font: mono; font-size: 16; bold: true; font-color: ${tinta}}
+  }
+  celda: {
+    width: 230
+    height: 34
+    style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 1; border-radius: 6; font: mono; font-size: 14; bold: false; font-color: ${tinta}}
+  }
+  cambia: {
+    width: 230
+    height: 34
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 6; font: mono; font-size: 14; bold: false; font-color: ${tinta}}
+  }
+  ausente: {
+    width: 230
+    height: 34
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; stroke-dash: 3; border-radius: 6; font: mono; font-size: 14; bold: false; italic: true; font-color: ${tenue}}
+  }
+  operacion: {
+    shape: text
+    style: {font: mono; font-size: 26; font-color: ${suave}}
+  }
+}
+
+grid-columns: 1
+grid-gap: 26
+
+reemplazo: "x, n sin reducer: LastValue" {
+  class: grupo
+  label.near: top-left
+  grid-columns: 5
+  grid-gap: 20
+
+  s: "s" {
+    class: tabla
+    x: "x: 1,0" {class: celda}
+    n: "n: 3" {class: celda}
+  }
+  mas: "⊕" {class: operacion}
+  u: "u" {
+    class: tabla
+    x: "x: 1,5" {class: celda}
+    n: "n ∉ dom(u)" {class: ausente}
+  }
+  igual: "=" {class: operacion}
+  r: "s ⊕ u" {
+    class: tabla
+    style.opacity: 0
+    x: "x: 1,5" {class: cambia}
+    n: "n: 3" {class: celda}
+  }
+}
+
+acumulo: "trayectoria con operator.add: BinaryOperatorAggregate" {
+  class: grupo
+  label.near: top-left
+  grid-columns: 5
+  grid-gap: 20
+
+  s: "s" {
+    class: tabla
+    x: "x: 1,0" {class: celda}
+    t: "trayectoria: [1,0]" {class: celda}
+  }
+  mas: "⊕" {class: operacion}
+  u: "u" {
+    class: tabla
+    x: "x: 1,5" {class: celda}
+    t: "trayectoria: [1,5]" {class: celda}
+  }
+  igual: "=" {class: operacion}
+  r: "s ⊕ u" {
+    class: tabla
+    style.opacity: 0
+    x: "x: 1,5" {class: cambia}
+    t: "trayectoria: [1,0, 1,5]" {class: cambia}
+  }
+}
+
+explica: "El nodo devuelve u. LangGraph calcula s ⊕ u con el reducer de cada clave." {class: paso; width: 640; height: 44}
+
+steps: {
+  1: {
+    reemplazo.r.style.opacity: 1
+    explica.label: "x está en dom(u): 1,5 reemplaza a 1,0. n no está: conserva el 3."
+  }
+  2: {
+    acumulo.r.style.opacity: 1
+    explica.label: "Con operator.add, r(a, b) = a + b: la lista nueva se concatena."
+  }
+}

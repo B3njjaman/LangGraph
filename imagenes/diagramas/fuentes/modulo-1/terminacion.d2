@@ -1,0 +1,66 @@
+# Lección 1. Dos formas de terminar Newton para f(x) = x² + 1, que no tiene raíces reales.
+# Sin cota, c elige paso siempre y recursion_limit corta la ejecución con un error.
+# Con la cota N, c_N llega a END, pero el estado final no es una raíz.
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  decision: {
+    shape: diamond
+    width: 120
+    height: 76
+    style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 15; font-color: ${tinta}}
+  }
+  error: {
+    style: {fill: ${rosa-suave}; stroke: ${rosa}; stroke-width: 2; border-radius: 10; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  aviso: {
+    style: {fill: ${ambar-suave}; stroke: ${ambar}; stroke-width: 2; border-radius: 10; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  corte: {
+    style: {stroke: ${rosa}; stroke-width: 2; stroke-dash: 4; font: mono; font-size: 13; font-color: ${suave}}
+  }
+  nunca: {
+    style: {stroke: ${borde-nodo}; stroke-width: 2; stroke-dash: 4; opacity: 0.55; font: mono; font-size: 13; font-color: ${tenue}}
+  }
+}
+
+grid-columns: 2
+grid-gap: 36
+
+sin_cota: "c, sin cota · Proposición 1.11" {
+  class: grupo
+  label.near: top-center
+  direction: down
+
+  inicio: START {class: extremo}
+  paso: "paso" {class: nodo; width: 120}
+  c: "c(s)" {class: decision}
+  fin: END {class: extremo; style.opacity: 0.5}
+  error: "GraphRecursionError" {class: error; width: 210}
+
+  inicio -> paso {class: arista}
+  paso -> c {class: arista}
+  c -> paso: "|f(x)| ≥ ε\nsiempre" {class: recorrida}
+  c -> fin: "|f(x)| < ε\nnunca" {class: nunca}
+  paso -> error: "recursion_limit\nen el superstep L" {class: corte}
+}
+
+con_cota: "c_N, con cota N = 50 · Proposición 1.12" {
+  class: grupo
+  label.near: top-center
+  direction: down
+
+  inicio: START {class: extremo}
+  paso: "paso" {class: nodo; width: 120}
+  c: "c_N(s)" {class: decision}
+  fin: END {class: extremo-activo}
+  aviso: "s₅₀: n = 50, |f(x)| ≥ ε\nterminó sin converger" {class: aviso; width: 250}
+
+  inicio -> paso {class: arista}
+  paso -> c {class: arista}
+  c -> paso: "n < N y\n|f(x)| ≥ ε" {class: condicional}
+  c -> fin: "n = N" {class: recorrida}
+  fin -> aviso: "estado final" {class: condicional}
+}

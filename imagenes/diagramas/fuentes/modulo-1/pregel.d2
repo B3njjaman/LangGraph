@@ -1,0 +1,144 @@
+# Lección 1, Profundización 1.B. El grafo de Newton compilado: actores (nodos) que leen y escriben canales.
+# Un nodo corre en un superstep si en el anterior alguien escribió en su canal de disparo.
+# La arista fija START → paso y la condicional c son escrituras en branch:to:paso; END no escribe nada.
+# intervalo: 3200
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  canal: {
+    shape: queue
+    width: 200
+    height: 50
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  canal-escrito: {
+    shape: queue
+    width: 200
+    height: 50
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 3; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  disparo: {
+    shape: queue
+    width: 200
+    height: 50
+    style: {fill: ${ambar-suave}; stroke: ${ambar}; stroke-width: 2; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  disparo-escrito: {
+    shape: queue
+    width: 200
+    height: 50
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 3; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  disparo-vacio: {
+    shape: queue
+    width: 200
+    height: 50
+    style: {fill: ${tarjeta}; stroke: ${ambar}; stroke-width: 2; stroke-dash: 3; opacity: 0.6; font: mono; font-size: 14; font-color: ${suave}}
+  }
+  decision: {
+    shape: diamond
+    width: 130
+    height: 76
+    style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 15; font-color: ${tinta}}
+  }
+  decision-activa: {
+    shape: diamond
+    width: 130
+    height: 76
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 3; font: mono; font-size: 15; font-color: ${tinta}}
+  }
+  hueco: {
+    label: ""
+    width: 130
+    height: 50
+    style: {fill: ${fondo}; stroke: ${fondo}; stroke-width: 0}
+  }
+}
+
+grid-columns: 1
+grid-gap: 22
+
+red: {
+  class: invisible
+  grid-columns: 3
+  horizontal-gap: 110
+  vertical-gap: 60
+
+  # La grilla se llena por columnas.
+  # Fila 1: canal de entrada, x.  Fila 2: nodo __start__, n, nodo paso.  Fila 3: branch:to:paso, c.
+  entrada: "__start__" {class: disparo}
+  inicio: "nodo __start__" {class: nodo; width: 200; height: 56}
+  hueco1: {class: hueco}
+
+  x: "x · LastValue" {class: canal}
+  n: "n · LastValue" {class: canal}
+  rama: "branch:to:paso" {class: disparo}
+
+  hueco2: {class: hueco}
+  paso: "nodo paso" {class: nodo; width: 130; height: 56}
+  c: "c(s)" {class: decision}
+
+  entrada -> inicio: "dispara" {class: arista}
+  inicio -> x {class: arista}
+  inicio -> n: "escribe" {class: arista}
+  inicio -> rama: "arista fija" {class: arista}
+  rama -> paso: "dispara" {class: arista}
+  x <-> paso: "lee y escribe" {class: arista}
+  n <-> paso {class: arista}
+  paso -> c {class: arista}
+  c -> rama: "c(s) = paso" {class: arista}
+}
+
+explica: "invoke escribe la entrada {x: 1, n: 0} en el canal __start__." {class: paso; width: 640; height: 56}
+
+red.entrada.class: disparo-escrito
+
+steps: {
+  1: {
+    red.entrada.class: disparo
+    red.(entrada -> inicio)[0].class: recorrida
+    red.inicio.class: nodo-activo
+    red.(inicio -> x)[0].class: recorrida
+    red.(inicio -> n)[0].class: recorrida
+    red.(inicio -> rama)[0].class: recorrida
+    red.x.class: canal-escrito
+    red.n.class: canal-escrito
+    red.rama.class: disparo-escrito
+    explica.label: "Superstep 0: __start__ copia la entrada en x y n.\nLa arista fija START → paso escribe en branch:to:paso."
+  }
+  2: {
+    red.entrada.class: disparo-vacio
+    red.(entrada -> inicio)[0].class: arista
+    red.inicio.class: nodo
+    red.(inicio -> x)[0].class: arista
+    red.(inicio -> n)[0].class: arista
+    red.(inicio -> rama)[0].class: arista
+    red.(rama -> paso)[0].class: recorrida
+    red.paso.class: nodo-activo
+    red.(x <-> paso)[0].class: recorrida
+    red.(n <-> paso)[0].class: recorrida
+    red.(paso -> c)[0].class: recorrida
+    red.c.class: decision-activa
+    red.(c -> rama)[0].class: recorrida
+    explica.label: "Superstep 1: branch:to:paso tiene un valor nuevo, así que paso corre.\nEscribe x y n, y c(s₁) = paso vuelve a escribir en branch:to:paso."
+  }
+  3: {
+    red.(c -> rama)[0].class: arista
+    red.rama.class: disparo
+    explica.label: "Superstep 4: paso escribe x y n, pero c(s₄) = END\nno escribe en ningún canal."
+  }
+  4: {
+    red.rama.class: disparo-vacio
+    red.(rama -> paso)[0].class: arista
+    red.paso.class: nodo
+    red.(x <-> paso)[0].class: arista
+    red.(n <-> paso)[0].class: arista
+    red.(paso -> c)[0].class: arista
+    red.c.class: decision
+    red.x.class: canal
+    red.n.class: canal
+    explica.label: "Al cerrar el superstep 4, branch:to:paso queda vacío.\nNo hay nodos activos y la ejecución termina."
+  }
+}

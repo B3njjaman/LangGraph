@@ -1,0 +1,116 @@
+# Módulo 1. Las cinco lecciones y el grafo que construye cada una, del grafo sin modelo al agente con memoria.
+# La animación recorre las lecciones en orden. La 1 está publicada; las demás, en preparación.
+# intervalo: 2600
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  leccion: {
+    direction: down
+    label.near: top-center
+    style: {fill: ${fondo}; stroke: ${borde}; stroke-width: 1; stroke-dash: 3; border-radius: 12; font-size: 15; bold: true; font-color: ${suave}}
+  }
+  leccion-activa: {
+    direction: down
+    label.near: top-center
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 12; font-size: 15; bold: true; font-color: ${tinta}}
+  }
+  hilo: {
+    width: 150
+    height: 34
+    style: {fill: ${verde-suave}; stroke: ${verde}; stroke-width: 1; border-radius: 8; font: mono; font-size: 13; font-color: ${tinta}}
+  }
+}
+
+grid-columns: 1
+grid-gap: 22
+
+lecciones: {
+  class: invisible
+  grid-columns: 5
+  grid-gap: 26
+
+  l1: "1 · Grafo\nsin modelo" {
+    class: leccion-activa
+    a: START {class: extremo}
+    paso: "paso" {class: nodo; width: 110}
+    c: "c" {shape: diamond; width: 70; height: 50; style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 14; font-color: ${tinta}}}
+    z: END {class: extremo}
+    a -> paso {class: arista}
+    paso -> c {class: arista}
+    c -> paso {class: condicional}
+    c -> z {class: condicional}
+  }
+
+  l2: "2 · Mensajes\ny herramientas" {
+    class: leccion
+    a: START {class: extremo}
+    modelo: "modelo" {class: nodo-llm; width: 110}
+    z: END {class: extremo}
+    a -> modelo {class: arista}
+    modelo -> z: "tool_call" {class: arista}
+  }
+
+  l3: "3 · Router" {
+    class: leccion
+    a: START {class: extremo}
+    modelo: "modelo" {class: nodo-llm; width: 110}
+    tools: "tools" {class: nodo-herramienta; width: 90}
+    z: END {class: extremo}
+    a -> modelo {class: arista}
+    modelo -> tools {class: condicional}
+    modelo -> z {class: condicional}
+    tools -> z {class: arista}
+  }
+
+  l4: "4 · Agente" {
+    class: leccion
+    a: START {class: extremo}
+    modelo: "modelo" {class: nodo-llm; width: 110}
+    tools: "tools" {class: nodo-herramienta; width: 90}
+    z: END {class: extremo}
+    a -> modelo {class: arista}
+    modelo -> tools {class: condicional}
+    tools -> modelo {class: arista}
+    modelo -> z {class: condicional}
+  }
+
+  l5: "5 · Agente\ncon memoria" {
+    class: leccion
+    a: START {class: extremo}
+    modelo: "modelo" {class: nodo-llm; width: 110}
+    tools: "tools" {class: nodo-herramienta; width: 90}
+    z: END {class: extremo}
+    hilo: "+ un checkpoint\npor superstep" {class: hilo; width: 170; height: 50}
+    a -> modelo {class: arista}
+    modelo -> tools {class: condicional}
+    tools -> modelo {class: arista}
+    modelo -> z {class: condicional}
+  }
+}
+
+explica: "1 · El método de Newton como grafo. Sin modelo; corre en CPU." {class: paso; width: 760; height: 44}
+
+steps: {
+  1: {
+    lecciones.l1.class: leccion
+    lecciones.l2.class: leccion-activa
+    explica.label: "2 · Mensajes, herramientas de SymPy y tool_call (en preparación)."
+  }
+  2: {
+    lecciones.l2.class: leccion
+    lecciones.l3.class: leccion-activa
+    explica.label: "3 · El modelo decide una vez: grafo acíclico (en preparación)."
+  }
+  3: {
+    lecciones.l3.class: leccion
+    lecciones.l4.class: leccion-activa
+    explica.label: "4 · El ciclo tools → modelo y el límite de supersteps (en preparación)."
+  }
+  4: {
+    lecciones.l4.class: leccion
+    lecciones.l5.class: leccion-activa
+    explica.label: "5 · El hilo como sucesión de estados (en preparación)."
+  }
+}
