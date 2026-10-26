@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 410" width="680" height="410" role="img">
+<title>Dos pasos del método de Newton para f(x) = x² − 2 vistos como tangentes a la curva</title>
+<style>
+.sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif}
+.mono{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.halo{stroke-width:5;stroke-linejoin:round;paint-order:stroke}
+.f-fondo{fill:#ffffff} .s-fondo{stroke:#ffffff}
+.f-tinta{fill:#1f2328} .s-tinta{stroke:#1f2328}
+.f-suave{fill:#57606a} .s-suave{stroke:#57606a}
+.f-tenue{fill:#8c959f} .s-tenue{stroke:#8c959f}
+.f-turquesa{fill:#0d9488} .s-turquesa{stroke:#0d9488}
+.f-turquesa-suave{fill:#ccfbf1} .s-turquesa-suave{stroke:#ccfbf1}
+.f-violeta{fill:#7c3aed} .s-violeta{stroke:#7c3aed}
+.f-ambar{fill:#d97706} .s-ambar{stroke:#d97706}
+.halo{stroke:#ffffff}
+@media (prefers-color-scheme: dark) {
+.f-fondo{fill:#0b1120} .s-fondo{stroke:#0b1120}
+.f-tinta{fill:#e6edf3} .s-tinta{stroke:#e6edf3}
+.f-suave{fill:#9aa7b8} .s-suave{stroke:#9aa7b8}
+.f-tenue{fill:#64748b} .s-tenue{stroke:#64748b}
+.f-turquesa{fill:#2dd4bf} .s-turquesa{stroke:#2dd4bf}
+.f-turquesa-suave{fill:#0f3a3a} .s-turquesa-suave{stroke:#0f3a3a}
+.f-violeta{fill:#a78bfa} .s-violeta{stroke:#a78bfa}
+.f-ambar{fill:#fbbf24} .s-ambar{stroke:#fbbf24}
+.halo{stroke:#0b1120}
+}
+</style>
+<rect width="680" height="410" class="f-fondo"/>
+<polyline points="50,375.83 57.5,374.13 65,372.38 72.5,370.57 80,368.7 87.5,366.78 95,364.81 102.5,362.78 110,360.69 117.5,358.55 125,356.35 132.5,354.09 140,351.78 147.5,349.42 155,347 162.5,344.52 170,341.99 177.5,339.4 185,336.76 192.5,334.06 200,331.3 207.5,328.49 215,325.63 222.5,322.71 230,319.73 237.5,316.7 245,313.61 252.5,310.46 260,307.26 267.5,304.01 275,300.7 282.5,297.33 290,293.91 297.5,290.43 305,286.89 312.5,283.3 320,279.66 327.5,275.96 335,272.2 342.5,268.39 350,264.52 357.5,260.6 365,256.62 372.5,252.58 380,248.49 387.5,244.35 395,240.15 402.5,235.89 410,231.58 417.5,227.21 425,222.78 432.5,218.3 440,213.77 447.5,209.18 455,204.53 462.5,199.83 470,195.07 477.5,190.25 485,185.38 492.5,180.46 500,175.48 507.5,170.44 515,165.35 522.5,160.2 530,155 537.5,149.74 545,144.42 552.5,139.05 560,133.63 567.5,128.15 575,122.61 582.5,117.02 590,111.37 597.5,105.66 605,99.9 612.5,94.09 620,88.22 627.5,82.29 635,76.31 642.5,70.27 650,64.17" fill="none" class="s-violeta" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="50" y1="261.74" x2="650" y2="261.74" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<line x1="200" y1="256.74" x2="200" y2="266.74" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<line x1="387.5" y1="256.74" x2="387.5" y2="266.74" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<line x1="575" y1="256.74" x2="575" y2="266.74" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<text x="200" y="247.74" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">x₀ = 1</text>
+<text x="381.5" y="289.74" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="start">x₁ = 1,5</text>
+<text x="575" y="289.74" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">2</text>
+<line x1="355.33" y1="251.74" x2="355.33" y2="271.74" class="s-ambar" stroke-width="3" stroke-linecap="round"></line>
+<text x="355.33" y="289.74" class="sans f-ambar halo" font-size="17" font-weight="bold" text-anchor="middle">√2</text>
+<text x="60" y="86" class="sans f-violeta" font-size="19" font-weight="bold" text-anchor="start">f(x) = x² − 2</text>
+<text x="60" y="114" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="start">x₁ = x₀ − f(x₀) / f′(x₀)</text>
+<line x1="200" y1="331.3" x2="200" y2="261.74" class="s-suave" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 5"><animate attributeName="y2" values="331.3;331.3;261.74;261.74" keyTimes="0.0000;0.0667;0.1667;1.0000" dur="12s" repeatCount="indefinite"/></line>
+<line x1="200" y1="331.3" x2="387.5" y2="261.74" class="s-turquesa" stroke-width="2.5" stroke-linecap="round"><animate attributeName="x2" values="200;200;387.5;387.5" keyTimes="0.0000;0.2000;0.3667;1.0000" dur="12s" repeatCount="indefinite"/><animate attributeName="y2" values="331.3;331.3;261.74;261.74" keyTimes="0.0000;0.2000;0.3667;1.0000" dur="12s" repeatCount="indefinite"/></line>
+<line x1="387.5" y1="261.74" x2="387.5" y2="244.35" class="s-suave" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 5"><animate attributeName="y2" values="261.74;261.74;244.35;244.35" keyTimes="0.0000;0.4333;0.5333;1.0000" dur="12s" repeatCount="indefinite"/></line>
+<line x1="387.5" y1="244.35" x2="356.25" y2="261.74" class="s-turquesa" stroke-width="2.5" stroke-linecap="round"><animate attributeName="x2" values="387.5;387.5;356.25;356.25" keyTimes="0.0000;0.5667;0.7167;1.0000" dur="12s" repeatCount="indefinite"/><animate attributeName="y2" values="244.35;244.35;261.74;261.74" keyTimes="0.0000;0.5667;0.7167;1.0000" dur="12s" repeatCount="indefinite"/></line>
+<circle cx="200" cy="331.3" r="6" class="f-turquesa"></circle>
+<text x="190" y="321.3" class="sans f-turquesa halo" font-size="16" font-weight="normal" text-anchor="end">(x₀, f(x₀))</text>
+<circle cx="387.5" cy="261.74" r="5" class="f-turquesa"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.3667;0.4000;1.0000" dur="12s" repeatCount="indefinite"/></circle>
+<circle cx="387.5" cy="244.35" r="6" class="f-turquesa"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.5333;0.5667;1.0000" dur="12s" repeatCount="indefinite"/></circle>
+<circle cx="356.25" cy="261.74" r="5" class="f-turquesa"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.7167;0.7500;1.0000" dur="12s" repeatCount="indefinite"/></circle>
+<g><text x="346.25" y="249.74" class="sans f-turquesa halo" font-size="17" font-weight="bold" text-anchor="end">x₂ ≈ √2</text><text x="346.25" y="227.74" class="sans f-suave halo" font-size="15" font-weight="normal" text-anchor="end">a 0,0025 de √2</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.7333;0.7667;1.0000" dur="12s" repeatCount="indefinite"/></g>
+</svg>

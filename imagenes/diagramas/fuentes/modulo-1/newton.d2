@@ -1,0 +1,97 @@
+# Lección 1. El grafo de Newton para f(x) = x² − 2 desde x₀ = 1, superstep a superstep.
+# Cada paso enciende el nodo que corre, agrega el estado nuevo a la sucesión y muestra qué decide la arista c.
+# intervalo: 2200
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  estado: {
+    width: 360
+    height: 36
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  estado-nuevo: {
+    width: 360
+    height: 36
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+}
+
+grid-columns: 2
+grid-gap: 48
+
+grafo: {
+  class: invisible
+  direction: down
+
+  inicio: START {class: extremo}
+  paso: "paso" {class: nodo; width: 120}
+  fin: END {class: extremo}
+
+  inicio -> paso {class: arista}
+  paso -> paso: "|f(x)| ≥ ε" {class: condicional}
+  paso -> fin: "|f(x)| < ε" {class: condicional}
+}
+
+lado: {
+  class: invisible
+  grid-columns: 1
+  grid-gap: 12
+
+  explica: "Superstep 0: START escribe\nla entrada {x: 1, n: 0}." {class: paso; width: 360}
+
+  sucesion: "stream_mode=\"values\"" {
+    class: panel
+    label.near: top-left
+    grid-columns: 1
+    grid-gap: 8
+
+    s0: "s₀  x = 1             n = 0" {class: estado-nuevo}
+    s1: "s₁  x = 1,5           n = 1" {class: estado; style.opacity: 0}
+    s2: "s₂  x = 1,4166666667  n = 2" {class: estado; style.opacity: 0}
+    s3: "s₃  x = 1,4142156863  n = 3" {class: estado; style.opacity: 0}
+    s4: "s₄  x = 1,4142135624  n = 4" {class: estado; style.opacity: 0}
+  }
+}
+
+grafo.inicio.class: extremo-activo
+
+steps: {
+  1: {
+    grafo.inicio.class: extremo
+    grafo.(inicio -> paso)[0].class: recorrida
+    grafo.paso.class: nodo-activo
+    lado.sucesion.s0.class: estado
+    lado.sucesion.s1.class: estado-nuevo
+    lado.sucesion.s1.style.opacity: 1
+    lado.explica.label: "Superstep 1: |f(1,5)| = 0,25 ≥ ε.\nc elige paso."
+  }
+  2: {
+    grafo.(inicio -> paso)[0].class: arista
+    grafo.(paso -> paso)[0].class: recorrida
+    lado.sucesion.s1.class: estado
+    lado.sucesion.s2.class: estado-nuevo
+    lado.sucesion.s2.style.opacity: 1
+    lado.explica.label: "Superstep 2: |f(x₂)| ≈ 6,9·10⁻³ ≥ ε.\nc elige paso."
+  }
+  3: {
+    lado.sucesion.s2.class: estado
+    lado.sucesion.s3.class: estado-nuevo
+    lado.sucesion.s3.style.opacity: 1
+    lado.explica.label: "Superstep 3: |f(x₃)| ≈ 6,0·10⁻⁶ ≥ ε.\nc elige paso."
+  }
+  4: {
+    lado.sucesion.s3.class: estado
+    lado.sucesion.s4.class: estado-nuevo
+    lado.sucesion.s4.style.opacity: 1
+    lado.explica.label: "Superstep 4: |f(x₄)| ≈ 4,5·10⁻¹² < ε.\nc elige END."
+  }
+  5: {
+    grafo.(paso -> paso)[0].class: condicional
+    grafo.paso.class: nodo
+    grafo.(paso -> fin)[0].class: recorrida
+    grafo.fin.class: extremo-activo
+    lado.explica.label: "Sin nodos activos: termina.\ninvoke devuelve s₄."
+  }
+}

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 470" width="700" height="470" role="img">
+<title>Error del método de Newton en escala logarítmica: el exponente casi se duplica en cada paso</title>
+<style>
+.sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif}
+.mono{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.halo{stroke-width:5;stroke-linejoin:round;paint-order:stroke}
+.f-fondo{fill:#ffffff} .s-fondo{stroke:#ffffff}
+.f-tinta{fill:#1f2328} .s-tinta{stroke:#1f2328}
+.f-suave{fill:#57606a} .s-suave{stroke:#57606a}
+.f-tenue{fill:#8c959f} .s-tenue{stroke:#8c959f}
+.f-turquesa{fill:#0d9488} .s-turquesa{stroke:#0d9488}
+.f-turquesa-suave{fill:#ccfbf1} .s-turquesa-suave{stroke:#ccfbf1}
+.f-violeta{fill:#7c3aed} .s-violeta{stroke:#7c3aed}
+.f-ambar{fill:#d97706} .s-ambar{stroke:#d97706}
+.halo{stroke:#ffffff}
+@media (prefers-color-scheme: dark) {
+.f-fondo{fill:#0b1120} .s-fondo{stroke:#0b1120}
+.f-tinta{fill:#e6edf3} .s-tinta{stroke:#e6edf3}
+.f-suave{fill:#9aa7b8} .s-suave{stroke:#9aa7b8}
+.f-tenue{fill:#64748b} .s-tenue{stroke:#64748b}
+.f-turquesa{fill:#2dd4bf} .s-turquesa{stroke:#2dd4bf}
+.f-turquesa-suave{fill:#0f3a3a} .s-turquesa-suave{stroke:#0f3a3a}
+.f-violeta{fill:#a78bfa} .s-violeta{stroke:#a78bfa}
+.f-ambar{fill:#fbbf24} .s-ambar{stroke:#fbbf24}
+.halo{stroke:#0b1120}
+}
+</style>
+<rect width="700" height="470" class="f-fondo"/>
+<line x1="130" y1="80" x2="642" y2="80" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="118" y="85" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁰</text>
+<line x1="130" y1="160" x2="642" y2="160" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="118" y="165" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻⁴</text>
+<line x1="130" y1="240" x2="642" y2="240" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="118" y="245" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻⁸</text>
+<line x1="130" y1="320" x2="642" y2="320" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="118" y="325" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻¹²</text>
+<line x1="130" y1="400" x2="642" y2="400" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="118" y="405" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻¹⁶</text>
+<line x1="130" y1="80" x2="130" y2="400" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<line x1="130" y1="400" x2="642" y2="400" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<text x="130" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">0</text>
+<text x="194" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">1</text>
+<text x="258" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">2</text>
+<text x="322" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">3</text>
+<text x="386" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">4</text>
+<text x="450" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">5</text>
+<text x="514" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">6</text>
+<text x="578" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">7</text>
+<text x="642" y="426" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">8</text>
+<text x="386" y="452" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">n (número de pasos)</text>
+<text x="30" y="34" class="sans f-tinta" font-size="18" font-weight="bold" text-anchor="start">error de Newton, e<tspan dy="4" font-size="12">n</tspan><tspan dy="-4"> = |x</tspan><tspan dy="4" font-size="12">n</tspan><tspan dy="-4"> − √2|</tspan></text>
+<line x1="130" y1="393.15" x2="642" y2="393.15" class="s-ambar" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="10 5"></line>
+<text x="642" y="385.15" class="sans f-ambar halo" font-size="16" font-weight="normal" text-anchor="end">precisión de máquina (2,2·10⁻¹⁶)</text>
+<polyline points="130,87.66 194,93.68 258,99.7 322,105.72 386,111.74 450,117.76 514,123.78 578,129.8 642,135.82" fill="none" class="s-violeta" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 6"/>
+<circle cx="130" cy="87.66" r="3" class="f-violeta"></circle>
+<circle cx="194" cy="93.68" r="3" class="f-violeta"></circle>
+<circle cx="258" cy="99.7" r="3" class="f-violeta"></circle>
+<circle cx="322" cy="105.72" r="3" class="f-violeta"></circle>
+<circle cx="386" cy="111.74" r="3" class="f-violeta"></circle>
+<circle cx="450" cy="117.76" r="3" class="f-violeta"></circle>
+<circle cx="514" cy="123.78" r="3" class="f-violeta"></circle>
+<circle cx="578" cy="129.8" r="3" class="f-violeta"></circle>
+<circle cx="642" cy="135.82" r="3" class="f-violeta"></circle>
+<text x="642" y="188" class="sans f-violeta halo" font-size="16" font-weight="bold" text-anchor="end">orden 1:</text>
+<text x="642" y="210" class="sans f-violeta halo" font-size="16" font-weight="normal" text-anchor="end">el error se divide por 2 en cada paso</text>
+<circle cx="130" cy="87.66" r="6" class="f-turquesa"></circle><text x="142" y="77.66" class="sans f-turquesa halo" font-size="16" font-weight="bold" text-anchor="start">4,1·10⁻¹</text>
+<g><line x1="130" y1="87.66" x2="194" y2="101.33" class="s-turquesa" stroke-width="3" stroke-linecap="round"></line><circle cx="194" cy="101.33" r="6" class="f-turquesa"></circle><text x="204" y="126.33" class="sans f-turquesa halo" font-size="16" font-weight="bold" text-anchor="end">8,6·10⁻²</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.2316;0.2737;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+<g><line x1="194" y1="101.33" x2="258" y2="132.21" class="s-turquesa" stroke-width="3" stroke-linecap="round"></line><circle cx="258" cy="132.21" r="6" class="f-turquesa"></circle><text x="250" y="157.21" class="sans f-turquesa halo" font-size="16" font-weight="bold" text-anchor="end">2,5·10⁻³</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.3579;0.4000;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+<g><line x1="258" y1="132.21" x2="322" y2="193.46" class="s-turquesa" stroke-width="3" stroke-linecap="round"></line><circle cx="322" cy="193.46" r="6" class="f-turquesa"></circle><text x="314" y="218.46" class="sans f-turquesa halo" font-size="16" font-weight="bold" text-anchor="end">2,1·10⁻⁶</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.4842;0.5263;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+<g><line x1="322" y1="193.46" x2="386" y2="315.95" class="s-turquesa" stroke-width="3" stroke-linecap="round"></line><circle cx="386" cy="315.95" r="6" class="f-turquesa"></circle><text x="378" y="340.95" class="sans f-turquesa halo" font-size="16" font-weight="bold" text-anchor="end">1,6·10⁻¹²</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.6105;0.6526;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+<g><text x="412" y="292" class="sans f-turquesa" font-size="16" font-weight="bold" text-anchor="start">Newton: el exponente</text><text x="412" y="314" class="sans f-turquesa" font-size="16" font-weight="bold" text-anchor="start">casi se duplica en cada paso</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.7158;0.7579;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+</svg>
