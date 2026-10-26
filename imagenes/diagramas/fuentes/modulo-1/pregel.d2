@@ -122,14 +122,15 @@ steps: {
     red.(paso -> c)[0].class: recorrida
     red.c.class: decision-activa
     red.(c -> rama)[0].class: recorrida
-    explica.label: "Superstep 1: branch:to:paso cambió, así que paso corre.\nEscribe x y n, y c(s₁) = paso vuelve a escribir en branch:to:paso."
+    explica.label: "Superstep 1: branch:to:paso tiene un valor nuevo, así que paso corre.\nEscribe x y n, y c(s₁) = paso vuelve a escribir en branch:to:paso."
   }
   3: {
     red.(c -> rama)[0].class: arista
-    red.rama.class: disparo-vacio
+    red.rama.class: disparo
     explica.label: "Superstep 4: paso escribe x y n, pero c(s₄) = END\nno escribe en ningún canal."
   }
   4: {
+    red.rama.class: disparo-vacio
     red.(rama -> paso)[0].class: arista
     red.paso.class: nodo
     red.(x <-> paso)[0].class: arista
@@ -138,6 +139,6 @@ steps: {
     red.c.class: decision
     red.x.class: canal
     red.n.class: canal
-    explica.label: "Superstep 5: ningún canal de disparo cambió.\nNo hay nodos activos y la ejecución termina."
+    explica.label: "Al cerrar el superstep 4, branch:to:paso queda vacío.\nNo hay nodos activos y la ejecución termina."
   }
 }

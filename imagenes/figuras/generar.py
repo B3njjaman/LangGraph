@@ -8,13 +8,14 @@ Escribe tres SVG en `modulo-1/`, sin dependencias (solo la biblioteca estándar)
 
 Cada SVG sigue el tema claro u oscuro del navegador y se anima solo con SMIL.
 
-Uso, desde cualquier carpeta:
+Uso, desde la raíz del repositorio:
 
     python imagenes/figuras/generar.py
 """
 
 import math
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 SALIDA = Path(__file__).parent / "modulo-1"
 
@@ -102,7 +103,7 @@ def svg(ancho, alto, titulo, cuerpo):
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {ancho} {alto}" '
         f'width="{ancho}" height="{alto}" role="img">\n'
-        f"<title>{titulo}</title>\n{css()}\n"
+        f"<title>{escape(titulo)}</title>\n{css()}\n"
         f'<rect width="{ancho}" height="{alto}" class="f-fondo"/>\n'
         f"{cuerpo}\n</svg>\n"
     )
