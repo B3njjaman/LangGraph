@@ -37,7 +37,7 @@ lecciones: {
     paso: "paso" {class: nodo; width: 110}
     c: "c" {shape: diamond; width: 70; height: 50; style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 14; font-color: ${tinta}}}
     z: END {class: extremo}
-    a -> paso {class: arista}
+    a -> paso {class: condicional}
     paso -> c {class: arista}
     c -> paso {class: condicional}
     c -> z {class: condicional}

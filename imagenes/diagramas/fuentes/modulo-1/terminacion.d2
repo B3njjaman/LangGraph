@@ -40,7 +40,8 @@ sin_cota: "c, sin cota · Proposición 1.11" {
   fin: END {class: extremo; style.opacity: 0.5}
   error: "GraphRecursionError" {class: error; width: 210}
 
-  inicio -> paso {class: arista}
+  inicio -> paso {class: condicional}
+  inicio -> fin {class: nunca}
   paso -> c {class: arista}
   c -> paso: "|f(x)| ≥ ε\nsiempre" {class: recorrida}
   c -> fin: "|f(x)| < ε\nnunca" {class: nunca}
@@ -58,7 +59,8 @@ con_cota: "c_N, con cota N = 50 · Proposición 1.12" {
   fin: END {class: extremo-activo}
   aviso: "s₅₀: n = 50, |f(x)| ≥ ε\nterminó sin converger" {class: aviso; width: 250}
 
-  inicio -> paso {class: arista}
+  inicio -> paso {class: condicional}
+  inicio -> fin {class: nunca}
   paso -> c {class: arista}
   c -> paso: "n < N y\n|f(x)| ≥ ε" {class: condicional}
   c -> fin: "n = N" {class: recorrida}

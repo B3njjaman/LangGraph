@@ -29,7 +29,8 @@ grafo: {
   paso: "paso" {class: nodo; width: 120}
   fin: END {class: extremo}
 
-  inicio -> paso {class: arista}
+  inicio -> paso: "|f(x)| ≥ ε" {class: condicional}
+  inicio -> fin: "|f(x)| < ε" {class: condicional}
   paso -> paso: "|f(x)| ≥ ε" {class: condicional}
   paso -> fin: "|f(x)| < ε" {class: condicional}
 }
@@ -39,7 +40,7 @@ lado: {
   grid-columns: 1
   grid-gap: 12
 
-  explica: "Superstep 0: START escribe\nla entrada {x: 1, n: 0}." {class: paso; width: 360}
+  explica: "Superstep 0: START escribe la entrada\n{x: 1, n: 0}; c(s₀) elige paso." {class: paso; width: 360}
 
   sucesion: "stream_mode=\"values\"" {
     class: panel
@@ -68,7 +69,7 @@ steps: {
     lado.explica.label: "Superstep 1: |f(1,5)| = 0,25 ≥ ε.\nc elige paso."
   }
   2: {
-    grafo.(inicio -> paso)[0].class: arista
+    grafo.(inicio -> paso)[0].class: condicional
     grafo.(paso -> paso)[0].class: recorrida
     lado.sucesion.s1.class: estado
     lado.sucesion.s2.class: estado-nuevo

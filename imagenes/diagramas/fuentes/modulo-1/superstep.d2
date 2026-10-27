@@ -1,4 +1,4 @@
-# Lección 1. Un superstep del grafo de Newton, con los valores del primer paso.
+# Lección 1. Un superstep del grafo de Euclides, con los valores del primer paso.
 # El nodo lee el estado, devuelve una actualización, el reducer la aplica y la arista elige el vértice siguiente.
 # intervalo: 2400
 ...@../estilo
@@ -40,60 +40,60 @@ flujo: {
   vertical-gap: 90
 
   # La grilla se llena por columnas: arriba s₀, paso, u; abajo END, c, s₁.
-  s0: "s₀\n{x: 1, n: 0}" {class: estado; width: 170; height: 70}
+  s0: "s₀\n{a: 1071, b: 462}" {class: estado; width: 170; height: 70}
   fin: END {class: extremo; width: 170; height: 70}
   paso: "paso" {class: nodo; width: 170; height: 70}
   c: "c(s₁)" {class: decision; width: 170; height: 90}
-  u: "u = φ(s₀)\n{x: 1,5, n: 1}" {class: estado; width: 170; height: 70}
-  s1: "s₁ = s₀ ⊕ u\n{x: 1,5, n: 1}" {class: estado; width: 170; height: 70}
+  u: "u = φ(s₀)\n{a: 462, b: 147}" {class: estado; width: 170; height: 70}
+  s1: "s₁ = s₀ ⊕ u\n{a: 462, b: 147}" {class: estado; width: 170; height: 70}
 
   s0 -> paso: "lee" {class: arista}
   paso -> u: "devuelve" {class: arista}
   u -> s1: "⊕" {class: arista}
   s1 -> c {class: arista}
-  c -> paso: "|f(x)| ≥ ε" {class: condicional}
-  c -> fin: "|f(x)| < ε" {class: condicional}
+  c -> paso: "b ≠ 0" {class: condicional}
+  c -> fin: "b = 0" {class: condicional}
 }
 
-explica: "Un superstep de Newton, con los valores del primer paso." {class: paso; width: 620; height: 44}
+explica: "Un superstep de Euclides, con los valores de la primera vuelta." {class: paso; width: 620; height: 44}
 
 steps: {
   1: {
     flujo.s0.class: estado-activo
-    explica.label: "§2 · El estado s₀ es un dict con las claves del esquema."
+    explica.label: "§3 · El estado s₀ es un dict con las claves del esquema."
   }
   2: {
     flujo.s0.class: estado
     flujo.(s0 -> paso)[0].class: recorrida
     flujo.paso.class: nodo-activo
-    explica.label: "§3 · El nodo paso recibe el estado completo."
+    explica.label: "§4 · El nodo paso recibe el estado completo."
   }
   3: {
     flujo.(s0 -> paso)[0].class: arista
     flujo.paso.class: nodo
     flujo.(paso -> u)[0].class: recorrida
     flujo.u.class: estado-activo
-    explica.label: "§3 · Devuelve una actualización u: solo las claves que cambia."
+    explica.label: "§4 · Devuelve una actualización u: solo las claves que cambia."
   }
   4: {
     flujo.(paso -> u)[0].class: arista
     flujo.u.class: estado
     flujo.(u -> s1)[0].class: recorrida
     flujo.s1.class: estado-activo
-    explica.label: "§4 · El reducer de cada clave aplica u a s₀: s₁ cierra el superstep 1."
+    explica.label: "§5 · El reducer de cada clave aplica u a s₀: s₁ cierra el superstep 1."
   }
   5: {
     flujo.(u -> s1)[0].class: arista
     flujo.s1.class: estado
     flujo.(s1 -> c)[0].class: recorrida
     flujo.c.class: decision-activa
-    explica.label: "§5 · La arista condicional c se evalúa en s₁."
+    explica.label: "§6 · La arista condicional c se evalúa en s₁."
   }
   6: {
     flujo.(s1 -> c)[0].class: arista
     flujo.c.class: decision
     flujo.(c -> paso)[0].class: recorrida
     flujo.paso.class: nodo-activo
-    explica.label: "|f(1,5)| = 0,25 ≥ ε: c elige paso y empieza el superstep 2."
+    explica.label: "b = 147 ≠ 0: c elige paso y empieza el superstep 2."
   }
 }

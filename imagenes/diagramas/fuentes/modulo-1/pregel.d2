@@ -1,6 +1,6 @@
 # Lección 1, Profundización 1.B. El grafo de Newton compilado: actores (nodos) que leen y escriben canales.
 # Un nodo corre en un superstep si en el anterior alguien escribió en su canal de disparo.
-# La arista fija START → paso y la condicional c son escrituras en branch:to:paso; END no escribe nada.
+# Las aristas condicionales desde START y desde paso son escrituras en branch:to:paso; END no escribe nada.
 # intervalo: 3200
 ...@../estilo
 
@@ -83,7 +83,7 @@ red: {
   entrada -> inicio: "dispara" {class: arista}
   inicio -> x {class: arista}
   inicio -> n: "escribe" {class: arista}
-  inicio -> rama: "arista fija" {class: arista}
+  inicio -> rama: "c(s₀) = paso" {class: arista}
   rama -> paso: "dispara" {class: arista}
   x <-> paso: "lee y escribe" {class: arista}
   n <-> paso {class: arista}
@@ -106,7 +106,7 @@ steps: {
     red.x.class: canal-escrito
     red.n.class: canal-escrito
     red.rama.class: disparo-escrito
-    explica.label: "Superstep 0: __start__ copia la entrada en x y n.\nLa arista fija START → paso escribe en branch:to:paso."
+    explica.label: "Superstep 0: __start__ copia la entrada en x y n.\nc(s₀) = paso escribe en branch:to:paso."
   }
   2: {
     red.entrada.class: disparo-vacio
