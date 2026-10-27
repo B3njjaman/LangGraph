@@ -1,4 +1,4 @@
-# Lección 1. Cómo se aplica una actualización: s ⊕ u, clave por clave.
+# Lección 1. Cómo se aplica una actualización en Euclides: s ⊕ u, clave por clave.
 # Arriba, claves sin reducer (LastValue): el valor nuevo reemplaza y la clave ausente se conserva.
 # Abajo, una clave con operator.add (BinaryOperatorAggregate): las listas se concatenan.
 # intervalo: 2600
@@ -37,7 +37,7 @@ classes: {
 grid-columns: 1
 grid-gap: 26
 
-reemplazo: "x, n sin reducer: LastValue" {
+reemplazo: "a, b sin reducer: LastValue" {
   class: grupo
   label.near: top-left
   grid-columns: 5
@@ -45,25 +45,25 @@ reemplazo: "x, n sin reducer: LastValue" {
 
   s: "s" {
     class: tabla
-    x: "x: 1,0" {class: celda}
-    n: "n: 3" {class: celda}
+    a: "a: 1071" {class: celda}
+    b: "b: 462" {class: celda}
   }
   mas: "⊕" {class: operacion}
   u: "u" {
     class: tabla
-    x: "x: 1,5" {class: celda}
-    n: "n ∉ dom(u)" {class: ausente}
+    a: "a: 7" {class: celda}
+    b: "b ∉ dom(u)" {class: ausente}
   }
   igual: "=" {class: operacion}
   r: "s ⊕ u" {
     class: tabla
     style.opacity: 0
-    x: "x: 1,5" {class: cambia}
-    n: "n: 3" {class: celda}
+    a: "a: 7" {class: cambia}
+    b: "b: 462" {class: celda}
   }
 }
 
-acumulo: "trayectoria con operator.add: BinaryOperatorAggregate" {
+acumulo: "cocientes con operator.add: BinaryOperatorAggregate" {
   class: grupo
   label.near: top-left
   grid-columns: 5
@@ -71,21 +71,24 @@ acumulo: "trayectoria con operator.add: BinaryOperatorAggregate" {
 
   s: "s" {
     class: tabla
-    x: "x: 1,0" {class: celda}
-    t: "trayectoria: [1,0]" {class: celda}
+    a: "a: 462" {class: celda}
+    b: "b: 147" {class: celda}
+    q: "cocientes: [2]" {class: celda}
   }
   mas: "⊕" {class: operacion}
   u: "u" {
     class: tabla
-    x: "x: 1,5" {class: celda}
-    t: "trayectoria: [1,5]" {class: celda}
+    a: "a: 147" {class: celda}
+    b: "b: 21" {class: celda}
+    q: "cocientes: [3]" {class: celda}
   }
   igual: "=" {class: operacion}
   r: "s ⊕ u" {
     class: tabla
     style.opacity: 0
-    x: "x: 1,5" {class: cambia}
-    t: "trayectoria: [1,0, 1,5]" {class: cambia}
+    a: "a: 147" {class: cambia}
+    b: "b: 21" {class: cambia}
+    q: "cocientes: [2, 3]" {class: cambia}
   }
 }
 
@@ -94,10 +97,10 @@ explica: "El nodo devuelve u. LangGraph calcula s ⊕ u con el reducer de cada c
 steps: {
   1: {
     reemplazo.r.style.opacity: 1
-    explica.label: "x está en dom(u): 1,5 reemplaza a 1,0. n no está: conserva el 3."
+    explica.label: "a está en dom(u): 7 reemplaza a 1071. b no está: conserva el 462."
   }
   2: {
     acumulo.r.style.opacity: 1
-    explica.label: "Con operator.add, r(a, b) = a + b: la lista nueva se concatena."
+    explica.label: "Con operator.add, r(ℓ, m) = ℓ + m: la lista de cocientes se concatena."
   }
 }

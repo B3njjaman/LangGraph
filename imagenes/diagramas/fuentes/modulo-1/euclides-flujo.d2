@@ -1,0 +1,185 @@
+# Lección 1. El algoritmo de Euclides con (1071, 462), recorrido por su diagrama de flujo.
+# Cada paso enciende la línea del programa y la pieza del diagrama que corren, y la memoria crece con cada vuelta.
+# intervalo: 1600
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  linea: {
+    width: 270
+    height: 30
+    style: {fill: ${nodo}; stroke: ${borde}; stroke-width: 1; border-radius: 6; font: mono; font-size: 14; bold: false; font-color: ${tinta}}
+  }
+  linea-activa: {
+    width: 270
+    height: 30
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 6; font: mono; font-size: 14; bold: false; font-color: ${tinta}}
+  }
+  rombo: {
+    shape: diamond
+    width: 150
+    height: 80
+    style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 15; font-color: ${tinta}}
+  }
+  rombo-activo: {
+    shape: diamond
+    width: 150
+    height: 80
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 3; font: mono; font-size: 15; font-color: ${tinta}}
+  }
+  estado: {
+    width: 270
+    height: 30
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  estado-nuevo: {
+    width: 270
+    height: 30
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+}
+
+grid-columns: 1
+grid-gap: 14
+
+arriba: {
+  class: invisible
+  grid-columns: 2
+  grid-gap: 24
+
+  izq: {
+    class: invisible
+    grid-columns: 1
+    grid-gap: 16
+
+    programa: "programa" {
+      class: panel
+      label.near: top-center
+      grid-columns: 1
+      grid-gap: 6
+
+      l1: "def mcd(a, b):          ​" {class: linea}
+      l2: "    while b != 0:       ​" {class: linea}
+      l3: "        a, b = b, a % b​" {class: linea}
+      l4: "    return a            ​" {class: linea}
+    }
+
+    memoria: "memoria" {
+      class: panel
+      label.near: top-center
+      grid-columns: 1
+      grid-gap: 6
+
+      s0: "σ₀  a = 1071   b = 462" {class: estado-nuevo}
+      s1: "σ₁  a = 462    b = 147" {class: estado; style.opacity: 0}
+      s2: "σ₂  a = 147    b = 21" {class: estado; style.opacity: 0}
+      s3: "σ₃  a = 21     b = 0" {class: estado; style.opacity: 0}
+    }
+  }
+
+  flujo: "diagrama de flujo" {
+    class: panel
+    label.near: top-center
+    direction: down
+
+    inicio: "inicio" {class: extremo}
+    cond: "b ≠ 0" {class: rombo}
+    caja: "a, b ← b, a mod b" {class: nodo; width: 170; height: 40; style.font-size: 14}
+    fin: "fin\ndevuelve a" {class: extremo; width: 120; height: 52}
+
+    inicio -> cond {class: arista}
+    cond -> caja: "sí" {class: arista}
+    caja -> cond {class: arista}
+    cond -> fin: "no" {class: arista}
+  }
+}
+
+explica: "Entrada: σ₀ = {a: 1071, b: 462}." {class: paso; width: 560; height: 44}
+
+arriba.izq.programa.l1.class: linea-activa
+arriba.flujo.inicio.class: extremo-activo
+
+steps: {
+  1: {
+    arriba.izq.programa.l1.class: linea
+    arriba.izq.programa.l2.class: linea-activa
+    arriba.flujo.inicio.class: extremo
+    arriba.flujo.cond.class: rombo-activo
+    arriba.flujo.(inicio -> cond)[0].class: recorrida
+    arriba.izq.memoria.s0.class: estado
+    explica.label: "b = 462 ≠ 0: el rombo sigue por «sí»."
+  }
+  2: {
+    arriba.izq.programa.l2.class: linea
+    arriba.izq.programa.l3.class: linea-activa
+    arriba.flujo.cond.class: rombo
+    arriba.flujo.caja.class: nodo-activo
+    arriba.flujo.(inicio -> cond)[0].class: arista
+    arriba.flujo.(cond -> caja)[0].class: recorrida
+    arriba.izq.memoria.s1.class: estado-nuevo
+    arriba.izq.memoria.s1.style.opacity: 1
+    explica.label: "La caja cambia la memoria: σ₁ = {a: 462, b: 147}."
+  }
+  3: {
+    arriba.izq.programa.l3.class: linea
+    arriba.izq.programa.l2.class: linea-activa
+    arriba.flujo.caja.class: nodo
+    arriba.flujo.cond.class: rombo-activo
+    arriba.flujo.(cond -> caja)[0].class: arista
+    arriba.flujo.(caja -> cond)[0].class: recorrida
+    arriba.izq.memoria.s1.class: estado
+    explica.label: "b = 147 ≠ 0: otra vuelta."
+  }
+  4: {
+    arriba.izq.programa.l2.class: linea
+    arriba.izq.programa.l3.class: linea-activa
+    arriba.flujo.cond.class: rombo
+    arriba.flujo.caja.class: nodo-activo
+    arriba.flujo.(caja -> cond)[0].class: arista
+    arriba.flujo.(cond -> caja)[0].class: recorrida
+    arriba.izq.memoria.s2.class: estado-nuevo
+    arriba.izq.memoria.s2.style.opacity: 1
+    explica.label: "σ₂ = {a: 147, b: 21}."
+  }
+  5: {
+    arriba.izq.programa.l3.class: linea
+    arriba.izq.programa.l2.class: linea-activa
+    arriba.flujo.caja.class: nodo
+    arriba.flujo.cond.class: rombo-activo
+    arriba.flujo.(cond -> caja)[0].class: arista
+    arriba.flujo.(caja -> cond)[0].class: recorrida
+    arriba.izq.memoria.s2.class: estado
+    explica.label: "b = 21 ≠ 0: otra vuelta."
+  }
+  6: {
+    arriba.izq.programa.l2.class: linea
+    arriba.izq.programa.l3.class: linea-activa
+    arriba.flujo.cond.class: rombo
+    arriba.flujo.caja.class: nodo-activo
+    arriba.flujo.(caja -> cond)[0].class: arista
+    arriba.flujo.(cond -> caja)[0].class: recorrida
+    arriba.izq.memoria.s3.class: estado-nuevo
+    arriba.izq.memoria.s3.style.opacity: 1
+    explica.label: "σ₃ = {a: 21, b: 0}."
+  }
+  7: {
+    arriba.izq.programa.l3.class: linea
+    arriba.izq.programa.l2.class: linea-activa
+    arriba.flujo.caja.class: nodo
+    arriba.flujo.cond.class: rombo-activo
+    arriba.flujo.(cond -> caja)[0].class: arista
+    arriba.flujo.(caja -> cond)[0].class: recorrida
+    arriba.izq.memoria.s3.class: estado
+    explica.label: "b = 0: el rombo sigue por «no»."
+  }
+  8: {
+    arriba.izq.programa.l2.class: linea
+    arriba.izq.programa.l4.class: linea-activa
+    arriba.flujo.cond.class: rombo
+    arriba.flujo.fin.class: extremo-activo
+    arriba.flujo.(caja -> cond)[0].class: arista
+    arriba.flujo.(cond -> fin)[0].class: recorrida
+    explica.label: "Fin: devuelve a = 21 = mcd(1071, 462)."
+  }
+}

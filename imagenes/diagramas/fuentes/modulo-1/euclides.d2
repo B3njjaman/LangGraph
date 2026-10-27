@@ -1,0 +1,92 @@
+# Lección 1. El grafo de Euclides para mcd(1071, 462), superstep a superstep.
+# Cada paso enciende el nodo que corre, agrega el estado nuevo a la sucesión y muestra qué decide la arista c.
+# intervalo: 2200
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  estado: {
+    width: 360
+    height: 36
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  estado-nuevo: {
+    width: 360
+    height: 36
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+}
+
+grid-columns: 2
+grid-gap: 48
+
+grafo: {
+  class: invisible
+  direction: down
+
+  inicio: START {class: extremo}
+  paso: "paso" {class: nodo; width: 120}
+  fin: END {class: extremo}
+
+  inicio -> paso: "b ≠ 0" {class: condicional}
+  inicio -> fin: "b = 0" {class: condicional}
+  paso -> paso: "b ≠ 0" {class: condicional}
+  paso -> fin: "b = 0" {class: condicional}
+}
+
+lado: {
+  class: invisible
+  grid-columns: 1
+  grid-gap: 12
+
+  explica: "Superstep 0: START escribe la entrada.\nc(s₀): b = 462 ≠ 0, elige paso." {class: paso; width: 360}
+
+  sucesion: "stream_mode=\"values\"" {
+    class: panel
+    label.near: top-left
+    grid-columns: 1
+    grid-gap: 8
+
+    s0: "s₀  a = 1071   b = 462" {class: estado-nuevo}
+    s1: "s₁  a = 462    b = 147" {class: estado; style.opacity: 0}
+    s2: "s₂  a = 147    b = 21" {class: estado; style.opacity: 0}
+    s3: "s₃  a = 21     b = 0" {class: estado; style.opacity: 0}
+  }
+}
+
+grafo.inicio.class: extremo-activo
+
+steps: {
+  1: {
+    grafo.inicio.class: extremo
+    grafo.(inicio -> paso)[0].class: recorrida
+    grafo.paso.class: nodo-activo
+    lado.sucesion.s0.class: estado
+    lado.sucesion.s1.class: estado-nuevo
+    lado.sucesion.s1.style.opacity: 1
+    lado.explica.label: "Superstep 1: paso da s₁.\nc(s₁): b = 147 ≠ 0, elige paso."
+  }
+  2: {
+    grafo.(inicio -> paso)[0].class: condicional
+    grafo.(paso -> paso)[0].class: recorrida
+    lado.sucesion.s1.class: estado
+    lado.sucesion.s2.class: estado-nuevo
+    lado.sucesion.s2.style.opacity: 1
+    lado.explica.label: "Superstep 2: paso da s₂.\nc(s₂): b = 21 ≠ 0, elige paso."
+  }
+  3: {
+    lado.sucesion.s2.class: estado
+    lado.sucesion.s3.class: estado-nuevo
+    lado.sucesion.s3.style.opacity: 1
+    lado.explica.label: "Superstep 3: paso da s₃.\nc(s₃): b = 0, elige END."
+  }
+  4: {
+    grafo.(paso -> paso)[0].class: condicional
+    grafo.paso.class: nodo
+    grafo.(paso -> fin)[0].class: recorrida
+    grafo.fin.class: extremo-activo
+    lado.sucesion.s3.class: estado
+    lado.explica.label: "Sin nodos activos: termina.\ninvoke devuelve s₃ = {a: 21, b: 0}."
+  }
+}

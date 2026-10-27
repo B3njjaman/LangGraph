@@ -8,7 +8,7 @@ Cada concepto se presenta como definición, propiedad y código, con diagramas a
 
 | Lección | Qué construye | Dónde corre |
 |---|---|---|
-| [1 · Grafo sin modelo](01_grafo_sin_modelo.ipynb) | El método de Newton como grafo: esquema, estado, nodo, reducer, aristas, supersteps y terminación. Con 7 diagramas animados, 3 figuras y dos profundizaciones: Newton como método babilónico (y la ecuación de Pell) y lo que ejecuta `compile` (Pregel y canales) | CPU |
+| [1 · Grafo sin modelo](01_grafo_sin_modelo.ipynb) | Un algoritmo como grafo: el algoritmo de Euclides del código al diagrama de flujo y a LangGraph, y con él esquema, estado, nodo, reducer, aristas, supersteps y terminación. Después, el método de Newton con el mismo grafo. Con 11 diagramas (8 animados), 3 figuras y dos profundizaciones: Newton como método babilónico (la ecuación de Pell y la fracción continua de √2) y lo que ejecuta `compile` (Pregel y canales) | CPU |
 | [2 · Mensajes y herramientas](02_mensajes_y_herramientas.ipynb) | Mensajes y conversaciones, `add_messages` como monoide idempotente no conmutativo, herramientas de SymPy y lo que el modelo ve de ellas, el modelo como núcleo de probabilidad y el grafo `START → modelo → END`. Con 2 diagramas animados y una profundización: un `tool_call` es texto (la plantilla y el lector de Ollama) | §1–4 en CPU, el resto en Kaggle |
 | 3 · Router *(próximamente)* | El modelo decide una vez: grafo acíclico | Kaggle |
 | 4 · Agente *(próximamente)* | El ciclo `tools → modelo` y el límite de supersteps | Kaggle |

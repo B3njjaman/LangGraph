@@ -1,0 +1,176 @@
+# Lección 1. El algoritmo de Euclides en tres formas, pieza por pieza: programa, diagrama de flujo y grafo de LangGraph.
+# Cada paso enciende la misma pieza en las tres columnas.
+# intervalo: 2800
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  sinfondo: {
+    label: ""
+    style: {fill: ${tarjeta}; stroke: ${tarjeta}; stroke-width: 0}
+  }
+  linea: {
+    width: 220
+    height: 30
+    style: {fill: ${nodo}; stroke: ${borde}; stroke-width: 1; border-radius: 6; font: mono; font-size: 14; bold: false; font-color: ${tinta}}
+  }
+  linea-activa: {
+    width: 220
+    height: 30
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 6; font: mono; font-size: 14; bold: false; font-color: ${tinta}}
+  }
+  rombo: {
+    shape: diamond
+    width: 140
+    height: 76
+    style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 15; font-color: ${tinta}}
+  }
+  rombo-activo: {
+    shape: diamond
+    width: 140
+    height: 76
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 3; font: mono; font-size: 15; font-color: ${tinta}}
+  }
+  memoria: {
+    width: 150
+    height: 40
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; stroke-dash: 3; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  memoria-activa: {
+    width: 150
+    height: 40
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  esquema: {
+    width: 150
+    height: 78
+    style: {fill: ${tarjeta}; stroke: ${borde}; stroke-width: 1; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  esquema-activo: {
+    width: 150
+    height: 78
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 8; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+}
+
+grid-columns: 1
+grid-gap: 14
+
+cols: {
+  class: invisible
+  grid-columns: 3
+  grid-gap: 18
+
+  programa: "programa" {
+    class: panel
+    label.near: top-center
+    grid-columns: 1
+    grid-gap: 6
+
+    l1: "def mcd(a, b):         ​" {class: linea}
+    l2: "    while b != 0:      ​" {class: linea}
+    l3: "        a, b = b, a % b​" {class: linea}
+    l4: "    return a           ​" {class: linea}
+    sep: "" {class: sinfondo; width: 220; height: 14}
+    llamada: "mcd(1071, 462)         ​" {class: linea}
+  }
+
+  flujo: "diagrama de flujo" {
+    class: panel
+    label.near: top-center
+    grid-columns: 1
+    grid-gap: 14
+
+    mem: "memoria: a, b" {class: memoria}
+    dia: {
+      class: sinfondo
+      direction: down
+
+      inicio: "inicio" {class: extremo}
+      cond: "b ≠ 0" {class: rombo}
+      caja: "a, b ← b, a mod b" {class: nodo; width: 165; height: 40; style.font-size: 14}
+      fin: "fin\ndevuelve a" {class: extremo; width: 112; height: 52}
+
+      inicio -> cond {class: arista}
+      cond -> caja: "sí" {class: arista}
+      caja -> cond {class: arista}
+      cond -> fin: "no" {class: arista}
+    }
+  }
+
+  lg: "LangGraph" {
+    class: panel
+    label.near: top-center
+    grid-columns: 1
+    grid-gap: 14
+
+    esq: "EstadoMCD\na: int\nb: int" {class: esquema}
+    grafo: {
+      class: sinfondo
+      direction: down
+
+      inicio: START {class: extremo}
+      paso: "paso" {class: nodo; width: 110}
+      fin: END {class: extremo}
+
+      inicio -> paso: "c" {class: condicional}
+      inicio -> fin: "c" {class: condicional}
+      paso -> paso: "c" {class: condicional}
+      paso -> fin: "c" {class: condicional}
+    }
+  }
+}
+
+explica: "El algoritmo de Euclides en tres formas, pieza por pieza." {class: paso; width: 640; height: 44}
+
+steps: {
+  1: {
+    cols.programa.l1.class: linea-activa
+    cols.flujo.mem.class: memoria-activa
+    cols.lg.esq.class: esquema-activo
+    explica.label: "Las variables a, b son la memoria del diagrama y las claves del esquema."
+  }
+  2: {
+    cols.programa.l1.class: linea
+    cols.flujo.mem.class: memoria
+    cols.lg.esq.class: esquema
+    cols.programa.llamada.class: linea-activa
+    cols.flujo.dia.inicio.class: extremo-activo
+    cols.lg.grafo.inicio.class: extremo-activo
+    explica.label: "La llamada mcd(1071, 462) es el inicio y es START con la entrada {a: 1071, b: 462}."
+  }
+  3: {
+    cols.programa.llamada.class: linea
+    cols.flujo.dia.inicio.class: extremo
+    cols.lg.grafo.inicio.class: extremo
+    cols.programa.l3.class: linea-activa
+    cols.flujo.dia.caja.class: nodo-activo
+    cols.lg.grafo.paso.class: nodo-activo
+    explica.label: "La asignación a, b = b, a % b es la caja y es el nodo paso."
+  }
+  4: {
+    cols.programa.l3.class: linea
+    cols.flujo.dia.caja.class: nodo
+    cols.lg.grafo.paso.class: nodo
+    cols.programa.l2.class: linea-activa
+    cols.flujo.dia.cond.class: rombo-activo
+    cols.lg.grafo.(inicio -> paso)[0].class: recorrida
+    cols.lg.grafo.(inicio -> fin)[0].class: recorrida
+    cols.lg.grafo.(paso -> paso)[0].class: recorrida
+    cols.lg.grafo.(paso -> fin)[0].class: recorrida
+    explica.label: "La condición b != 0 es el rombo. LangGraph no tiene rombos: es la arista condicional c, que sale de START y de paso."
+  }
+  5: {
+    cols.programa.l2.class: linea
+    cols.flujo.dia.cond.class: rombo
+    cols.lg.grafo.(inicio -> paso)[0].class: condicional
+    cols.lg.grafo.(inicio -> fin)[0].class: condicional
+    cols.lg.grafo.(paso -> paso)[0].class: condicional
+    cols.lg.grafo.(paso -> fin)[0].class: condicional
+    cols.programa.l4.class: linea-activa
+    cols.flujo.dia.fin.class: extremo-activo
+    cols.lg.grafo.fin.class: extremo-activo
+    explica.label: "return a es el fin y es END: invoke devuelve el estado final."
+  }
+}
