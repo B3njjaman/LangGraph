@@ -11,7 +11,7 @@
   <img alt="Avance: módulo 1, lección 1 de 5" src="https://img.shields.io/badge/avance-m%C3%B3dulo%201%20%C2%B7%201%20de%205-F37626?logo=jupyter&logoColor=white">
 </p>
 
-Mi curso de LangGraph, escrito en lenguaje matemático. Cada concepto se presenta como una definición, sus propiedades y el código que lo implementa, y los ejemplos son de matemática: el primer grafo es el método de Newton y el proyecto del módulo 1 es un agente de cálculo simbólico con SymPy.
+Mi curso de LangGraph, escrito en lenguaje matemático. Cada concepto se presenta como una definición, sus propiedades y el código que lo implementa, y los ejemplos son de matemática: la primera lección muestra que un algoritmo ya es un grafo, con Euclides y con Newton, y el proyecto del módulo 1 es un agente de cálculo simbólico con SymPy.
 
 Las lecciones sin modelo de lenguaje corren en el PC, sin GPU ni claves. Las que usan modelo corren en Kaggle, con Ollama y `qwen3:8b` en una GPU.
 
@@ -51,7 +51,7 @@ def continuar(s: EstadoNewton) -> str:
 
 constructor = StateGraph(EstadoNewton)
 constructor.add_node("paso", paso)
-constructor.add_edge(START, "paso")
+constructor.add_conditional_edges(START, continuar, ["paso", END])
 constructor.add_conditional_edges("paso", continuar, ["paso", END])
 newton = constructor.compile()
 
@@ -59,7 +59,7 @@ newton.invoke({"x": 1.0, "n": 0})
 # {'x': 1.4142135623746899, 'n': 4}
 ```
 
-`paso` aplica $x_{n+1} = x_n - f(x_n)/f^{\prime}(x_n)$ con $f(x) = x^2 - 2$, y `continuar` es la arista condicional: vuelve a `paso` mientras $\lvert f(x) \rvert \ge \varepsilon$. Cada pasada es un superstep, y en cuatro se llega a $\sqrt 2$. En el agente del módulo 1 la misma idea decide si el modelo pidió una herramienta: si la pidió, sigue `tools`; si no, termina.
+`paso` aplica $x_{n+1} = x_n - f(x_n)/f^{\prime}(x_n)$ con $f(x) = x^2 - 2$, y `continuar` es la arista condicional, el `while` del algoritmo: sale de `START` y de `paso`, y elige `paso` mientras $\lvert f(x) \rvert \ge \varepsilon$. Cada pasada es un superstep, y en cuatro se llega a $\sqrt 2$. En el agente del módulo 1 la misma idea decide si el modelo pidió una herramienta: si la pidió, sigue `tools`; si no, termina.
 
 Solo necesita `pip install langgraph`, sin claves.
 
@@ -74,7 +74,7 @@ Solo necesita `pip install langgraph`, sin claves.
 
 | Lección | Qué construye |
 |---|---|
-| 1 · [Grafo sin modelo](modulos/modulo-1/01_grafo_sin_modelo.ipynb)<br><sub>PC</sub> | El método de Newton como grafo: esquema, estado, nodo, reducer, aristas, supersteps y terminación |
+| 1 · [Grafo sin modelo](modulos/modulo-1/01_grafo_sin_modelo.ipynb)<br><sub>PC</sub> | Un algoritmo como grafo: Euclides del código al diagrama de flujo y a LangGraph; esquema, estado, nodo, reducer, aristas, supersteps y terminación; Newton con el mismo grafo |
 | 2 · Mensajes y herramientas<br><sub>próximamente · Kaggle</sub> | `add_messages` como operación sobre listas, herramientas de SymPy, `tool_call` |
 | 3 · Router<br><sub>próximamente · Kaggle</sub> | El modelo decide una vez: grafo acíclico |
 | 4 · Agente<br><sub>próximamente · Kaggle</sub> | El ciclo `tools → modelo` y el límite de supersteps |
