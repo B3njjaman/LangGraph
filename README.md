@@ -8,7 +8,7 @@
   <img alt="Python 3.11" src="https://img.shields.io/badge/python-3.11-3776AB?logo=python&logoColor=white">
   <img alt="SymPy" src="https://img.shields.io/badge/SymPy-c%C3%A1lculo%20simb%C3%B3lico-3B5526?logo=sympy&logoColor=white">
   <img alt="Modelo qwen3:8b en Kaggle" src="https://img.shields.io/badge/modelo-qwen3%3A8b%20en%20Kaggle-20BEFF?logo=kaggle&logoColor=white">
-  <img alt="Avance: módulo 1, lección 1 de 5" src="https://img.shields.io/badge/avance-m%C3%B3dulo%201%20%C2%B7%201%20de%205-F37626?logo=jupyter&logoColor=white">
+  <img alt="Avance: módulo 1, 2 de 5 lecciones" src="https://img.shields.io/badge/avance-m%C3%B3dulo%201%20%C2%B7%202%20de%205-F37626?logo=jupyter&logoColor=white">
 </p>
 
 Mi curso de LangGraph, escrito en lenguaje matemático. Cada concepto se presenta como una definición, sus propiedades y el código que lo implementa, y los ejemplos son de matemática: la primera lección muestra que un algoritmo ya es un grafo, con Euclides y con Newton, y el proyecto del módulo 1 es un agente de cálculo simbólico con SymPy.
@@ -19,7 +19,7 @@ Las lecciones sin modelo de lenguaje corren en el PC, sin GPU ni claves. Las que
 
 <p><picture>
   <source media="(prefers-color-scheme: dark)" srcset="imagenes/readme/ruta-oscuro.svg">
-  <img alt="Los siete módulos en orden: 0 puesta a punto, 1 introducción, 2 estado y memoria, 3 human-in-the-loop, 4 paralelismo, 5 memoria larga y 6 despliegue. El módulo 1 lleva 1 de 5 lecciones y los demás están por escribir" src="imagenes/readme/ruta-claro.svg" width="100%">
+  <img alt="Los siete módulos en orden: 0 puesta a punto, 1 introducción, 2 estado y memoria, 3 human-in-the-loop, 4 paralelismo, 5 memoria larga y 6 despliegue. El módulo 1 lleva 2 de 5 lecciones y los demás están por escribir" src="imagenes/readme/ruta-claro.svg" width="100%">
 </picture></p>
 
 Cada módulo usa lo del anterior. El 1 va de un grafo sin modelo a un agente que decide cuándo usar SymPy, el 2 controla qué guarda su estado, el 3 lo detiene para pedir permiso, el 4 ejecuta varios nodos en el mismo paso, el 5 le da memoria entre conversaciones y el 6 lo sirve como una API.
@@ -75,7 +75,7 @@ Solo necesita `pip install langgraph`, sin claves.
 | Lección | Qué construye |
 |---|---|
 | 1 · [Grafo sin modelo](modulos/modulo-1/01_grafo_sin_modelo.ipynb)<br><sub>PC</sub> | Un algoritmo como grafo: Euclides del código al diagrama de flujo y a LangGraph; esquema, estado, nodo, reducer, aristas, supersteps y terminación; Newton con el mismo grafo |
-| 2 · Mensajes y herramientas<br><sub>próximamente · Kaggle</sub> | `add_messages` como operación sobre listas, herramientas de SymPy, `tool_call` |
+| 2 · [Mensajes y herramientas](modulos/modulo-1/02_mensajes_y_herramientas.ipynb)<br><sub>PC y Kaggle</sub> | Mensajes, `add_messages` como monoide, herramientas de SymPy y el modelo como núcleo de probabilidad |
 | 3 · Router<br><sub>próximamente · Kaggle</sub> | El modelo decide una vez: grafo acíclico |
 | 4 · Agente<br><sub>próximamente · Kaggle</sub> | El ciclo `tools → modelo` y el límite de supersteps |
 | 5 · Agente con memoria<br><sub>próximamente · Kaggle</sub> | El hilo como sucesión de estados |
@@ -153,7 +153,7 @@ jupyter notebook
 
 Jupyter tiene que partir en la raíz: las imágenes están en `imagenes/`, y si se abre directo en un módulo no las puede servir.
 
-**En Kaggle**, para las lecciones con modelo: un notebook con GPU, Ollama y `qwen3:8b`. Las instrucciones llegan con la lección 2.
+**En Kaggle**, para las lecciones con modelo: se importa el notebook desde GitHub, se activan la GPU T4 e internet, y se corre entero. La celda de preparación instala Ollama y descarga `qwen3:8b`. Los pasos están en el [índice del módulo 1](modulos/modulo-1#cómo-ejecutar-las-lecciones-con-modelo).
 
 ## Imágenes
 

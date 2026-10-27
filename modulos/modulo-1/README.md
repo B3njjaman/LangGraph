@@ -9,7 +9,7 @@ Cada concepto se presenta como definición, propiedad y código, con diagramas a
 | Lección | Qué construye | Dónde corre |
 |---|---|---|
 | [1 · Grafo sin modelo](01_grafo_sin_modelo.ipynb) | Un algoritmo como grafo: el algoritmo de Euclides del código al diagrama de flujo y a LangGraph, y con él esquema, estado, nodo, reducer, aristas, supersteps y terminación. Después, el método de Newton con el mismo grafo. Con 11 diagramas (8 animados), 3 figuras y dos profundizaciones: Newton como método babilónico (la ecuación de Pell y la fracción continua de √2) y lo que ejecuta `compile` (Pregel y canales) | CPU |
-| 2 · Mensajes y herramientas *(próximamente)* | `add_messages` como operación sobre listas, herramientas de SymPy, `tool_call` | Kaggle |
+| [2 · Mensajes y herramientas](02_mensajes_y_herramientas.ipynb) | Mensajes y conversaciones, `add_messages` como monoide idempotente no conmutativo, herramientas de SymPy y lo que el modelo ve de ellas, el modelo como núcleo de probabilidad y el grafo `START → modelo → END`. Con 2 diagramas animados y una profundización: un `tool_call` es texto (la plantilla y el lector de Ollama) | §1–4 en CPU, el resto en Kaggle |
 | 3 · Router *(próximamente)* | El modelo decide una vez: grafo acíclico | Kaggle |
 | 4 · Agente *(próximamente)* | El ciclo `tools → modelo` y el límite de supersteps | Kaggle |
 | 5 · Agente con memoria *(próximamente)* | El hilo como sucesión de estados, `get_state_history` | Kaggle |
@@ -27,7 +27,17 @@ jupyter notebook
 
 En el navegador, abrir `modulos/modulo-1/01_grafo_sin_modelo.ipynb`. Jupyter tiene que partir en la raíz del repositorio: las imágenes están en `imagenes/`, y si se abre directo en `modulos/modulo-1` no las puede servir.
 
-El dibujo del grafo usa el servicio mermaid.ink, así que esa celda necesita internet. Las lecciones 2 a 5 usan un modelo de lenguaje y corren en Kaggle; sus instrucciones llegan con ellas.
+El dibujo del grafo usa el servicio mermaid.ink, así que esa celda necesita internet. Las secciones 1 a 4 de la lección 2 también corren así.
+
+## Cómo ejecutar las lecciones con modelo
+
+Desde la lección 2, el modelo es `qwen3:8b` con [Ollama](https://ollama.com), en una GPU gratis de Kaggle:
+
+1. En [kaggle.com](https://www.kaggle.com), **Create → New Notebook** y después **File → Import Notebook**, con la dirección del notebook en GitHub; por ejemplo, `https://github.com/B3njjaman/LangGraph/blob/main/modulos/modulo-1/02_mensajes_y_herramientas.ipynb`.
+2. En **Settings**, **Accelerator → GPU T4 x2** e **Internet on**. Para activar internet, Kaggle pide verificar la cuenta con un teléfono.
+3. **Run All**. La celda de preparación instala las dependencias y Ollama y descarga el modelo, en un minuto y medio; la primera llamada al modelo tarda cerca de dos minutos más, porque lo carga en la GPU.
+
+El notebook importado no trae la carpeta `imagenes/`, así que en Kaggle no se ven los diagramas; se ven en GitHub. Con Ollama instalado y `ollama pull qwen3:8b` (unos 5 GB), el notebook también corre en un PC; fuera de Kaggle, la celda de preparación no hace nada.
 
 ## Imágenes
 

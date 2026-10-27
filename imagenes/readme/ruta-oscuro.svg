@@ -31,7 +31,7 @@
 <text x="273.333" y="66" class="mono" font-size="16" font-weight="700" fill="#e6edf3" text-anchor="middle" dy=".35em">1</text>
 <text x="273.333" y="124" class="sans" font-size="17" font-weight="600" fill="#e6edf3" text-anchor="middle" >Introducción</text>
 <text x="273.333" y="148" class="sans" font-size="14" font-weight="400" fill="#9aa7b8" text-anchor="middle" >del grafo al agente</text>
-<text x="273.333" y="176" class="mono" font-size="13" font-weight="600" fill="#2dd4bf" text-anchor="middle" >1 de 5</text>
+<text x="273.333" y="176" class="mono" font-size="13" font-weight="600" fill="#2dd4bf" text-anchor="middle" >2 de 5</text>
 <circle cx="436.667" cy="66" r="22" fill="#38bdf8" opacity="0" filter="url(#difuso)"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.2667;0.2944;0.9222;0.9500;1.0000" values="0.0;0.0;0.55;0.55;0.0;0.0"/></circle>
 <circle cx="436.667" cy="66" r="20" fill="#111a2c" stroke="#34445f" stroke-width="2.5"/>
 <circle cx="436.667" cy="66" r="20" fill="#38bdf8" fill-opacity=".16" stroke="#38bdf8" stroke-width="2.5" opacity="0"><animate attributeName="opacity" dur="9s" repeatCount="indefinite" calcMode="linear" keyTimes="0.0000;0.2667;0.2944;0.9222;0.9500;1.0000" values="0;0;1;1;0;0"/></circle>
