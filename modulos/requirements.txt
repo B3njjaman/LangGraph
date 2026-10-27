@@ -1,2 +1,4 @@
 langgraph>=1.2
+langchain-ollama>=1.1
+sympy>=1.14
 notebook
