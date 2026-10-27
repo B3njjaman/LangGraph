@@ -328,7 +328,7 @@ def portada(t) -> str:
 
 MODULOS = [
     ("Puesta a punto", "PC y Kaggle", "por escribir"),
-    ("Introducción", "del grafo al agente", "1 de 5"),
+    ("Introducción", "del grafo al agente", "2 de 5"),
     ("Estado y memoria", "reducers y resúmenes", "por escribir"),
     ("Human-in-the-loop", "pausar y aprobar", "por escribir"),
     ("Paralelismo", "supersteps, map-reduce", "por escribir"),
@@ -430,7 +430,7 @@ def modulo_1(t) -> str:
     return tarjeta(
         t, 1, "Introducción",
         ["Del método de Newton como grafo", "a un agente de cálculo simbólico", "con SymPy y memoria."],
-        "1 de 5 lecciones", "\n".join(partes),
+        "2 de 5 lecciones", "\n".join(partes),
         "Módulo 1: el método de Newton como grafo; el nodo paso se repite hasta que |f(x)| < ε",
     )
 

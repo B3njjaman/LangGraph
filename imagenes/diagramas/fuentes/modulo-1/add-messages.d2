@@ -1,0 +1,120 @@
+# Lección 2. La operación a ⊕ b = add_messages(a, b) sobre conversaciones.
+# Un mensaje de b cuyo id ya está en a lo reemplaza en su posición; uno con id nuevo va al final.
+# Abajo, b ⊕ a: cambian el orden y el mensaje que gana, así que ⊕ no es conmutativa.
+# intervalo: 2600
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  lista: {
+    grid-columns: 1
+    grid-gap: 8
+    label.near: top-center
+    style: {fill: ${tarjeta}; stroke: ${borde}; stroke-width: 1; border-radius: 10; font: mono; font-size: 16; bold: true; font-color: ${tinta}}
+  }
+  humano: {
+    width: 240
+    height: 34
+    style: {bold: false; fill: ${celeste-suave}; stroke: ${celeste}; stroke-width: 1; border-radius: 8; font: mono; font-size: 13; font-color: ${tinta}}
+  }
+  ia: {
+    width: 240
+    height: 34
+    style: {bold: false; fill: ${violeta-suave}; stroke: ${violeta}; stroke-width: 1; border-radius: 8; font: mono; font-size: 13; font-color: ${tinta}}
+  }
+  ia-cambia: {
+    width: 240
+    height: 34
+    style: {bold: false; fill: ${violeta-suave}; stroke: ${turquesa}; stroke-width: 3; border-radius: 8; font: mono; font-size: 13; font-color: ${tinta}}
+  }
+  humano-nuevo: {
+    width: 240
+    height: 34
+    style: {bold: false; fill: ${celeste-suave}; stroke: ${turquesa}; stroke-width: 3; border-radius: 8; font: mono; font-size: 13; font-color: ${tinta}}
+  }
+  operacion: {
+    shape: text
+    style: {font: mono; font-size: 26; font-color: ${suave}}
+  }
+}
+
+grid-columns: 1
+grid-gap: 26
+
+ab: "a ⊕ b" {
+  class: grupo
+  label.near: top-left
+  grid-columns: 5
+  grid-gap: 20
+
+  a: "a" {
+    class: lista
+    h1: "h1 · Deriva x³" {class: humano}
+    a1: "a1 · Es 3x" {class: ia}
+  }
+  mas: "⊕" {class: operacion}
+  b: "b" {
+    class: lista
+    a1: "a1 · Es 3x²" {class: ia}
+    h2: "h2 · Ahora intégralo" {class: humano}
+  }
+  igual: "=" {class: operacion}
+  r: "a ⊕ b" {
+    class: lista
+    style.opacity: 0
+    h1: "h1 · Deriva x³" {class: humano}
+    a1: "a1 · Es 3x" {class: ia}
+    h2: "h2 · Ahora intégralo" {class: humano; style.opacity: 0}
+  }
+}
+
+ba: "b ⊕ a" {
+  class: grupo
+  label.near: top-left
+  grid-columns: 5
+  grid-gap: 20
+  style.opacity: 0
+
+  b: "b" {
+    class: lista
+    a1: "a1 · Es 3x²" {class: ia}
+    h2: "h2 · Ahora intégralo" {class: humano}
+  }
+  mas: "⊕" {class: operacion}
+  a: "a" {
+    class: lista
+    h1: "h1 · Deriva x³" {class: humano}
+    a1: "a1 · Es 3x" {class: ia}
+  }
+  igual: "=" {class: operacion}
+  r: "b ⊕ a" {
+    class: lista
+    a1: "a1 · Es 3x" {class: ia-cambia}
+    h2: "h2 · Ahora intégralo" {class: humano}
+    h1: "h1 · Deriva x³" {class: humano-nuevo}
+  }
+}
+
+explica: "Cada mensaje tiene un id. a ⊕ b recorre b en orden y compara ids." {class: paso; width: 660; height: 44}
+
+steps: {
+  1: {
+    ab.r.style.opacity: 1
+    explica.label: "Se parte de una copia de a."
+  }
+  2: {
+    ab.r.a1.label: "a1 · Es 3x²"
+    ab.r.a1.class: ia-cambia
+    explica.label: "a1 ya está en a: el mensaje de b lo reemplaza en su posición."
+  }
+  3: {
+    ab.r.h2.style.opacity: 1
+    ab.r.h2.class: humano-nuevo
+    explica.label: "h2 es un id nuevo: va al final."
+  }
+  4: {
+    ba.style.opacity: 1
+    explica.label: "En b ⊕ a gana el «Es 3x» de a y h1 queda último: ⊕ no es conmutativa."
+  }
+}

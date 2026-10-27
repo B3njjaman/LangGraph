@@ -1,0 +1,95 @@
+# Lección 2. El grafo START → modelo → END con una herramienta enlazada.
+# bind_tools le pasa al modelo el esquema de la función, no la función. El modelo devuelve un
+# AIMessage con un tool_call, add_messages lo agrega al estado y el grafo termina: nadie ejecutó derivar.
+# intervalo: 2600
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  esquema: {
+    style: {fill: ${tarjeta}; stroke: ${ambar}; stroke-width: 2; border-radius: 8; font: mono; font-size: 13; bold: false; font-color: ${tinta}}
+  }
+  esquema-activo: {
+    style: {fill: ${ambar-suave}; stroke: ${ambar}; stroke-width: 3; border-radius: 8; font: mono; font-size: 13; bold: false; font-color: ${tinta}}
+  }
+  funcion-apagada: {
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; stroke-dash: 4; border-radius: 8; font: mono; font-size: 13; bold: false; font-color: ${tenue}}
+  }
+  lista: {
+    grid-columns: 1
+    grid-gap: 8
+    label.near: top-center
+    style: {fill: ${tarjeta}; stroke: ${borde}; stroke-width: 1; border-radius: 10; font: mono; font-size: 14; bold: true; font-color: ${tinta}}
+  }
+  falta: {
+    width: 300
+    height: 36
+    style: {bold: false; fill: ${fondo}; stroke: ${rosa}; stroke-width: 1; stroke-dash: 4; border-radius: 8; font: mono; font-size: 13; italic: true; font-color: ${rosa}}
+  }
+}
+
+grid-columns: 1
+grid-gap: 22
+
+flujo: {
+  class: invisible
+  direction: down
+
+  funcion: "def derivar(expresion, variable='x'):\n    return str(diff(...))" {class: codigo; width: 330; height: 64; style.bold: false}
+  esquema: "{\"name\": \"derivar\",\n \"description\": \"Deriva...\",\n \"parameters\": {...}}" {class: esquema; width: 270; height: 76}
+  inicio: START {class: extremo; width: 120; height: 46}
+  modelo: "modelo\nqwen3:8b" {class: nodo-llm; width: 170; height: 64}
+  fin: END {class: extremo; width: 120; height: 46}
+  estado: "s(messages)" {
+    class: lista
+    h: "humano · Deriva x²·sen(x)" {class: msj-humano}
+    ia: "ia · tool_calls: derivar(x**2*sin(x))" {class: msj-ia; style.opacity: 0}
+    tool: "tool · nadie lo escribió" {class: falta; style.opacity: 0}
+  }
+
+  funcion -> esquema: "convert_to_openai_tool" {class: arista}
+  esquema -> modelo: "bind_tools" {class: arista}
+  inicio -> modelo {class: arista}
+  modelo -> fin {class: arista}
+  modelo -> estado: "u" {class: arista}
+}
+
+explica: "La función queda en Python; al modelo solo le llega su esquema." {class: paso; width: 640; height: 44}
+
+steps: {
+  1: {
+    flujo.(funcion -> esquema)[0].class: recorrida
+    flujo.(esquema -> modelo)[0].class: recorrida
+    flujo.esquema.class: esquema-activo
+    explica.label: "bind_tools: el modelo recibe nombre, descripción y esquema de los argumentos."
+  }
+  2: {
+    flujo.(funcion -> esquema)[0].class: arista
+    flujo.(esquema -> modelo)[0].class: arista
+    flujo.esquema.class: esquema
+    flujo.inicio.class: extremo-activo
+    explica.label: "Superstep 0: START escribe la entrada, s(messages) = [humano]."
+  }
+  3: {
+    flujo.inicio.class: extremo
+    flujo.(inicio -> modelo)[0].class: recorrida
+    flujo.modelo.class: nodo-llm-activo
+    explica.label: "Superstep 1: modelo lee [sistema] + s(messages) y muestrea un mensaje."
+  }
+  4: {
+    flujo.(inicio -> modelo)[0].class: arista
+    flujo.(modelo -> estado)[0].class: recorrida
+    flujo.estado.ia.style.opacity: 1
+    explica.label: "El mensaje trae un tool_call, y add_messages lo agrega al final."
+  }
+  5: {
+    flujo.(modelo -> estado)[0].class: arista
+    flujo.modelo.class: nodo-llm
+    flujo.(modelo -> fin)[0].class: recorrida
+    flujo.fin.class: extremo-activo
+    flujo.funcion.class: funcion-apagada
+    flujo.estado.tool.style.opacity: 1
+    explica.label: "END. El tool_call queda pendiente: ningún nodo ejecutó derivar."
+  }
+}

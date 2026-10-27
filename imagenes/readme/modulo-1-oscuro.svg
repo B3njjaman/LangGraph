@@ -21,7 +21,7 @@
 <text x="48" y="148" class="sans" font-size="18" font-weight="400" fill="#9aa7b8" text-anchor="start" >Del método de Newton como grafo</text>
 <text x="48" y="174" class="sans" font-size="18" font-weight="400" fill="#9aa7b8" text-anchor="start" >a un agente de cálculo simbólico</text>
 <text x="48" y="200" class="sans" font-size="18" font-weight="400" fill="#9aa7b8" text-anchor="start" >con SymPy y memoria.</text>
-<g><rect x="48" y="222" width="166.88" height="32" rx="10" fill="#2dd4bf" fill-opacity=".14" stroke="#2dd4bf" stroke-opacity=".75" stroke-width="1.2"/><text x="131.44" y="238" class="mono" font-size="14" font-weight="400" fill="#e6edf3" text-anchor="middle" dy=".35em">1 de 5 lecciones</text></g>
+<g><rect x="48" y="222" width="166.88" height="32" rx="10" fill="#2dd4bf" fill-opacity=".14" stroke="#2dd4bf" stroke-opacity=".75" stroke-width="1.2"/><text x="131.44" y="238" class="mono" font-size="14" font-weight="400" fill="#e6edf3" text-anchor="middle" dy=".35em">2 de 5 lecciones</text></g>
 <path d="M610,105 L663,105" fill="none" stroke="#46587a" stroke-width="2" stroke-linecap="round" marker-end="url(#flecha)"/>
 <path d="M815,105 L1048,105" fill="none" stroke="#46587a" stroke-width="2" stroke-linecap="round" class="marcha" marker-end="url(#flecha)"/>
 <path d="M775,133 C805,205 675,205 708,136" fill="none" stroke="#46587a" stroke-width="2" stroke-linecap="round" class="marcha" marker-end="url(#flecha)"/>
