@@ -59,7 +59,7 @@ newton.invoke({"x": 1.0, "n": 0})
 # {'x': 1.4142135623746899, 'n': 4}
 ```
 
-`paso` aplica $x_{n+1} = x_n - f(x_n)/f'(x_n)$ con $f(x) = x^2 - 2$, y `continuar` es la arista condicional: vuelve a `paso` mientras $|f(x)| \ge \varepsilon$. Cada pasada es un superstep, y en cuatro se llega a $\sqrt 2$. En el agente del módulo 1 la misma idea decide si el modelo pidió una herramienta: si la pidió, sigue `tools`; si no, termina.
+`paso` aplica $x_{n+1} = x_n - f(x_n)/f^{\prime}(x_n)$ con $f(x) = x^2 - 2$, y `continuar` es la arista condicional: vuelve a `paso` mientras $\lvert f(x) \rvert \ge \varepsilon$. Cada pasada es un superstep, y en cuatro se llega a $\sqrt 2$. En el agente del módulo 1 la misma idea decide si el modelo pidió una herramienta: si la pidió, sigue `tools`; si no, termina.
 
 Solo necesita `pip install langgraph`, sin claves.
 
@@ -72,13 +72,13 @@ Solo necesita `pip install langgraph`, sin claves.
   <img alt="Módulo 1. El método de Newton como grafo: desde START, el nodo paso se repite por la arista |f(x)| ≥ ε y va a END cuando |f(x)| < ε, mientras aparecen las iteradas x₀ = 1, x₁ = 1,5, x₂, x₃ y x₄ = 1,4142135624" src="imagenes/readme/modulo-1-claro.svg" width="100%">
 </picture></p>
 
-| | Lección | Qué construye | Dónde corre |
-|---|---|---|---|
-| 1 | [Grafo sin modelo](modulos/modulo-1/01_grafo_sin_modelo.ipynb) | El método de Newton como grafo: esquema, estado, nodo, reducer, aristas, supersteps y terminación | PC |
-| 2 | Mensajes y herramientas *(próximamente)* | `add_messages` como operación sobre listas, herramientas de SymPy, `tool_call` | Kaggle |
-| 3 | Router *(próximamente)* | El modelo decide una vez: grafo acíclico | Kaggle |
-| 4 | Agente *(próximamente)* | El ciclo `tools → modelo` y el límite de supersteps | Kaggle |
-| 5 | Agente con memoria *(próximamente)* | El hilo como sucesión de estados | Kaggle |
+| Lección | Qué construye |
+|---|---|
+| 1 · [Grafo sin modelo](modulos/modulo-1/01_grafo_sin_modelo.ipynb)<br><sub>PC</sub> | El método de Newton como grafo: esquema, estado, nodo, reducer, aristas, supersteps y terminación |
+| 2 · Mensajes y herramientas<br><sub>próximamente · Kaggle</sub> | `add_messages` como operación sobre listas, herramientas de SymPy, `tool_call` |
+| 3 · Router<br><sub>próximamente · Kaggle</sub> | El modelo decide una vez: grafo acíclico |
+| 4 · Agente<br><sub>próximamente · Kaggle</sub> | El ciclo `tools → modelo` y el límite de supersteps |
+| 5 · Agente con memoria<br><sub>próximamente · Kaggle</sub> | El hilo como sucesión de estados |
 
 Índice del módulo, con el mapa de las cinco lecciones: [`modulos/modulo-1`](modulos/modulo-1).
 
