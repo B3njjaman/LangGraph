@@ -6,13 +6,13 @@ Cada concepto se presenta como definición, propiedad y código, con diagramas a
 
 <img src="../../imagenes/diagramas/modulo-1/ruta.svg" alt="Las cinco lecciones del módulo con su grafo: 1, START → paso → END con la arista c que vuelve a paso; 2, START → modelo → END con un tool_call; 3, el router, donde el modelo va a tools o a END y tools termina; 4, el agente, con el ciclo modelo ⇄ tools; 5, el mismo agente con un checkpoint por superstep" width="100%">
 
-| Lección | Del curso | Qué construye | Dónde corre |
-|---|---|---|---|
-| [1 · Grafo sin modelo](01_grafo_sin_modelo.ipynb) | Simple graph | El método de Newton como grafo: esquema, estado, nodo, reducer, aristas, supersteps y terminación. Con 7 diagramas animados, 3 figuras y dos profundizaciones: Newton como método babilónico (y la ecuación de Pell) y lo que ejecuta `compile` (Pregel y canales) | CPU |
-| 2 · Mensajes y herramientas *(próximamente)* | Chain | `add_messages` como operación sobre listas, herramientas de SymPy, `tool_call` | Kaggle |
-| 3 · Router *(próximamente)* | Router | El modelo decide una vez: grafo acíclico | Kaggle |
-| 4 · Agente *(próximamente)* | Agent | El ciclo `tools → modelo` y el límite de supersteps | Kaggle |
-| 5 · Agente con memoria *(próximamente)* | Agent memory | El hilo como sucesión de estados, `get_state_history` | Kaggle |
+| Lección | Qué construye | Dónde corre |
+|---|---|---|
+| [1 · Grafo sin modelo](01_grafo_sin_modelo.ipynb) | El método de Newton como grafo: esquema, estado, nodo, reducer, aristas, supersteps y terminación. Con 7 diagramas animados, 3 figuras y dos profundizaciones: Newton como método babilónico (y la ecuación de Pell) y lo que ejecuta `compile` (Pregel y canales) | CPU |
+| 2 · Mensajes y herramientas *(próximamente)* | `add_messages` como operación sobre listas, herramientas de SymPy, `tool_call` | Kaggle |
+| 3 · Router *(próximamente)* | El modelo decide una vez: grafo acíclico | Kaggle |
+| 4 · Agente *(próximamente)* | El ciclo `tools → modelo` y el límite de supersteps | Kaggle |
+| 5 · Agente con memoria *(próximamente)* | El hilo como sucesión de estados, `get_state_history` | Kaggle |
 
 ## Cómo ejecutar la lección 1
 

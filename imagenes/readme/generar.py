@@ -249,17 +249,17 @@ def lienzo(t, w, h, titulo, cuerpo, defs="") -> str:
 
 
 def portada(t) -> str:
-    """Título, una llamada a un agente que se escribe sola y el agente ejecutándola."""
+    """Título, una llamada al agente que se escribe sola y el agente ejecutándola."""
     partes = [
         '<rect x="1" y="1" width="1198" height="418" rx="18" fill="url(#halo)"/>',
-        texto(64, 96, "CURSO · LANGCHAIN ACADEMY", tam=14, color=t["turquesa"], fuente="mono", peso=600, extra='letter-spacing="3"'),
+        texto(64, 96, "DEFINICIÓN · PROPIEDAD · CÓDIGO", tam=14, color=t["turquesa"], fuente="mono", peso=600, extra='letter-spacing="3"'),
         texto(58, 186, "LangGraph", tam=92, color="url(#degradado-titulo)", peso=800, extra='letter-spacing="-2"'),
-        texto(64, 236, "Apuntes y notebooks del curso", tam=28, color=t["tinta"], peso=600),
-        texto(64, 272, "de un grafo simple a un agente desplegado", tam=20, color=t["suave"]),
+        texto(64, 236, "Un curso en lenguaje matemático", tam=28, color=t["tinta"], peso=600),
+        texto(64, 272, "del método de Newton a un agente con SymPy", tam=20, color=t["suave"]),
     ]
 
     # Una llamada que se escribe letra a letra
-    llamada = 'agent.invoke({"messages": "¿Cuánto es 3 × 4?"})'
+    llamada = 'agente.invoke({"messages": "Deriva x³"})'
     paso, x_llamada, inicio, fin_tecleo = 9.0, 122, 0.4, 2.5
     n = len(llamada)
     anchos = [(0, 0)] + [(inicio + (fin_tecleo - inicio) * i / n, i * paso) for i in range(1, n + 1)] + [(FIN + 0.5, 0)]
@@ -275,7 +275,7 @@ def portada(t) -> str:
         f'<animate attributeName="opacity" values="1;0" dur="1s" calcMode="discrete" repeatCount="indefinite"/></rect>',
     ]
 
-    # El agente: START → assistant ⇄ tools → END
+    # El agente: START → modelo ⇄ tools → END
     partes += [
         arista(t, "M800,98 L800,160"),
         arista(t, "M885,178 C915,140 940,140 968,176", condicional=True),
@@ -296,19 +296,19 @@ def portada(t) -> str:
     partes.append(ficha(t, "ambar", ruta, horario))
     partes += [
         nodo(t, 800, 78, 120, 40, "START", pill=True, activo=[(0.2, 2.9)], tam=15),
-        nodo(t, 800, 190, 170, 56, "assistant", sub="LLM", activo=[(3.25, 4.3), (6.45, 7.4)]),
-        nodo(t, 1040, 190, 140, 56, "tools", sub="multiply", activo=[(4.9, 5.85)]),
+        nodo(t, 800, 190, 170, 56, "modelo", sub="qwen3:8b", activo=[(3.25, 4.3), (6.45, 7.4)]),
+        nodo(t, 1040, 190, 140, 56, "tools", sub="derivar", activo=[(4.9, 5.85)]),
         nodo(t, 800, 300, 120, 40, "END", pill=True, activo=[(7.8, FIN)], tam=15),
     ]
 
     # El estado: la lista de mensajes crece con cada paso
-    partes.append(texto(640, 350, "state['messages']", tam=13, color=t["suave"], fuente="mono"))
+    partes.append(texto(640, 350, "s(messages)", tam=13, color=t["suave"], fuente="mono"))
     x = 640
     for contenido, color, entra in [
-        ("user · ¿3 × 4?", "celeste", 2.8),
-        ("ai · multiply(3, 4)", "violeta", 4.3),
-        ("tool · 12", "ambar", 5.85),
-        ("ai · Es 12", "violeta", 7.4),
+        ("user · deriva x³", "celeste", 2.8),
+        ("ai · derivar", "violeta", 4.3),
+        ("tool · 3*x**2", "ambar", 5.85),
+        ("ai · es 3x²", "violeta", 7.4),
     ]:
         w = ancho(contenido, 12) + 20
         partes.append(chip(t, x, 362, contenido, color, w=w, tam=12, anim=aparecer(entra)))
@@ -321,19 +321,19 @@ def portada(t) -> str:
         f'<stop offset="0" stop-color="{t["turquesa"]}" stop-opacity="{t["halo"] * 1.6:g}"/>'
         f'<stop offset="1" stop-color="{t["turquesa"]}" stop-opacity="0"/></radialGradient>'
     )
-    return lienzo(t, 1200, 420, "LangGraph: un agente que llama a una herramienta y responde", "\n".join(partes), defs)
+    return lienzo(t, 1200, 420, "LangGraph: un agente que deriva con una herramienta de SymPy y responde", "\n".join(partes), defs)
 
 
 # --- Ruta del curso --------------------------------------------------------
 
 MODULOS = [
-    ("Puesta a punto", "entorno y claves", "17 min"),
-    ("Introducción", "del grafo al agente", "51 min"),
-    ("Estado y memoria", "reducers y resúmenes", "45 min"),
-    ("Human-in-the-loop", "pausar y aprobar", "55 min"),
-    ("Tu asistente", "paralelo, map-reduce", "61 min"),
-    ("Memoria larga", "Store y Trustcall", "78 min"),
-    ("Despliegue", "servidor y SDK", "49 min"),
+    ("Puesta a punto", "PC y Kaggle", "por escribir"),
+    ("Introducción", "del grafo al agente", "1 de 5"),
+    ("Estado y memoria", "reducers y resúmenes", "por escribir"),
+    ("Human-in-the-loop", "pausar y aprobar", "por escribir"),
+    ("Paralelismo", "supersteps, map-reduce", "por escribir"),
+    ("Memoria larga", "Store entre hilos", "por escribir"),
+    ("Despliegue", "servidor y SDK", "por escribir"),
 ]
 
 
@@ -348,7 +348,7 @@ def ruta_del_curso(t) -> str:
         + animar("opacity", [(0, 1), (dur - 0.7, 1), (dur - 0.3, 0)], dur)
         + "</path>",
     ]
-    for i, (titulo, sub, minutos) in enumerate(MODULOS):
+    for i, (titulo, sub, estado) in enumerate(MODULOS):
         x = x0 + i * paso
         color = t[ACENTOS[i]]
         luz = ventanas([(inicio + i * por_modulo, dur - 0.7)], fundido=0.25)
@@ -359,7 +359,7 @@ def ruta_del_curso(t) -> str:
             texto(x, y, str(i), tam=16, color=t["tinta"], fuente="mono", peso=700, ancla="middle", extra='dy=".35em"'),
             texto(x, 124, titulo, tam=17, color=t["tinta"], peso=600, ancla="middle"),
             texto(x, 148, sub, tam=14, color=t["suave"], ancla="middle"),
-            texto(x, 176, minutos, tam=13, color=color, fuente="mono", peso=600, ancla="middle"),
+            texto(x, 176, estado, tam=13, color=color, fuente="mono", peso=600, ancla="middle"),
         ]
     # La cabeza de la barra de progreso
     cabeza = Ruta(x0, y).a(x1, y)
@@ -394,49 +394,51 @@ def tarjeta(t, numero, titulo, lineas, cifras, diagrama, descripcion, defs="") -
 
 
 def modulo_1(t) -> str:
-    """El grafo más simple: una arista condicional elige entre node_2 y node_3."""
+    """Newton como grafo: paso se repite hasta que |f(x)| < ε y las iteradas se acumulan."""
     partes = [
-        arista(t, "M610,145 L656,145"),
-        arista(t, "M782,135 C820,135 820,80 856,80", condicional=True),
-        arista(t, "M782,155 C820,155 820,210 856,210", condicional=True),
-        arista(t, "M982,80 C1020,80 1020,135 1048,135"),
-        arista(t, "M982,210 C1020,210 1020,155 1048,155"),
-        texto(824, 150, "decide_mood", tam=12, color=t["suave"], fuente="mono", extra='dy=".35em"'),
+        arista(t, "M610,105 L663,105"),
+        arista(t, "M815,105 L1048,105", condicional=True),
+        arista(t, "M775,133 C805,205 675,205 708,136", condicional=True),
+        texto(930, 89, "|f(x)| < ε", tam=13, color=t["suave"], fuente="mono", ancla="middle"),
+        texto(806, 182, "|f(x)| ≥ ε", tam=13, color=t["suave"], fuente="mono"),
     ]
-    for rama, y_rama, desfase in [(2, 80, 0), (3, 210, 5)]:
-        ruta = (
-            Ruta(560, 145).a(610, 145).a(658, 145).a(720, 145).a(782, 145 + (-10 if rama == 2 else 10))
-            .curva((820, 145 + (-10 if rama == 2 else 10)), (820, y_rama), (858, y_rama)).a(920, y_rama)
-            .a(982, y_rama).curva((1020, y_rama), (1020, 145 + (-10 if rama == 2 else 10)), (1050, 145 + (-10 if rama == 2 else 10)))
-            .a(1100, 145)
-        )
-        d = desfase
-        horario = [
-            (d + 0.4, 0), (d + 0.55, 1), (d + 0.8, 2), (d + 0.95, 3), (d + 1.6, 3), (d + 1.75, 4),
-            (d + 2.3, 5), (d + 2.45, 6), (d + 3.1, 6), (d + 3.25, 7), (d + 3.8, 8), (d + 3.95, 9),
-        ]
-        if d:
-            horario = [(0, 0)] + horario
-        partes.append(ficha(t, "turquesa", ruta, horario))
+    # La ficha entra a paso, da tres vueltas por la arista c y sale a END.
+    ruta = Ruta(560, 105).a(610, 105).a(665, 105).a(740, 105)
+    for _ in range(3):
+        ruta = ruta.a(775, 133).curva((805, 205), (675, 205), (708, 136)).a(740, 105)
+    ruta = ruta.a(815, 105).a(1050, 105).a(1100, 105)
+    horario = [(0.4, 0), (0.55, 1), (0.8, 2), (0.95, 3)]
+    for vuelta in range(3):
+        s = 1.5 + 1.45 * vuelta
+        v = 3 + 3 * vuelta
+        horario += [(s, v), (s + 0.15, v + 1), (s + 0.75, v + 2), (s + 0.9, v + 3)]
+    horario += [(5.85, 12), (6.0, 13), (6.9, 14), (7.05, 15)]
+    partes.append(ficha(t, "turquesa", ruta, horario))
     partes += [
-        nodo(t, 560, 145, 100, 40, "START", pill=True, activo=[(0.1, 0.6), (5.1, 5.6)], tam=15),
-        nodo(t, 720, 145, 124, 56, "node_1", sub="+ I am", activo=[(0.8, 1.75), (5.8, 6.75)]),
-        nodo(t, 920, 80, 124, 56, "node_2", sub="+ happy!", activo=[(2.3, 3.25)]),
-        nodo(t, 920, 210, 124, 56, "node_3", sub="+ sad!", activo=[(7.3, 8.25)]),
-        nodo(t, 1100, 145, 100, 40, "END", pill=True, activo=[(3.8, 4.7), (8.8, 9.6)], tam=15),
+        nodo(t, 560, 105, 100, 40, "START", pill=True, activo=[(0.1, 0.6)], tam=15),
+        nodo(t, 740, 105, 150, 56, "paso", sub="x − f(x)/f′(x)", activo=[(0.8, 6.0)]),
+        nodo(t, 1100, 105, 100, 40, "END", pill=True, activo=[(6.9, FIN)], tam=15),
     ]
+    # Las iteradas aparecen al cerrar cada superstep, como en stream_mode="values".
+    x = 520
+    for contenido, entra in [
+        ("x₀ = 1", 0.5), ("x₁ = 1.5", 1.2), ("x₂ = 1.416667", 2.65), ("x₃ = 1.414216", 4.1), ("x₄ = 1.4142135624", 5.55),
+    ]:
+        w = ancho(contenido, 13) + 22
+        partes.append(chip(t, x, 232, contenido, "turquesa", w=w, h=30, tam=13, anim=aparecer(entra)))
+        x += w + 10
     return tarjeta(
         t, 1, "Introducción",
-        ["Nodos, aristas y estado: del grafo", "más simple a un agente con", "herramientas y memoria."],
-        "8 lecciones · 51 min", "\n".join(partes),
-        "Módulo 1: un grafo con una arista condicional que elige entre dos nodos",
+        ["Del método de Newton como grafo", "a un agente de cálculo simbólico", "con SymPy y memoria."],
+        "1 de 5 lecciones", "\n".join(partes),
+        "Módulo 1: el método de Newton como grafo; el nodo paso se repite hasta que |f(x)| < ε",
     )
 
 
 def modulo_2(t) -> str:
     """Los mensajes se acumulan en el estado y, pasado el límite, se resumen."""
     partes = [
-        texto(510, 58, 'state["messages"]', tam=13, color=t["suave"], fuente="mono"),
+        texto(510, 58, "s(messages)", tam=13, color=t["suave"], fuente="mono"),
         texto(1160, 58, "reducer: add_messages", tam=13, color=t["celeste"], fuente="mono", ancla="end"),
     ]
     resumen_entra, corre, sale = 5.5, 5.7, FIN
@@ -467,14 +469,14 @@ def modulo_2(t) -> str:
     horario = [(4.6, 0), (4.75, 1), (5.05, 2), (5.2, 3), (6.3, 3), (6.45, 4), (6.75, 5), (6.9, 6)]
     partes.append(ficha(t, "celeste", ruta, horario))
     partes += [
-        nodo(t, 640, 205, 190, 52, "conversation", acento="celeste", activo=[(0.4, 4.7)]),
-        nodo(t, 900, 205, 190, 52, "summarize", acento="celeste", activo=[(5.05, 6.4)]),
+        nodo(t, 640, 205, 190, 52, "conversar", acento="celeste", activo=[(0.4, 4.7)]),
+        nodo(t, 900, 205, 190, 52, "resumir", acento="celeste", activo=[(5.05, 6.4)]),
         nodo(t, 1100, 205, 100, 40, "END", pill=True, acento="celeste", activo=[(6.75, FIN)], tam=15),
     ]
     return tarjeta(
         t, 2, "Estado y memoria",
         ["Esquemas de estado, reducers y", "cómo recortar o resumir una", "conversación larga."],
-        "6 lecciones · 45 min", "\n".join(partes),
+        "por escribir", "\n".join(partes),
         "Módulo 2: los mensajes se acumulan en el estado y los más antiguos se resumen",
     )
 
@@ -518,20 +520,20 @@ def modulo_3(t) -> str:
     partes.append(ficha(t, "rosa", ruta, horario))
     partes += [
         nodo(t, 550, 110, 100, 40, "START", pill=True, activo=[(0.1, 0.6)], tam=15),
-        nodo(t, 715, 110, 150, 52, "assistant", acento="rosa", activo=[(0.8, 1.75)]),
+        nodo(t, 715, 110, 150, 52, "modelo", acento="rosa", activo=[(0.8, 1.75)]),
         nodo(t, 950, 110, 130, 52, "tools", acento="rosa", activo=[(4.65, 5.55)]),
         nodo(t, 1100, 110, 90, 40, "END", pill=True, acento="rosa", activo=[(5.8, FIN)], tam=15),
     ]
     return tarjeta(
         t, 3, "Human-in-the-loop",
         ["Streaming, breakpoints, editar el", "estado con feedback humano y", "volver atrás en el tiempo."],
-        "5 lecciones · 55 min", "\n".join(partes),
+        "por escribir", "\n".join(partes),
         "Módulo 3: el grafo se detiene antes de usar una herramienta hasta que una persona lo aprueba",
     )
 
 
 def modulo_4(t) -> str:
-    """Send() reparte el tema entre tres entrevistas en paralelo y el informe las junta."""
+    """Send() reparte un problema en tres partes que corren en paralelo y otro nodo las junta."""
     filas = [62, 145, 228]
     partes = [arista(t, "M585,145 L613,145")]
     for y in filas:
@@ -552,13 +554,13 @@ def modulo_4(t) -> str:
         horario = [(1.8, 0), (1.95, 1), (2.5, 2), (2.65, 3), (termina, 3), (termina + 0.15, 4), (termina + 0.65, 5), (termina + 0.8, 6)]
         partes.append(ficha(t, "ambar", ruta, horario, r=6))
     partes += [
-        nodo(t, 540, 145, 90, 40, "tema", pill=True, acento="ambar", activo=[(0.1, 0.6)], tam=15),
-        nodo(t, 680, 145, 130, 52, "analistas", acento="ambar", activo=[(0.75, 1.95)]),
+        nodo(t, 540, 145, 110, 40, "problema", pill=True, acento="ambar", activo=[(0.1, 0.6)], tam=15),
+        nodo(t, 680, 145, 130, 52, "repartir", acento="ambar", activo=[(0.75, 1.95)]),
     ]
     for i, (y, termina) in enumerate(zip(filas, terminos), start=1):
-        partes.append(nodo(t, 900, y, 150, 50, f"entrevista {i}", acento="ambar", activo=[(2.5, termina + 0.15)], tam=15))
+        partes.append(nodo(t, 900, y, 150, 50, f"parte {i}", acento="ambar", activo=[(2.5, termina + 0.15)], tam=15))
     partes.append(nodo(t, 1090, 145, 120, 76, "", acento="ambar", activo=[(4.55, FIN)]))
-    partes.append(texto(1090, 127, "informe", tam=17, color=t["tinta"], fuente="mono", peso=600, ancla="middle", extra='dy=".35em"'))
+    partes.append(texto(1090, 127, "juntar", tam=17, color=t["tinta"], fuente="mono", peso=600, ancla="middle", extra='dy=".35em"'))
     for i, largo in enumerate([70, 58, 46]):
         y = 151 + 11 * i
         entra = 4.8 + 0.4 * i
@@ -569,10 +571,10 @@ def modulo_4(t) -> str:
             + "</path>"
         )
     return tarjeta(
-        t, 4, "Tu asistente",
-        ["Nodos en paralelo, sub-grafos y", "map-reduce, juntos en un", "asistente de investigación."],
-        "4 lecciones · 61 min", "\n".join(partes),
-        "Módulo 4: un tema se reparte entre tres entrevistas en paralelo y un informe las junta",
+        t, 4, "Paralelismo",
+        ["Varios nodos en un superstep,", "sub-grafos y map-reduce", "con Send."],
+        "por escribir", "\n".join(partes),
+        "Módulo 4: un problema se reparte en tres partes que corren en paralelo y un nodo las junta",
     )
 
 
@@ -580,10 +582,10 @@ def modulo_5(t) -> str:
     """Lo que se guarda en el Store desde un hilo se recupera en otro."""
     partes = [
         texto(500, 50, 'hilo 1 · thread_id="1"', tam=12, color=t["suave"], fuente="mono"),
-        chip(t, 500, 62, "Me gusta mucho andar en bici", "celeste", w=240, h=36, tam=15, fuente="sans", anim=aparecer(0.4)),
+        chip(t, 500, 62, "Respóndeme siempre en LaTeX", "celeste", w=240, h=36, tam=15, fuente="sans", anim=aparecer(0.4)),
         texto(500, 150, 'hilo 2 · thread_id="2"', tam=12, color=t["suave"], fuente="mono"),
-        chip(t, 500, 162, "¿Qué hago este fin de semana?", "celeste", w=246, h=36, tam=15, fuente="sans", anim=aparecer(3.6)),
-        chip(t, 540, 208, "Una ruta en bici por el cerro", "violeta", w=246, h=36, tam=15, fuente="sans", anim=aparecer(5.4)),
+        chip(t, 500, 162, "¿Cuál es la derivada de x³?", "celeste", w=246, h=36, tam=15, fuente="sans", anim=aparecer(3.6)),
+        chip(t, 540, 208, "La derivada es $3x^{2}$", "violeta", w=246, h=36, tam=15, fuente="sans", anim=aparecer(5.4)),
         arista(t, "M744,80 C830,80 900,88 966,108", condicional=True, flecha=False, color="violeta", ancho_linea=1.6),
         arista(t, "M968,200 C900,214 850,226 792,226", condicional=True, flecha=False, color="violeta", ancho_linea=1.6),
         texto(850, 70, "store.put", tam=12, color=t["violeta"], fuente="mono", peso=600, ancla="middle"),
@@ -597,14 +599,14 @@ def modulo_5(t) -> str:
     partes += [
         cilindro(t, 1050, 86, 214, 82, "violeta", activo=[(2.0, 3.0), (4.2, 5.0)]),
         texto(1050, 128, "Store", tam=20, color=t["tinta"], peso=700, ancla="middle"),
-        texto(1050, 150, '(user_id, "memories")', tam=11, color=t["suave"], fuente="mono", ancla="middle"),
-        chip(t, 977, 168, "le gusta el ciclismo", "violeta", w=146, h=28, tam=13, fuente="sans", anim=aparecer(2.3)),
+        texto(1050, 150, '(usuario, "estilo")', tam=11, color=t["suave"], fuente="mono", ancla="middle"),
+        chip(t, 977, 168, "formato: LaTeX", "violeta", w=146, h=28, tam=13, fuente="sans", anim=aparecer(2.3)),
     ]
     return tarjeta(
         t, 5, "Memoria a largo plazo",
-        ["Memoria que sobrevive entre", "hilos con el Store, perfiles y", "colecciones con Trustcall."],
-        "5 lecciones · 78 min", "\n".join(partes),
-        "Módulo 5: un recuerdo guardado en el Store desde una conversación se usa en otra",
+        ["Memoria que sobrevive entre", "hilos con el Store: perfiles", "y colecciones."],
+        "por escribir", "\n".join(partes),
+        "Módulo 5: una preferencia guardada en el Store desde una conversación se usa en otra",
     )
 
 
@@ -631,7 +633,7 @@ def modulo_6(t) -> str:
     partes += [
         f'<rect x="700" y="40" width="260" height="220" rx="14" fill="{t["nodo"]}" stroke="{t["verde"]}" stroke-width="1.8"/>',
         texto(830, 66, "LangGraph Server", tam=17, color=t["tinta"], peso=700, ancla="middle"),
-        chip(t, 716, 80, "assistant · task_maistro", "violeta", w=228, h=28, tam=12, visible=True),
+        chip(t, 716, 80, "assistant · agente", "violeta", w=228, h=28, tam=12, visible=True),
         texto(718, 134, "runs del hilo", tam=11, color=t["suave"], fuente="mono"),
         # run 1: en curso → listo
         chip(t, 716, 144, "run 1 · en curso", "verde", w=228, h=28, tam=12, anim=aparecer(1.0, 4.6)),
@@ -650,7 +652,7 @@ def modulo_6(t) -> str:
     return tarjeta(
         t, 6, "Despliegue",
         ["Del notebook a una API: servidor,", "SDK, double texting y", "assistants versionados."],
-        "5 lecciones · 49 min", "\n".join(partes),
+        "por escribir", "\n".join(partes),
         "Módulo 6: el servidor de LangGraph encola un segundo mensaje mientras termina el primero",
     )
 
