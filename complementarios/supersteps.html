@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" integrity="sha512-fHwaWebuwA7NSF5Qg/af4UeDx9XqUpYpOGgubo3yWu+b2IQR4UeQwbb42Ti7gVAjNtVoI/I9TEoYeu9omwcC6g==" crossorigin="anonymous" referrerpolicy="no-referrer">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" integrity="sha512-LQNxIMR5rXv7o+b1l8+N1EZMfhG7iFZ9HhnbJkTp4zjNr5Wvst75AqUeFDxeRUa7l5vEDyUiAip//r+EFLLCyA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="stylesheet" href="estilo.css">
-<script type="module" src="escenas/supersteps.js"></script>
+<script defer src="paquetes/supersteps.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -143,6 +143,7 @@
     <section class="blk">
       <h2 class="blk-h">Cómo está construido</h2>
       <p class="blk-p">La página no llama a LangGraph. Las reglas de arriba están escritas en JavaScript, en <code>logica/grafo.js</code>, y los dos grafos, en <code>logica/supersteps.js</code>. Para comprobar que coinciden con LangGraph, <code>pruebas/generar_casos.py</code> corre los mismos grafos con langgraph 1.2.17 en 480 combinaciones y guarda cada sucesión de estados y cada error. Euclides: 8 pares (a₀, b₀), las dos aristas desde START, las tres variantes de <code>cocientes</code> y 6 valores de <code>recursion_limit</code>. Newton: 2 funciones, 8 valores de x₀, 2 de ε, 3 límites y las dos aristas. La prueba de Node exige, en los 480 casos, la misma sucesión de estados, el mismo tipo de error y el mismo mensaje.</p>
+      <p class="blk-p">El navegador no carga esos módulos uno por uno, sino <code>paquetes/supersteps.js</code>, un solo archivo armado desde ellos. Así la página funciona también abierta como archivo, sin servidor.</p>
       <p class="blk-p">Python y JavaScript usan los mismos números de punto flotante, los dobles de IEEE 754, así que las iteradas de Newton salen idénticas bit a bit. La traza las escribe como Python: <code>1.0</code> y no <code>1</code>.</p>
       <p class="blk-p">Corre un solo nodo por superstep, como en la lección. Varios nodos en el mismo superstep llegan en el módulo 4.</p>
     </section>
