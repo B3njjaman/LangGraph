@@ -129,7 +129,7 @@ Por escribir. Del notebook a una API: servidor de LangGraph, SDK, double texting
 
 ## Simulaciones
 
-Las ideas que se entienden mejor viéndolas correr tienen una simulación en el navegador, en [Complementarios](https://b3njjaman.github.io/LangGraph/complementarios/). Cada una sigue una lección, con la matemática y el código al lado, y su lógica está probada contra LangGraph.
+Las ideas que se entienden mejor viéndolas correr tienen una simulación en el navegador, en [Complementarios](https://b3njjaman.github.io/LangGraph/complementarios/). Cada una sigue una lección, con la matemática y el código al lado, y su lógica está probada contra LangGraph. Con el repositorio en el PC también se abren sin servidor, desde `complementarios/index.html`.
 
 | Simulación | Lección |
 |---|---|
@@ -138,7 +138,7 @@ Las ideas que se entienden mejor viéndolas correr tienen una simulación en el 
 | Temperatura y muestreo<br><sub>próximamente</sub> | 2 · `softmax(z/T)`, `top_k` y `top_p` sobre los mismos logits |
 | El agente y sus checkpoints<br><sub>próximamente</sub> | 4 y 5 · El ciclo `modelo → tools`, un checkpoint por superstep y la vuelta atrás |
 
-Para correr las pruebas, con Node 22 o más nuevo: `node --test "complementarios/pruebas/*.test.js"`. Los casos de referencia se generan con LangGraph: `python complementarios/pruebas/generar_casos.py`.
+Cómo están hechas y cómo se prueban: [`complementarios/`](complementarios).
 
 ## Cómo ejecutarlo
 
