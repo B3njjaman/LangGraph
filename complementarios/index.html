@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complementarios del curso</title>
+<meta name="description" content="Simulaciones interactivas del curso de LangGraph en lenguaje matemático: supersteps y reducers, add_messages, temperatura y muestreo, y el ciclo del agente con checkpoints.">
+<script>
+  try {
+    var modo = localStorage.getItem("complementarios-modo");
+    if (modo === "claro" || modo === "oscuro") document.documentElement.dataset.modo = modo;
+  } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<script type="module">
+  import { iniciarPagina } from "./motor.js";
+  iniciarPagina();
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a href="https://github.com/B3njjaman/LangGraph">← El curso</a>
+    <button class="modo" type="button">Modo oscuro</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Curso de LangGraph · Complementarios</p>
+      <h1>Simulaciones</h1>
+      <p class="lede">Las ideas del curso que se entienden mejor viéndolas correr. Cada simulación sigue una lección: se mueven los parámetros, se avanza paso a paso y al lado están la matemática y el código. La lógica de cada una está probada contra LangGraph.</p>
+    </section>
+
+    <div class="tarjetas">
+      <a class="tarjeta" href="supersteps.html">
+        <p class="eyebrow">Módulo 1 · Lección 1</p>
+        <h2>Supersteps y reducers</h2>
+        <p>Euclides y Newton como grafos, un superstep a la vez: la actualización de cada nodo, el reducer que la junta con el estado y el superstep en que <code>recursion_limit</code> corta.</p>
+        <span class="ir">Abrir →</span>
+      </a>
+      <div class="tarjeta pronto">
+        <p class="eyebrow">Módulo 1 · Lección 2</p>
+        <h2>add_messages</h2>
+        <p>Dos listas de mensajes y su combinación: por qué a ⊕ b y b ⊕ a no siempre coinciden, cuándo sí, y qué hace <code>RemoveMessage</code>.</p>
+        <span class="ir">Próximamente</span>
+      </div>
+      <div class="tarjeta pronto">
+        <p class="eyebrow">Módulo 1 · Lección 2</p>
+        <h2>Temperatura y muestreo</h2>
+        <p>El modelo como núcleo de probabilidad: softmax(z/T), <code>top_k</code> y <code>top_p</code> sobre los mismos logits, y muestras que se acercan a la distribución.</p>
+        <span class="ir">Próximamente</span>
+      </div>
+      <div class="tarjeta pronto">
+        <p class="eyebrow">Módulo 1 · Lecciones 4 y 5</p>
+        <h2>El agente y sus checkpoints</h2>
+        <p>El ciclo modelo → herramientas → modelo con «Deriva x³ y después integra el resultado», un checkpoint por superstep y la vuelta atrás en el historial.</p>
+        <span class="ir">Próximamente</span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="pie">
+    Complementarios de <a href="https://github.com/B3njjaman/LangGraph">un curso de LangGraph en lenguaje matemático</a>. Las simulaciones corren en el navegador, sin modelo ni servidor.
+  </footer>
+</div>
+</body>
+</html>
