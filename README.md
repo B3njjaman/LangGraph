@@ -127,6 +127,19 @@ Por escribir. La diferencia entre el checkpoint de un hilo y el Store, que sobre
 
 Por escribir. Del notebook a una API: servidor de LangGraph, SDK, double texting y assistants.
 
+## Simulaciones
+
+Las ideas que se entienden mejor viéndolas correr tienen una simulación en el navegador, en [Complementarios](https://b3njjaman.github.io/LangGraph/complementarios/). Cada una sigue una lección, con la matemática y el código al lado, y su lógica está probada contra LangGraph.
+
+| Simulación | Lección |
+|---|---|
+| [Supersteps y reducers](https://b3njjaman.github.io/LangGraph/complementarios/supersteps.html) | 1 · Euclides y Newton un superstep a la vez: la actualización de cada nodo, el reducer y el corte de `recursion_limit` |
+| add_messages<br><sub>próximamente</sub> | 2 · Por qué `a ⊕ b` y `b ⊕ a` no siempre coinciden |
+| Temperatura y muestreo<br><sub>próximamente</sub> | 2 · `softmax(z/T)`, `top_k` y `top_p` sobre los mismos logits |
+| El agente y sus checkpoints<br><sub>próximamente</sub> | 4 y 5 · El ciclo `modelo → tools`, un checkpoint por superstep y la vuelta atrás |
+
+Para correr las pruebas, con Node 22 o más nuevo: `node --test "complementarios/pruebas/*.test.js"`. Los casos de referencia se generan con LangGraph: `python complementarios/pruebas/generar_casos.py`.
+
 ## Cómo ejecutarlo
 
 **En el PC**, para las lecciones sin modelo. Desde la raíz del repositorio, en Windows (PowerShell):
@@ -172,6 +185,7 @@ LangGraph/
 ├── modulos/                 el curso, una carpeta por módulo
 │   ├── modulo-1/            las lecciones en notebooks y el índice del módulo
 │   └── requirements.txt
+├── complementarios/         las simulaciones (GitHub Pages) y sus pruebas contra LangGraph
 ├── imagenes/
 │   ├── diagramas/           diagramas de flujo en D2 y su generador
 │   ├── figuras/             figuras matemáticas y su generador

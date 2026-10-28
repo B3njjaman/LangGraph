@@ -14,6 +14,8 @@ Cada concepto se presenta como definición, propiedad y código, con diagramas a
 | 4 · Agente *(próximamente)* | El ciclo `tools → modelo` y el límite de supersteps | Kaggle |
 | 5 · Agente con memoria *(próximamente)* | El hilo como sucesión de estados, `get_state_history` | Kaggle |
 
+**Simulación.** La lección 1 tiene una en el navegador: [Supersteps y reducers](https://b3njjaman.github.io/LangGraph/complementarios/supersteps.html), con Euclides y Newton un superstep a la vez. Las demás se irán sumando en [Complementarios](https://b3njjaman.github.io/LangGraph/complementarios/).
+
 ## Cómo ejecutar la lección 1
 
 No necesita GPU ni claves. Desde la raíz del repositorio:

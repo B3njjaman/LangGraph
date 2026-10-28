@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supersteps y reducers</title>
+<meta name="description" content="Simulación de la lección 1 del curso de LangGraph: Euclides y Newton como grafos, un superstep a la vez, con el reducer y recursion_limit a la vista.">
+<script>
+  try {
+    var modo = localStorage.getItem("complementarios-modo");
+    if (modo === "claro" || modo === "oscuro") document.documentElement.dataset.modo = modo;
+  } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" integrity="sha512-fHwaWebuwA7NSF5Qg/af4UeDx9XqUpYpOGgubo3yWu+b2IQR4UeQwbb42Ti7gVAjNtVoI/I9TEoYeu9omwcC6g==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" integrity="sha512-LQNxIMR5rXv7o+b1l8+N1EZMfhG7iFZ9HhnbJkTp4zjNr5Wvst75AqUeFDxeRUa7l5vEDyUiAip//r+EFLLCyA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="estilo.css">
+<script type="module" src="escenas/supersteps.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a href="./">← Complementarios</a>
+    <button class="modo" type="button">Modo oscuro</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Módulo 1 · Lección 1 · Simulación</p>
+      <h1>Supersteps y reducers</h1>
+      <p class="lede">Una ejecución de LangGraph es una sucesión de estados s₀, s₁, s₂, …, uno por superstep. Aquí corren los dos grafos de la lección 1, Euclides y Newton, un superstep a la vez: qué escribe el nodo, cómo el reducer lo junta con el estado y en qué superstep <code>recursion_limit</code> corta la ejecución.</p>
+    </section>
+
+    <div class="stage">
+      <canvas id="stage" role="img" aria-label="El grafo START, paso y END. Una ficha recorre la arista que se toma en cada superstep; debajo, la actualización que escribe paso y el estado que resulta."></canvas>
+      <span class="idx" id="idx" aria-live="polite">superstep 0</span>
+    </div>
+    <p class="hint">Paso ▸ avanza un superstep · un toque en la traza salta a ese estado</p>
+
+    <div class="botonera">
+      <button class="btn" id="reiniciar" type="button">⟲ Reiniciar</button>
+      <button class="btn" id="atras" type="button">◂ Atrás</button>
+      <button class="btn primario" id="paso" type="button">Paso ▸</button>
+      <button class="btn" id="reproducir" type="button">▶ Reproducir</button>
+    </div>
+
+    <div class="ctls">
+      <div class="ctl">
+        <span class="ctl-label">Algoritmo</span>
+        <div class="seg" id="ctl-algoritmo" role="group" aria-label="Algoritmo"></div>
+      </div>
+      <div class="ctl">
+        <span class="ctl-label">Arista desde START</span>
+        <div class="seg" id="ctl-entrada" role="group" aria-label="Arista desde START"></div>
+      </div>
+
+      <div class="ctl" data-solo="euclides">
+        <span class="ctl-label">Entrada</span>
+        <div class="nums">
+          <label>a₀ <input id="ctl-a" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
+          <label>b₀ <input id="ctl-b" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
+        </div>
+        <div class="presets">
+          <button class="btn" type="button" data-ab="1071,462">1071, 462</button>
+          <button class="btn" type="button" data-ab="89,55">89, 55</button>
+          <button class="btn" type="button" data-ab="5,0">5, 0</button>
+          <button class="btn" type="button" data-ab="0,5">0, 5</button>
+        </div>
+      </div>
+      <div class="ctl" data-solo="euclides">
+        <span class="ctl-label"><span>Clave <span class="nombre">cocientes</span></span></span>
+        <div class="seg" id="ctl-cocientes" role="group" aria-label="Clave cocientes"></div>
+      </div>
+
+      <div class="ctl" data-solo="newton" hidden>
+        <span class="ctl-label"><span class="nombre">f(x)</span></span>
+        <div class="seg" id="ctl-funcion" role="group" aria-label="f(x)"></div>
+      </div>
+      <div class="ctl" data-solo="newton" hidden>
+        <label class="ctl-label" for="ctl-x0"><span class="nombre">x₀</span> <output id="val-x0"></output></label>
+        <input id="ctl-x0" type="range" min="-3" max="3" step="0.25" value="1">
+      </div>
+      <div class="ctl" data-solo="newton" hidden>
+        <span class="ctl-label"><span class="nombre">ε</span></span>
+        <div class="seg" id="ctl-epsilon" role="group" aria-label="ε"></div>
+      </div>
+
+      <div class="ctl">
+        <label class="ctl-label" for="ctl-limite"><span class="nombre">recursion_limit</span> <output id="val-limite"></output></label>
+        <input id="ctl-limite" type="range" min="1" max="30" step="1" value="25">
+      </div>
+    </div>
+
+    <div class="traza" id="traza">
+      <div class="traza-h">
+        <span>stream · <span id="titulo-estado">EstadoMCD</span></span>
+        <span id="traza-resumen"></span>
+      </div>
+      <div class="traza-cuerpo">
+        <table>
+          <thead><tr><th class="min">t</th><th>corre</th><th class="min">s<sub>t</sub></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <section class="blk">
+      <h2 class="blk-h">Qué mirar</h2>
+      <ul class="blk-p">
+        <li><strong>El corte de <code>recursion_limit</code>.</strong> Euclides con (1071, 462) usa los supersteps 0 a 3. Con <code>recursion_limit</code> = 4 llega a END. Con 3, la traza muestra s₀ a s₃ y después <code>GraphRecursionError</code>, aunque en s₃ la arista ya eligió END: la ejecución usa cuatro supersteps contando el de START, y el límite es tres.</li>
+        <li><strong>while y do-while.</strong> Con b₀ = 0, la arista condicional desde START va directo a END y la ejecución termina en s₀. Con la arista fija, <code>paso</code> corre antes de preguntar y calcula a mod 0: <code>ZeroDivisionError</code>.</li>
+        <li><strong>El reducer.</strong> Con <code>operator.add</code>, los cocientes de (1071, 462) se acumulan: [2], [2, 3], [2, 3, 7]. Sin reducer, cada superstep reemplaza la lista y queda [7]. El nodo es el mismo en los dos casos; solo cambia el esquema.</li>
+        <li><strong>Newton y el límite.</strong> Con f(x) = x² − 2, x₀ = 1 y ε = 10⁻¹⁰, END llega en el superstep 4: <code>recursion_limit</code> = 4 da error y 5 alcanza. Con x² + 1 no hay raíz real y |f(x)| ≥ 1 siempre, así que la arista nunca elige END. Desde x₀ = 0,5 la ejecución termina en <code>GraphRecursionError</code>, como en la lección. Desde x₀ = 1, en cambio, x₁ = 1 − 2/2 = 0, f′(0) = 0 y el paso siguiente divide por cero: <code>ZeroDivisionError</code>.</li>
+      </ul>
+    </section>
+
+    <section class="blk">
+      <h2 class="blk-h">Las matemáticas</h2>
+      <div class="eq-row">
+        <div class="eq"><span class="tex-d">s_0 = s_\varnothing \oplus e</span></div>
+        <p class="eq-note">El superstep 0 es el de START: aplica la entrada <span class="tex">e</span> al estado parcial <span class="tex">s_\varnothing</span>, que solo tiene el valor inicial de cada clave con reducer (Definición 1.12 y su observación). Como la lista vacía es neutra para la concatenación, aquí <span class="tex">s_0</span> coincide con la entrada.</p>
+      </div>
+      <div class="eq-row">
+        <div class="eq"><span class="tex-d">s_t = s_{t-1} \oplus \varphi(s_{t-1}), \quad t \ge 1</span></div>
+        <p class="eq-note">En el superstep <span class="tex">t</span> corre <code>paso</code>: lee el estado <span class="tex">s_{t-1}</span> completo y devuelve una actualización <span class="tex">u = \varphi(s_{t-1})</span> con las claves que cambia (Definiciones 1.7 y 1.12). En el escenario, <span class="tex">u</span> es la primera tarjeta y <span class="tex">s_t</span> la segunda.</p>
+      </div>
+      <div class="eq-row">
+        <div class="eq"><span class="tex-d">(s \oplus u)(k) = \begin{cases} r_k\big(s(k), u(k)\big) & k \in \operatorname{dom}(u) \\ s(k) & k \notin \operatorname{dom}(u) \end{cases}</span></div>
+        <p class="eq-note">Definición 1.8. Sin reducer, <span class="tex">r_k(v, w) = w</span> y el valor nuevo reemplaza al anterior (Propiedad 1.9). Con <code>operator.add</code>, <span class="tex">r_k(v, w) = v + w</span>, la concatenación de listas.</p>
+      </div>
+      <div class="eq-row">
+        <div class="eq"><span class="tex-d">\texttt{invoke} = \begin{cases} s_n & n + 1 \le L \\ \text{error} & n + 1 > L \end{cases}</span></div>
+        <p class="eq-note">Aquí <span class="tex">n</span> es el superstep en que la arista elige END y <span class="tex">L</span> es <code>recursion_limit</code>, la cantidad máxima de supersteps contando el de START (Definición 1.15). Si la arista nunca elige END y ningún nodo falla, la ejecución entrega <span class="tex">s_0, \dots, s_L</span> y se corta con <code>GraphRecursionError</code>.</p>
+      </div>
+      <div class="eq-row">
+        <div class="eq"><span class="tex-d">b_t = a_{t-1} \bmod b_{t-1} &lt; b_{t-1} \;\Longrightarrow\; n \le b_0</span></div>
+        <p class="eq-note">En Euclides, <span class="tex">b</span> baja estrictamente en cada superstep en que corre <code>paso</code>: es una variante (Definición 1.16). Por eso END llega a más tardar en el superstep <span class="tex">b_0</span>, y <code>recursion_limit</code> <span class="tex">\ge b_0 + 1</span> basta (Proposición 1.17). Newton no tiene variante, y con <span class="tex">x^2 + 1</span> nunca llega a END.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <h2 class="blk-h">Cómo está construido</h2>
+      <p class="blk-p">La página no llama a LangGraph. Las reglas de arriba están escritas en JavaScript, en <code>logica/grafo.js</code>, y los dos grafos, en <code>logica/supersteps.js</code>. Para comprobar que coinciden con LangGraph, <code>pruebas/generar_casos.py</code> corre los mismos grafos con langgraph 1.2.17 en 480 combinaciones y guarda cada sucesión de estados y cada error. Euclides: 8 pares (a₀, b₀), las dos aristas desde START, las tres variantes de <code>cocientes</code> y 6 valores de <code>recursion_limit</code>. Newton: 2 funciones, 8 valores de x₀, 2 de ε, 3 límites y las dos aristas. La prueba de Node exige, en los 480 casos, la misma sucesión de estados, el mismo tipo de error y el mismo mensaje.</p>
+      <p class="blk-p">Python y JavaScript usan los mismos números de punto flotante, los dobles de IEEE 754, así que las iteradas de Newton salen idénticas bit a bit. La traza las escribe como Python: <code>1.0</code> y no <code>1</code>.</p>
+      <p class="blk-p">Corre un solo nodo por superstep, como en la lección. Varios nodos en el mismo superstep llegan en el módulo 4.</p>
+    </section>
+
+    <section class="blk">
+      <h2 class="blk-h">El código, paso a paso</h2>
+      <p class="blk-p">En cada paso, arriba va el código de la lección y abajo la parte de la simulación que hace lo mismo.</p>
+
+      <div class="step">
+        <div class="step-head"><span class="step-n">01</span><h3 class="step-t">El nodo y la condición</h3></div>
+        <div class="lang"><span>Python · lección 1</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="modulos/modulo-1/01_grafo_sin_modelo.ipynb"><code>def paso(s: EstadoMCD) -&gt; dict:
+    """La caja: a, b ← b, a mod b."""
+    return {"a": s["b"], "b": s["a"] % s["b"]}
+
+
+def continuar(s: EstadoMCD) -&gt; str:
+    """El rombo: sigue con paso mientras b ≠ 0."""
+    return "paso" if s["b"] != 0 else END</code></pre>
+        <div class="lang"><span>JavaScript · logica/supersteps.js</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="complementarios/logica/supersteps.js"><code>const paso = (s) =&gt; {
+  const { a, b } = s;
+  if (b === 0) throw new ErrorPython("ZeroDivisionError", "integer modulo by zero");
+  const u = { a: b, b: a % b };
+  if (cocientes !== "ninguna") u.cocientes = [Math.floor(a / b)];
+  return u;
+};
+const continuar = (s) =&gt; (s.b !== 0 ? "paso" : END);</code></pre>
+        <p class="step-x">El nodo devuelve solo las claves que cambia: una actualización, no un estado. En JavaScript, <code>a % 0</code> da <code>NaN</code> y no un error, así que la simulación lanza a mano el <code>ZeroDivisionError</code> de Python, con su mismo mensaje.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-n">02</span><h3 class="step-t">La arista desde START</h3></div>
+        <div class="lang"><span>Python · while</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="modulos/modulo-1/01_grafo_sin_modelo.ipynb"><code>constructor.add_conditional_edges(START, continuar, ["paso", END])
+constructor.add_conditional_edges("paso", continuar, ["paso", END])</code></pre>
+        <div class="lang"><span>Python · do-while</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="modulos/modulo-1/01_grafo_sin_modelo.ipynb"><code>constructor.add_edge(START, "paso")  # do … while: paso corre antes de preguntar
+constructor.add_conditional_edges("paso", continuar, ["paso", END])</code></pre>
+        <div class="lang"><span>JavaScript · logica/supersteps.js</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="complementarios/logica/supersteps.js"><code>function aristasDeBucle(continuar, entrada) {
+  return {
+    [START]: entrada === "while" ? { condicional: continuar } : { fija: "paso" },
+    paso: { condicional: continuar },
+  };
+}</code></pre>
+        <p class="step-x">La única diferencia entre los dos grafos es la arista que sale de START. La condicional pregunta antes del primer paso, como un <code>while</code>; la fija corre <code>paso</code> una vez sin preguntar, como un <code>do … while</code>. En el dibujo, las aristas condicionales van punteadas.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-n">03</span><h3 class="step-t">El reducer</h3></div>
+        <div class="lang"><span>Python · lección 1</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="modulos/modulo-1/01_grafo_sin_modelo.ipynb"><code>class EstadoConCocientes(TypedDict):
+    a: int
+    b: int
+    cocientes: Annotated[list[int], operator.add]</code></pre>
+        <div class="lang"><span>JavaScript · logica/grafo.js</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="complementarios/logica/grafo.js"><code>if (def.reducer) {
+  nuevo[k] = k in nuevo ? def.reducer(nuevo[k], w) : w;
+} else {
+  if (escritas.has(k)) throw new ErrorPython("InvalidUpdateError", `la clave ${k} recibió dos valores en un superstep`);
+  nuevo[k] = w;
+}</code></pre>
+        <p class="step-x">Es <span class="tex">s \oplus u</span> clave por clave. Una clave con reducer combina el valor anterior con el nuevo; una sin reducer lo reemplaza. Las claves que el nodo no devuelve ni se tocan.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-n">04</span><h3 class="step-t">El bucle de supersteps y su límite</h3></div>
+        <div class="lang"><span>Python · lección 1</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="modulos/modulo-1/01_grafo_sin_modelo.ipynb"><code>for limite in (4, 5):
+    try:
+        newton.invoke({"x": 1.0, "n": 0}, {"recursion_limit": limite})
+        print(f"recursion_limit = {limite}: llega a END")
+    except GraphRecursionError:
+        print(f"recursion_limit = {limite}: GraphRecursionError")</code></pre>
+        <div class="lang"><span>JavaScript · logica/grafo.js</span><button class="copy" type="button">Copiar</button></div>
+        <pre class="code" data-fuente="complementarios/logica/grafo.js"><code>for (let k = 0; ; ) {
+  if (k &gt;= limite) return { pasos, error: { tipo: "GraphRecursionError", mensaje: mensajeLimite(limite) } };
+  const siguientes = pasos[k].siguientes;
+  if (siguientes.length === 0) return { pasos, error: null };</code></pre>
+        <p class="step-x">El orden de las dos comparaciones importa. Primero se mira el límite y después si queda algo por correr; por eso (1071, 462) con límite 3 termina en error aunque la arista ya eligió END. LangGraph hace lo mismo, y los 480 casos lo confirman.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <h2 class="blk-h">Por qué importa</h2>
+      <p class="blk-p">El resto del curso corre sobre esta misma máquina. Un agente es un grafo con el ciclo modelo → herramientas → modelo: cada vuelta son supersteps, y <code>recursion_limit</code> es lo que lo detiene si el modelo nunca deja de pedir herramientas.</p>
+      <p class="blk-p">La lista de mensajes de la lección 2 es una clave con reducer, <code>add_messages</code>, y se usa como <code>cocientes</code> con <code>operator.add</code>: cada nodo devuelve solo los mensajes nuevos y el reducer los junta con los anteriores. Y los checkpoints de la lección 5 guardan un <span class="tex">s_t</span> por superstep, los mismos estados de la traza.</p>
+    </section>
+  </main>
+
+  <nav class="pager" aria-label="Simulaciones">
+    <a href="./">← Complementarios</a>
+    <span class="void">add_messages · próximamente</span>
+  </nav>
+</div>
+</body>
+</html>
