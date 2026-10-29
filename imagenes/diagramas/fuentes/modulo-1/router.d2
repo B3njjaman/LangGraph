@@ -1,0 +1,96 @@
+# Lección 3. El router, ejecutado dos veces: un pedido que el modelo responde con texto y uno que pasa por tools.
+# tools_condition mira el último mensaje: si trae pedidos va a tools; si no, a END. tools lleva a END sin volver al modelo.
+# intervalo: 2400
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+grid-columns: 2
+grid-gap: 48
+
+grafo: {
+  class: invisible
+  direction: down
+
+  inicio: START {class: extremo}
+  modelo: "modelo\nqwen3:8b" {class: nodo-llm; width: 170; height: 64}
+  tools: "tools" {class: nodo-herramienta; width: 130; height: 52}
+  fin: END {class: extremo}
+
+  inicio -> modelo {class: arista}
+  modelo -> tools: "trae pedidos" {class: condicional}
+  modelo -> fin: "sin pedidos" {class: condicional}
+  tools -> fin {class: arista}
+}
+
+lado: {
+  class: invisible
+  grid-columns: 1
+  grid-gap: 12
+
+  paso: "Primera ejecución:\n«¿Cuánto es 2 + 2?» entra por START." {class: paso; width: 320}
+
+  estado: "s(messages)" {
+    class: panel
+    label.near: top-left
+    grid-columns: 1
+    grid-gap: 10
+
+    m1: "humano · ¿Cuánto es 2 + 2?" {class: msj-humano}
+    m2: "ia · 4" {class: msj-ia; style.opacity: 0}
+    m3: "tool · 3*x**2" {class: msj-tool; style.opacity: 0}
+  }
+}
+
+grafo.inicio.class: extremo-activo
+
+steps: {
+  1: {
+    grafo.inicio.class: extremo
+    grafo.(inicio -> modelo)[0].class: recorrida
+    grafo.modelo.class: nodo-llm-activo
+    lado.estado.m2.style.opacity: 1
+    lado.paso.label: "Superstep 1: el modelo\nresponde con texto."
+  }
+  2: {
+    grafo.(inicio -> modelo)[0].class: arista
+    grafo.modelo.class: nodo-llm
+    grafo.(modelo -> fin)[0].class: recorrida
+    grafo.fin.class: extremo-activo
+    lado.paso.label: "El último mensaje no trae\npedidos: tools_condition va a END."
+  }
+  3: {
+    grafo.(modelo -> fin)[0].class: condicional
+    grafo.fin.class: extremo
+    grafo.inicio.class: extremo-activo
+    lado.estado.m1.label: "humano · Deriva x³"
+    lado.estado.m2.style.opacity: 0
+    lado.paso.label: "Segunda ejecución:\n«Deriva x³» entra por START."
+  }
+  4: {
+    grafo.inicio.class: extremo
+    grafo.(inicio -> modelo)[0].class: recorrida
+    grafo.modelo.class: nodo-llm-activo
+    lado.estado.m2.label: "ia · pide derivar(x**3)"
+    lado.estado.m2.style.opacity: 1
+    lado.paso.label: "Superstep 1: el modelo\npide la herramienta derivar."
+  }
+  5: {
+    grafo.(inicio -> modelo)[0].class: arista
+    grafo.modelo.class: nodo-llm
+    grafo.(modelo -> tools)[0].class: recorrida
+    grafo.tools.class: nodo-herramienta-activo
+    lado.paso.label: "El último mensaje trae un\npedido: tools_condition va a tools."
+  }
+  6: {
+    grafo.(modelo -> tools)[0].class: condicional
+    lado.estado.m3.style.opacity: 1
+    lado.paso.label: "Superstep 2: tools calcula\nderivar(x**3) y escribe 3*x**2."
+  }
+  7: {
+    grafo.tools.class: nodo-herramienta
+    grafo.(tools -> fin)[0].class: recorrida
+    grafo.fin.class: extremo-activo
+    lado.paso.label: "tools → END: termina con el\nresultado, sin volver al modelo."
+  }
+}

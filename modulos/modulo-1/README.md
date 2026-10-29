@@ -10,7 +10,7 @@ Cada concepto se presenta como definición, propiedad y código, con diagramas a
 |---|---|---|
 | [1 · Grafo sin modelo](01_grafo_sin_modelo.ipynb) | Un algoritmo como grafo: el algoritmo de Euclides del código al diagrama de flujo y a LangGraph, y con él esquema, estado, nodo, reducer, aristas, supersteps y terminación. Después, el método de Newton con el mismo grafo. Con 11 diagramas (8 animados), 3 figuras y dos profundizaciones: Newton como método babilónico (la ecuación de Pell y la fracción continua de √2) y lo que ejecuta `compile` (Pregel y canales) | CPU |
 | [2 · Mensajes y herramientas](02_mensajes_y_herramientas.ipynb) | Mensajes y conversaciones, `add_messages` como monoide idempotente no conmutativo, herramientas de SymPy y lo que el modelo ve de ellas, el modelo como núcleo de probabilidad y el grafo `START → modelo → END`. Con 2 diagramas animados y una profundización: un `tool_call` es texto (la plantilla y el lector de Ollama) | §1–4 en CPU, el resto en Kaggle |
-| 3 · Router *(próximamente)* | El modelo decide una vez: grafo acíclico | Kaggle |
+| [3 · Router](03_router.ipynb) | El nodo de herramientas (`ToolNode`) y los tres modos en que falla un pedido, con `handle_tool_errors`; la arista `tools_condition`; el router y sus estados finales, probados con un modelo guionado: el modelo decide una vez y el grafo termina con el resultado de la herramienta. Con 2 diagramas animados y una profundización: los pedidos de un mensaje corren en hilos dentro de un superstep, y el GIL | §1–5 y la profundización en CPU, §6 en Kaggle |
 | 4 · Agente *(próximamente)* | El ciclo `tools → modelo` y el límite de supersteps | Kaggle |
 | 5 · Agente con memoria *(próximamente)* | El hilo como sucesión de estados, `get_state_history` | Kaggle |
 
