@@ -1,6 +1,7 @@
 # Lección 3, profundización. El superstep 2 del router con tres pedidos en el mismo mensaje.
 # ToolNode reparte los pedidos con executor.map, un hilo por pedido; terminan en cualquier orden,
 # pero la actualización trae las respuestas en el orden de los pedidos. Abajo, la diferencia con el módulo 4.
+# Una sola columna: así se lee en el celular. Cada hilo muestra su pedido y, al terminar, su respuesta.
 # intervalo: 2400
 ...@../estilo
 
@@ -8,17 +9,17 @@ vars: {d2-config: {layout-engine: dagre}}
 
 classes: {
   pedido: {
-    width: 250
+    width: 320
     height: 36
     style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; border-radius: 8; font: mono; font-size: 13; bold: false; font-color: ${tinta}}
   }
   pedido-activo: {
-    width: 250
+    width: 320
     height: 36
     style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 8; font: mono; font-size: 13; bold: false; font-color: ${tinta}}
   }
   respuesta: {
-    width: 250
+    width: 320
     height: 36
     style: {bold: false; fill: ${ambar-suave}; stroke: ${ambar}; stroke-width: 1; border-radius: 8; font: mono; font-size: 13; font-color: ${tinta}}
   }
@@ -27,55 +28,52 @@ classes: {
 grid-columns: 1
 grid-gap: 18
 
-mensaje: "s₁ · último mensaje · ia pide\nderivar(x**3), integrar(x**3), resolver(x**2 - 2)" {class: msj-ia; width: 500; height: 52}
+mensaje: "s₁ · último mensaje · ia pide\nderivar(x**3), integrar(x**3),\nresolver(x**2 - 2)" {class: msj-ia; width: 340; height: 70}
 
 tools: "tools · superstep 2" {
   class: grupo
   label.near: top-left
-  grid-columns: 2
-  grid-gap: 12
+  grid-columns: 1
+  grid-gap: 10
 
-  p1: "hilo 0 · derivar(x**3)" {class: pedido}
-  p2: "hilo 1 · integrar(x**3)" {class: pedido}
-  p3: "hilo 2 · resolver(x**2 - 2)" {class: pedido}
-  r1: "t₁ · 3*x**2" {class: respuesta; style.opacity: 0}
-  r2: "t₂ · x**4/4" {class: respuesta; style.opacity: 0}
-  r3: "t₃ · [-sqrt(2), sqrt(2)]" {class: respuesta; style.opacity: 0}
+  h0: "hilo 0 · derivar(x**3)" {class: pedido}
+  h1: "hilo 1 · integrar(x**3)" {class: pedido}
+  h2: "hilo 2 · resolver(x**2 - 2)" {class: pedido}
 }
 
-u: "u = {messages: (t₁, t₂, t₃)}" {class: codigo; width: 500; height: 40; style.opacity: 0.25}
+u: "u = {messages: (t₁, t₂, t₃)}" {class: codigo; width: 340; height: 40; style.opacity: 0.25}
 
-explica: "Superstep 2: tools recibe\nun mensaje con tres pedidos." {class: paso; width: 500; height: 64}
+explica: "Superstep 2: tools recibe\nun mensaje con tres pedidos." {class: paso; width: 340; height: 80}
 
 steps: {
   1: {
-    tools.p1.class: pedido-activo
-    tools.p2.class: pedido-activo
-    tools.p3.class: pedido-activo
-    explica.label: "executor.map reparte un pedido por hilo:\nlos tres corren a la vez."
+    tools.h0.class: pedido-activo
+    tools.h1.class: pedido-activo
+    tools.h2.class: pedido-activo
+    explica.label: "executor.map reparte un pedido\npor hilo: los tres corren a la vez."
   }
   2: {
-    tools.p3.class: pedido
-    tools.r3.style.opacity: 1
+    tools.h2.class: respuesta
+    tools.h2.label: "hilo 2 → t₃ · [-sqrt(2), sqrt(2)]"
     explica.label: "Terminan en cualquier orden;\naquí, resolver termina primero."
   }
   3: {
-    tools.p1.class: pedido
-    tools.r1.style.opacity: 1
+    tools.h0.class: respuesta
+    tools.h0.label: "hilo 0 → t₁ · 3*x**2"
     explica.label: "Después termina derivar."
   }
   4: {
-    tools.p2.class: pedido
-    tools.r2.style.opacity: 1
+    tools.h1.class: respuesta
+    tools.h1.label: "hilo 1 → t₂ · x**4/4"
     explica.label: "Al final, integrar."
   }
   5: {
     u.style.opacity: 1
     u.style.stroke: ${turquesa}
     u.style.stroke-width: 2
-    explica.label: "La actualización trae las respuestas en el orden\nde los pedidos, no en el que terminaron."
+    explica.label: "La actualización trae las respuestas\nen el orden de los pedidos,\nno en el que terminaron."
   }
   6: {
-    explica.label: "En el módulo 4 son varios nodos en un superstep:\ncada uno escribe su u y los reducers las combinan."
+    explica.label: "En el módulo 4 son varios nodos en\nun superstep: cada uno escribe su u\ny los reducers las combinan."
   }
 }
