@@ -8,22 +8,17 @@ vars: {d2-config: {layout-engine: dagre}}
 
 classes: {
   pedido: {
-    width: 230
+    width: 250
     height: 36
     style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 1; border-radius: 8; font: mono; font-size: 13; bold: false; font-color: ${tinta}}
   }
   pedido-activo: {
-    width: 230
+    width: 250
     height: 36
     style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 2; border-radius: 8; font: mono; font-size: 13; bold: false; font-color: ${tinta}}
   }
-  hilo: {
-    shape: text
-    width: 60
-    style: {font: mono; font-size: 13; font-color: ${suave}}
-  }
   respuesta: {
-    width: 230
+    width: 250
     height: 36
     style: {bold: false; fill: ${ambar-suave}; stroke: ${ambar}; stroke-width: 1; border-radius: 8; font: mono; font-size: 13; font-color: ${tinta}}
   }
@@ -32,28 +27,25 @@ classes: {
 grid-columns: 1
 grid-gap: 18
 
-mensaje: "s₁ · último mensaje\nia · pide derivar(x**3), integrar(x**3), resolver(x**2 - 2)" {class: msj-ia; width: 560; height: 52}
+mensaje: "s₁ · último mensaje · ia pide\nderivar(x**3), integrar(x**3), resolver(x**2 - 2)" {class: msj-ia; width: 500; height: 52}
 
 tools: "tools · superstep 2" {
   class: grupo
   label.near: top-left
-  grid-columns: 3
+  grid-columns: 2
   grid-gap: 12
 
-  h1: "hilo 0" {class: hilo}
-  p1: "derivar(x**3)" {class: pedido}
+  p1: "hilo 0 · derivar(x**3)" {class: pedido}
+  p2: "hilo 1 · integrar(x**3)" {class: pedido}
+  p3: "hilo 2 · resolver(x**2 - 2)" {class: pedido}
   r1: "t₁ · 3*x**2" {class: respuesta; style.opacity: 0}
-  h2: "hilo 1" {class: hilo}
-  p2: "integrar(x**3)" {class: pedido}
   r2: "t₂ · x**4/4" {class: respuesta; style.opacity: 0}
-  h3: "hilo 2" {class: hilo}
-  p3: "resolver(x**2 - 2)" {class: pedido}
   r3: "t₃ · [-sqrt(2), sqrt(2)]" {class: respuesta; style.opacity: 0}
 }
 
-u: "u = {messages: (t₁, t₂, t₃)}" {class: codigo; width: 560; height: 40; style.opacity: 0.25}
+u: "u = {messages: (t₁, t₂, t₃)}" {class: codigo; width: 500; height: 40; style.opacity: 0.25}
 
-explica: "Superstep 2: tools recibe\nun mensaje con tres pedidos." {class: paso; width: 560}
+explica: "Superstep 2: tools recibe\nun mensaje con tres pedidos." {class: paso; width: 500; height: 64}
 
 steps: {
   1: {
