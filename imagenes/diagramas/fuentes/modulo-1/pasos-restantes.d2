@@ -1,0 +1,127 @@
+# Lección 4. El modelo insistente con recursion_limit = 7, sin guardia y con guardia.
+# Los pasos restantes λ = L − t bajan de a 1. En el superstep 5, con λ = 2, la guardia cambia el pedido por un aviso
+# y la ejecución llega a END; sin guardia, el modelo corre en el superstep 7 con λ = 0 y la ejecución termina en GraphRecursionError.
+# intervalo: 2800
+...@../estilo
+
+vars: {d2-config: {layout-engine: dagre}}
+
+classes: {
+  superstep: {
+    width: 84
+    height: 64
+    style: {fill: ${nodo}; stroke: ${borde-nodo}; stroke-width: 2; border-radius: 10; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  cuenta: {
+    width: 84
+    height: 64
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 3; border-radius: 10; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  guardia: {
+    width: 84
+    height: 64
+    style: {fill: ${ambar-suave}; stroke: ${ambar}; stroke-width: 3; border-radius: 10; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  excede: {
+    width: 84
+    height: 64
+    style: {fill: ${rosa-suave}; stroke: ${rosa}; stroke-width: 3; border-radius: 10; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  vacio: {
+    width: 84
+    height: 64
+    style: {fill: ${fondo}; stroke: ${fondo}; stroke-width: 0; font-size: 14; font-color: ${fondo}}
+  }
+  fin: {
+    shape: oval
+    width: 84
+    height: 64
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 2; font: mono; font-size: 14; font-color: ${suave}}
+  }
+  fin-activo: {
+    shape: oval
+    width: 84
+    height: 64
+    style: {fill: ${turquesa-suave}; stroke: ${turquesa}; stroke-width: 3; font: mono; font-size: 14; font-color: ${tinta}}
+  }
+  error: {
+    width: 84
+    height: 64
+    style: {fill: ${tarjeta}; stroke: ${borde-nodo}; stroke-width: 2; border-radius: 10; font: mono; font-size: 13; font-color: ${suave}}
+  }
+  error-activo: {
+    width: 84
+    height: 64
+    style: {fill: ${rosa-suave}; stroke: ${rosa}; stroke-width: 3; border-radius: 10; font: mono; font-size: 13; font-color: ${tinta}}
+  }
+}
+
+grid-columns: 1
+grid-gap: 22
+
+sin: "sin guardia" {
+  class: grupo
+  label.near: top-left
+  grid-columns: 9
+  grid-gap: 10
+
+  t0: "0\nSTART" {class: superstep}
+  t1: "1 modelo\nλ = 6" {class: superstep}
+  t2: "2 tools\nλ = 5" {class: superstep}
+  t3: "3 modelo\nλ = 4" {class: superstep}
+  t4: "4 tools\nλ = 3" {class: superstep}
+  t5: "5 modelo\nλ = 2" {class: superstep}
+  t6: "6 tools\nλ = 1" {class: superstep}
+  t7: "7 modelo\nλ = 0" {class: superstep}
+  fin: "Graph\nRecursion\nError" {class: error}
+}
+
+con: "con guardia" {
+  class: grupo
+  label.near: top-left
+  grid-columns: 9
+  grid-gap: 10
+
+  t0: "0\nSTART" {class: superstep}
+  t1: "1 modelo\nλ = 6" {class: superstep}
+  t2: "2 tools\nλ = 5" {class: superstep}
+  t3: "3 modelo\nλ = 4" {class: superstep}
+  t4: "4 tools\nλ = 3" {class: superstep}
+  t5: "5 modelo\nλ = 2" {class: superstep}
+  fin: END {class: fin}
+  v1: "" {class: vacio}
+  v2: "" {class: vacio}
+}
+
+explica: "Modelo insistente con recursion_limit = 7:\npide herramientas en cada mensaje." {class: paso; width: 640; height: 56}
+
+steps: {
+  1: {
+    sin.t0.class: cuenta
+    sin.t1.class: cuenta
+    sin.t2.class: cuenta
+    sin.t3.class: cuenta
+    sin.t4.class: cuenta
+    con.t0.class: cuenta
+    con.t1.class: cuenta
+    con.t2.class: cuenta
+    con.t3.class: cuenta
+    con.t4.class: cuenta
+    explica.label: "Hasta el superstep 4 las dos ejecuciones son iguales:\nλ = L − t baja de a 1 y el modelo pide con λ ≥ 3."
+  }
+  2: {
+    sin.t5.class: cuenta
+    con.t5.class: guardia
+    explica.label: "Superstep 5, λ = 2 < 3. Sin guardia, el modelo pide herramientas;\ncon guardia, escribe el aviso, sin pedidos."
+  }
+  3: {
+    sin.t6.class: cuenta
+    con.fin.class: fin-activo
+    explica.label: "Con guardia, tools_condition va a END:\nseis supersteps, sin error."
+  }
+  4: {
+    sin.t7.class: excede
+    sin.fin.class: error-activo
+    explica.label: "Sin guardia, el modelo corre en el superstep 7 = L con λ = 0,\ny la ejecución se detiene con GraphRecursionError."
+  }
+}
