@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 470" width="700" height="470" role="img">
+<title>La cota pʳ de P(R ≥ r) en escala logarítmica para p = 0,5, 0,7 y 0,9, y el recursion_limit L que la deja bajo δ = 10⁻³</title>
+<style>
+.sans{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif}
+.mono{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.halo{stroke-width:5;stroke-linejoin:round;paint-order:stroke}
+.f-fondo{fill:#ffffff} .s-fondo{stroke:#ffffff}
+.f-tinta{fill:#1f2328} .s-tinta{stroke:#1f2328}
+.f-suave{fill:#57606a} .s-suave{stroke:#57606a}
+.f-tenue{fill:#8c959f} .s-tenue{stroke:#8c959f}
+.f-turquesa{fill:#0d9488} .s-turquesa{stroke:#0d9488}
+.f-turquesa-suave{fill:#ccfbf1} .s-turquesa-suave{stroke:#ccfbf1}
+.f-violeta{fill:#7c3aed} .s-violeta{stroke:#7c3aed}
+.f-ambar{fill:#d97706} .s-ambar{stroke:#d97706}
+.halo{stroke:#ffffff}
+@media (prefers-color-scheme: dark) {
+.f-fondo{fill:#0b1120} .s-fondo{stroke:#0b1120}
+.f-tinta{fill:#e6edf3} .s-tinta{stroke:#e6edf3}
+.f-suave{fill:#9aa7b8} .s-suave{stroke:#9aa7b8}
+.f-tenue{fill:#64748b} .s-tenue{stroke:#64748b}
+.f-turquesa{fill:#2dd4bf} .s-turquesa{stroke:#2dd4bf}
+.f-turquesa-suave{fill:#0f3a3a} .s-turquesa-suave{stroke:#0f3a3a}
+.f-violeta{fill:#a78bfa} .s-violeta{stroke:#a78bfa}
+.f-ambar{fill:#fbbf24} .s-ambar{stroke:#fbbf24}
+.halo{stroke:#0b1120}
+}
+</style>
+<rect width="700" height="470" class="f-fondo"/>
+<line x1="110" y1="70" x2="650" y2="70" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="98" y="75" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁰</text>
+<line x1="110" y1="123.33" x2="650" y2="123.33" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="98" y="128.33" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻¹</text>
+<line x1="110" y1="176.67" x2="650" y2="176.67" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="98" y="181.67" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻²</text>
+<line x1="110" y1="230" x2="650" y2="230" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="98" y="235" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻³</text>
+<line x1="110" y1="283.33" x2="650" y2="283.33" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="98" y="288.33" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻⁴</text>
+<line x1="110" y1="336.67" x2="650" y2="336.67" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="98" y="341.67" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻⁵</text>
+<line x1="110" y1="390" x2="650" y2="390" class="s-tenue" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 5"></line>
+<text x="98" y="395" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">10⁻⁶</text>
+<line x1="110" y1="70" x2="110" y2="390" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<line x1="110" y1="390" x2="650" y2="390" class="s-suave" stroke-width="1.5" stroke-linecap="round"></line>
+<text x="110" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">0</text>
+<text x="187.14" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">10</text>
+<text x="264.29" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">20</text>
+<text x="341.43" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">30</text>
+<text x="418.57" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">40</text>
+<text x="495.71" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">50</text>
+<text x="572.86" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">60</text>
+<text x="650" y="416" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">70</text>
+<text x="380" y="442" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="middle">r (rondas)</text>
+<text x="30" y="34" class="sans f-tinta" font-size="18" font-weight="bold" text-anchor="start">cota de P(R ≥ r): pʳ</text>
+<line x1="110" y1="230" x2="650" y2="230" class="s-suave" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="10 5"></line>
+<text x="480.29" y="220" class="sans f-suave halo" font-size="16" font-weight="normal" text-anchor="end">δ = 10⁻³</text>
+<line x1="110" y1="70" x2="263.76" y2="390" class="s-turquesa" stroke-width="3" stroke-linecap="round"><animate attributeName="x2" values="110;110;263.76;263.76" keyTimes="0.0000;0.0632;0.1684;1.0000" dur="9.5s" repeatCount="indefinite"/><animate attributeName="y2" values="70;70;390;390" keyTimes="0.0000;0.0632;0.1684;1.0000" dur="9.5s" repeatCount="indefinite"/></line>
+<g><text x="271.76" y="382" class="sans f-turquesa halo" font-size="16" font-weight="bold" text-anchor="start">p = 0,5</text><circle cx="187.14" cy="230.55" r="6" class="f-turquesa"></circle><text x="187.14" y="260.55" class="sans f-turquesa halo" font-size="16" font-weight="bold" text-anchor="middle">L = 20</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.1684;0.2105;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+<line x1="110" y1="70" x2="408.81" y2="390" class="s-violeta" stroke-width="3" stroke-linecap="round"><animate attributeName="x2" values="110;110;408.81;408.81" keyTimes="0.0000;0.2316;0.3368;1.0000" dur="9.5s" repeatCount="indefinite"/><animate attributeName="y2" values="70;70;390;390" keyTimes="0.0000;0.2316;0.3368;1.0000" dur="9.5s" repeatCount="indefinite"/></line>
+<g><text x="416.81" y="382" class="sans f-violeta halo" font-size="16" font-weight="bold" text-anchor="start">p = 0,7</text><circle cx="264.29" cy="235.23" r="6" class="f-violeta"></circle><text x="264.29" y="265.23" class="sans f-violeta halo" font-size="16" font-weight="bold" text-anchor="middle">L = 40</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.3368;0.3789;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+<line x1="110" y1="70" x2="650" y2="240.83" class="s-ambar" stroke-width="3" stroke-linecap="round"><animate attributeName="x2" values="110;110;650;650" keyTimes="0.0000;0.4000;0.5053;1.0000" dur="9.5s" repeatCount="indefinite"/><animate attributeName="y2" values="70;70;240.83;240.83" keyTimes="0.0000;0.4000;0.5053;1.0000" dur="9.5s" repeatCount="indefinite"/></line>
+<g><text x="326" y="124.33" class="sans f-ambar halo" font-size="16" font-weight="bold" text-anchor="start">p = 0,9</text><circle cx="619.14" cy="231.07" r="6" class="f-ambar"></circle><text x="619.14" y="261.07" class="sans f-ambar halo" font-size="16" font-weight="bold" text-anchor="middle">L = 132</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.5053;0.5474;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+<g><text x="650" y="300" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">L = 2k, con k el primer r</text><text x="650" y="322" class="sans f-suave" font-size="16" font-weight="normal" text-anchor="end">en que pʳ ≤ δ</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0.0000;0.6105;0.6526;1.0000" dur="9.5s" repeatCount="indefinite"/></g>
+</svg>
