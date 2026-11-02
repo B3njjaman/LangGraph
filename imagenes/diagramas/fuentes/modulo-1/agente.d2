@@ -1,25 +1,26 @@
-# El agente del módulo 1 resolviendo "¿Cuánto es 3 × 4?".
-# Cada paso enciende el nodo que corre, agrega a messages lo que devolvió y explica qué pasó.
+# Lección 4. El agente con «Deriva x³ y después integra el resultado».
+# La arista tools → modelo devuelve cada resultado al modelo: en el superstep 3 lee 3*x**2 y pide integrar(3*x**2).
+# intervalo: 2200
 ...@../estilo
 
 vars: {d2-config: {layout-engine: dagre}}
 
-grid-columns: 2
-grid-gap: 48
+grid-columns: 1
+grid-gap: 28
 
 grafo: {
   class: invisible
   direction: down
 
   inicio: START {class: extremo}
-  asistente: "asistente" {class: nodo-llm; width: 150}
-  tools: "tools" {class: nodo-herramienta; width: 110}
+  modelo: "modelo" {class: nodo-llm; width: 150; height: 56}
+  tools: "tools" {class: nodo-herramienta; width: 130; height: 52}
   fin: END {class: extremo}
 
-  inicio -> asistente {class: arista}
-  asistente -> tools: "pidió\nherramientas" {class: condicional}
-  tools -> asistente {class: arista}
-  asistente -> fin: "respondió" {class: condicional}
+  inicio -> modelo {class: arista}
+  modelo -> tools: "trae pedidos" {class: condicional}
+  tools -> modelo {class: arista}
+  modelo -> fin: "sin pedidos" {class: condicional}
 }
 
 lado: {
@@ -27,18 +28,20 @@ lado: {
   grid-columns: 1
   grid-gap: 12
 
-  paso: "La pregunta entra por START." {class: paso}
+  paso: "«Deriva x³ y después integra\nel resultado» entra por START." {class: paso; width: 340}
 
-  estado: "estado['messages']" {
+  estado: "s(messages)" {
     class: panel
     label.near: top-left
     grid-columns: 1
     grid-gap: 10
 
-    m1: "humano · ¿Cuánto es 3 × 4?" {class: msj-humano}
-    m2: "ia · multiplicar(a=3, b=4)" {class: msj-ia; style.opacity: 0}
-    m3: "tool · 12" {class: msj-tool; style.opacity: 0}
-    m4: "ia · 3 × 4 es 12." {class: msj-ia; style.opacity: 0}
+    m1: "humano · Deriva x³ y después\nintegra el resultado" {class: msj-humano; width: 340; height: 52}
+    m2: "ia · pide derivar(x**3)" {class: msj-ia; width: 340; style.opacity: 0}
+    m3: "tool · 3*x**2" {class: msj-tool; width: 340; style.opacity: 0}
+    m4: "ia · pide integrar(3*x**2)" {class: msj-ia; width: 340; style.opacity: 0}
+    m5: "tool · x**3" {class: msj-tool; width: 340; style.opacity: 0}
+    m6: "ia · Una primitiva es x**3." {class: msj-ia; width: 340; style.opacity: 0}
   }
 }
 
@@ -47,32 +50,60 @@ grafo.inicio.class: extremo-activo
 steps: {
   1: {
     grafo.inicio.class: extremo
-    grafo.(inicio -> asistente)[0].class: recorrida
-    grafo.asistente.class: nodo-llm-activo
+    grafo.(inicio -> modelo)[0].class: recorrida
+    grafo.modelo.class: nodo-llm-activo
     lado.estado.m2.style.opacity: 1
-    lado.paso.label: "asistente llama al modelo,\nque pide la herramienta."
+    lado.paso.label: "Superstep 1: el modelo\npide derivar(x**3)."
   }
   2: {
-    grafo.(inicio -> asistente)[0].class: arista
-    grafo.asistente.class: nodo-llm
-    grafo.(asistente -> tools)[0].class: recorrida
-    grafo.tools.class: nodo-herramienta-activo
-    lado.estado.m3.style.opacity: 1
-    lado.paso.label: "tools ejecuta multiplicar\ny agrega el resultado."
+    grafo.(inicio -> modelo)[0].class: arista
+    grafo.modelo.class: nodo-llm
+    grafo.(modelo -> tools)[0].class: recorrida
+    lado.paso.label: "El último mensaje trae un pedido:\ntools_condition va a tools."
   }
   3: {
-    grafo.(asistente -> tools)[0].class: condicional
-    grafo.tools.class: nodo-herramienta
-    grafo.(tools -> asistente)[0].class: recorrida
-    grafo.asistente.class: nodo-llm-activo
-    lado.estado.m4.style.opacity: 1
-    lado.paso.label: "El modelo ve el resultado\ny responde con texto."
+    grafo.(modelo -> tools)[0].class: condicional
+    grafo.tools.class: nodo-herramienta-activo
+    lado.estado.m3.style.opacity: 1
+    lado.paso.label: "Superstep 2: tools calcula\nderivar(x**3) y escribe 3*x**2."
   }
   4: {
-    grafo.(tools -> asistente)[0].class: arista
-    grafo.asistente.class: nodo-llm
-    grafo.(asistente -> fin)[0].class: recorrida
+    grafo.tools.class: nodo-herramienta
+    grafo.(tools -> modelo)[0].class: recorrida
+    lado.paso.label: "tools → modelo: el resultado\nvuelve al modelo."
+  }
+  5: {
+    grafo.(tools -> modelo)[0].class: arista
+    grafo.modelo.class: nodo-llm-activo
+    lado.estado.m4.style.opacity: 1
+    lado.paso.label: "Superstep 3: el modelo lee\n3*x**2 y pide integrar(3*x**2)."
+  }
+  6: {
+    grafo.modelo.class: nodo-llm
+    grafo.(modelo -> tools)[0].class: recorrida
+    lado.paso.label: "Otro pedido: tools_condition\nva a tools."
+  }
+  7: {
+    grafo.(modelo -> tools)[0].class: condicional
+    grafo.tools.class: nodo-herramienta-activo
+    lado.estado.m5.style.opacity: 1
+    lado.paso.label: "Superstep 4: tools escribe x**3."
+  }
+  8: {
+    grafo.tools.class: nodo-herramienta
+    grafo.(tools -> modelo)[0].class: recorrida
+    lado.paso.label: "tools → modelo, otra vez."
+  }
+  9: {
+    grafo.(tools -> modelo)[0].class: arista
+    grafo.modelo.class: nodo-llm-activo
+    lado.estado.m6.style.opacity: 1
+    lado.paso.label: "Superstep 5: el modelo\nresponde con texto."
+  }
+  10: {
+    grafo.modelo.class: nodo-llm
+    grafo.(modelo -> fin)[0].class: recorrida
     grafo.fin.class: extremo-activo
-    lado.paso.label: "Sin llamadas a herramientas:\nel grafo termina."
+    lado.paso.label: "Sin pedidos: tools_condition va a\nEND. Seis supersteps, del 0 al 5."
   }
 }

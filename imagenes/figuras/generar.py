@@ -1,10 +1,11 @@
-"""Genera las figuras matemáticas animadas de la lección 1 (método de Newton para x² − 2).
+"""Genera las figuras matemáticas animadas del módulo 1.
 
-Escribe tres SVG en `modulo-1/`, sin dependencias (solo la biblioteca estándar):
+Escribe cuatro SVG en `modulo-1/`, sin dependencias (solo la biblioteca estándar):
 
-- `tangentes.svg`: dos pasos de Newton como tangentes a la curva.
-- `babilonico.svg`: rectángulos de área 2 que se acercan a un cuadrado de lado √2.
-- `error.svg`: el error de Newton en escala logarítmica, contra un método de orden 1.
+- `tangentes.svg`: dos pasos de Newton como tangentes a la curva (lección 1).
+- `babilonico.svg`: rectángulos de área 2 que se acercan a un cuadrado de lado √2 (lección 1).
+- `error.svg`: el error de Newton en escala logarítmica, contra un método de orden 1 (lección 1).
+- `cola.svg`: la cota pʳ de P(R ≥ r) y el recursion_limit que la deja bajo δ = 10⁻³ (lección 4).
 
 Cada SVG sigue el tema claro u oscuro del navegador y se anima solo con SMIL.
 
@@ -340,7 +341,53 @@ def error():
     return svg(ancho, alto, "Error del método de Newton en escala logarítmica: el exponente casi se duplica en cada paso", "\n".join(partes))
 
 
-FIGURAS = {"tangentes": tangentes, "babilonico": babilonico, "error": error}
+def cola():
+    ancho, alto, duracion = 700, 470, 9.5
+    izq, derecha, arriba, fondo = 110, 650, 70, 390
+    r_max, decadas, delta = 70, 6, 1e-3
+
+    def X(r):
+        return izq + r * (derecha - izq) / r_max
+
+    def Y(valor):
+        return arriba + -math.log10(valor) / decadas * (fondo - arriba)
+
+    partes = []
+    for exponente in range(0, -decadas - 1, -1):
+        y = Y(10.0**exponente)
+        partes.append(linea(izq, y, derecha, y, "tenue", 1, "2 5"))
+        partes.append(texto(izq - 12, y + 5, potencia_de_diez(exponente), "suave", 16, "end"))
+    partes.append(linea(izq, arriba, izq, fondo, "suave", 1.5))
+    partes.append(linea(izq, fondo, derecha, fondo, "suave", 1.5))
+    for r in range(0, r_max + 1, 10):
+        partes.append(texto(X(r), fondo + 26, str(r), "suave", 16, "middle"))
+    partes.append(texto((izq + derecha) / 2, fondo + 52, "r (rondas)", "suave", 16, "middle"))
+    partes.append(texto(30, 34, "cota de P(R ≥ r): pʳ", "tinta", 18, peso="bold"))
+
+    y_delta = Y(delta)
+    partes.append(linea(izq, y_delta, derecha, y_delta, "suave", 1.5, "10 5"))
+    partes.append(texto(X(48), y_delta - 10, "δ = 10⁻³", "suave", 16, "end", halo=True))
+
+    for i, (p, color) in enumerate([(0.5, "turquesa"), (0.7, "violeta"), (0.9, "ambar")]):
+        inicio = 0.6 + 1.6 * i
+        r_fin = min(r_max, math.log(10.0**-decadas) / math.log(p))
+        x0, y0, x1, y1 = X(0), Y(1), X(r_fin), Y(p**r_fin)
+        crece = crecer("x2", x0, x1, inicio, inicio + 1.0, duracion) + crecer("y2", y0, y1, inicio, inicio + 1.0, duracion)
+        partes.append(linea(x0, y0, x1, y1, color, 3, hijos=crece))
+        if r_fin < r_max:
+            nombre = texto(x1 + 8, fondo - 8, f"p = {numero(p, 1)}", color, 16, peso="bold", halo=True)
+        else:  # la recta sale por la derecha: el nombre va sobre ella
+            nombre = texto(X(28), Y(p**28) - 14, f"p = {numero(p, 1)}", color, 16, peso="bold", halo=True)
+        k = math.ceil(math.log(delta) / math.log(p))  # primer r con pʳ ≤ δ
+        marca = punto(X(k), Y(p**k), color, 6) + texto(X(k), Y(p**k) + 30, f"L = {2 * k}", color, 16, "middle", "bold", True)
+        partes.append(f"<g>{nombre}{marca}{aparecer(inicio + 1.0, duracion)}</g>")
+    nota = texto(derecha, 300, "L = 2k, con k el primer r", "suave", 16, "end") + texto(derecha, 322, "en que pʳ ≤ δ", "suave", 16, "end")
+    partes.append(f"<g>{nota}{aparecer(5.8, duracion)}</g>")
+    titulo = "La cota pʳ de P(R ≥ r) en escala logarítmica para p = 0,5, 0,7 y 0,9, y el recursion_limit L que la deja bajo δ = 10⁻³"
+    return svg(ancho, alto, titulo, "\n".join(partes))
+
+
+FIGURAS = {"tangentes": tangentes, "babilonico": babilonico, "error": error, "cola": cola}
 
 
 def main():
